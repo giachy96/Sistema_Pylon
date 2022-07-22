@@ -1,7 +1,6 @@
 /* 
 
 
-Githb percorso di lavoro Giacomo
 
   CODICE STRUTTURA : XYZ
  // X --> STATO y --> CHI Z ---> COSA
