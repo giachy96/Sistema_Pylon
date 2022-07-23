@@ -1,4 +1,4 @@
-  //#include "LoRa_E22.h"
+  #include "LoRa_E22.h"
   //#include "Arduino.h"
  // #include "SoftwareSerial.h"
   LoRa_E22 e22ttl(10, 11); // Arduino RX --> e22 TX - Arduino TX --> e22 RX
