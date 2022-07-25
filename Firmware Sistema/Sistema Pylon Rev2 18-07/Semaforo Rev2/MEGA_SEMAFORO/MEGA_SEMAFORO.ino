@@ -20,7 +20,7 @@
   int RelayRed=4;
   int RelayGreen=5;
   int RelayBlue=6;
-  String State="000"; //Startup state
+  String State="100"; //Bootup state
 
 void setup() {
   Serial1.begin(9600);
@@ -40,7 +40,7 @@ void setup() {
 void loop() {
 
 Currentmillisx=millis(); 
- if ((Currentmillisx-Timeserial1) > Delayserialx && (State=="200" || State=="100")) { //Delay time for receive serial data, if necessary...
+ if ((Currentmillisx-Timeserial1) > Delayserialx && (State=="200" || State=="300")) { //Delay time for receive serial data, if necessary...
   if (Serial1.available()){
     Dateserial1=Serial1.read();  //Assign incoming data from Serial1 to Dateserial1
     digitalWrite(RelayRed,HIGH); //Turn on stoplight
@@ -52,7 +52,7 @@ Currentmillisx=millis();
    }
 
  Currentmillisx=millis();
- if ((Currentmillisx-Timeserial2) > Delayserialx && (State=="200" || State=="100")) {
+ if ((Currentmillisx-Timeserial2) > Delayserialx && (State=="200" || State=="300")) {
   if (Serial2.available()){
     Dateserial2=Serial2.read();
     digitalWrite(RelayGreen,HIGH);
@@ -64,7 +64,7 @@ Currentmillisx=millis();
     }
 
  Currentmillisx=millis();
- if ((Currentmillisx-Timeserial3) > Delayserialx && (State=="200" || State=="100")) {
+ if ((Currentmillisx-Timeserial3) > Delayserialx && (State=="200" || State=="300")) {
   if (Serial3.available()){
     Dateserial3=Serial3.read();
     digitalWrite(RelayBlue,HIGH);
@@ -76,7 +76,7 @@ Currentmillisx=millis();
     }
 
  Currentmilliss=millis(); // millis assignments for send delay control
-  if ((Currentmilliss-Timesend) >= Delaysend && (State=="200" || State=="100")) {  //If the last trasmission is older than Delaysend, and state is race
+  if ((Currentmilliss-Timesend) >= Delaysend && (State=="200" || State=="300")) {  //If the last trasmission is older than Delaysend, and state is race
    if (Dateserial1 != "0" || Dateserial2 != "0" || Dateserial3 !="0")  { //If some button was pressed
     Dateserial=(Dateserial1); // Compose message for send with Lora
     Dateserial.concat(",");
@@ -100,5 +100,6 @@ Currentmillisx=millis();
     else{ 
      State=rc.data;    
    }
+   
     }
 }

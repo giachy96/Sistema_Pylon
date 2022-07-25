@@ -1,0 +1,22 @@
+PINOUT
+
+Serial 1 - RX*****
+Serial 2 - RX*****
+Serial 3 - RX*****
+Relay Rosso - 
+Relay Blu - 
+Relay Verde - 
+
+LEGENDA STATI SEMAFORO
+
+100 - Startup - In attesa nominativi manches, invio nominativi ai telecomandi e predispongoi per lo show
+200 - Show - Attivo luci semaforo alla pressione, spedisco al tabellone
+300 - Race - Attivo luci semaforo alla pressione, spedisco al tabellone
+400 - Invio Tempi - Disabilito tutto
+500 - Fine Gara - Disabilito tutto
+
+FORMATO DATI IN INPUT\OUTPUT
+
+
+
+LOGICA DI FUNZIONAMENTO
