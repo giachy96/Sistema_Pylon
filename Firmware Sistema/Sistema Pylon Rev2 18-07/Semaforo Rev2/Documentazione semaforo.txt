@@ -7,7 +7,7 @@ Relay Rosso -
 Relay Blu - 
 Relay Verde - 
 
-LEGENDA STATI SEMAFORO
+LEGENDA STATI SEMAFORO (XYZ)
 
 100 - Startup - In attesa nominativi manches, invio nominativi ai telecomandi e predispongoi per lo show
 200 - Show - Attivo luci semaforo alla pressione, spedisco al tabellone
@@ -15,8 +15,36 @@ LEGENDA STATI SEMAFORO
 400 - Invio Tempi - Disabilito tutto
 500 - Fine Gara - Disabilito tutto
 
+LEGENDA STATI GENERALE (XYZ)
+
+Stato X:
+	100 - Startup
+	200 - Show
+	300 - Race
+	400 - Invio Tempi
+	500 - Fine Gara
+
+Colori  Y :
+	 0 Stato Generico
+	 1 Verde
+         2 Rosso
+         3 Blu
+
+COSA Z : 0 Stato Generico
+	 1 --> TAGLIO
+         2--> SEMAFORO
+	 3--> TEMPI
+
 FORMATO DATI IN INPUT\OUTPUT
 
+Invio durante SHOW:
+Pressione Rosso:"212"
+Pressione Verde:"222"
+Pressione Blu:"232"
 
+Invio durante RACE:
+Pressione Rosso:"312"
+Pressione Verde:"322"
+Pressione Blu:"332"
 
 LOGICA DI FUNZIONAMENTO
