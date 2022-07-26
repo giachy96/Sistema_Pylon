@@ -6,6 +6,8 @@ LoRa_E22 e22ttl(2, 3); // Arduino RX --> e22 TX - Arduino TX --> e22 RX
 #define SOFTRX 10 // MT - define rx pin 10
 #define SOFTTX 11 // MT - define tx pin 11
 SoftwareSerial SwSerial(SOFTRX,SOFTTX);
+String State;
+String OldState;
 
 void setup() {
      pinMode(SOFTTX, OUTPUT); // MT - Softrx - pin mapping output
@@ -31,7 +33,10 @@ void loop() {
     if (rc.status.code!=1){
         rc.status.getResponseDescription();
     }else{
-             SwSerial.println(rc.data);
+       if (SwSerial.available()){
+    State=SwSerial.read();
+      }
+    SwSerial.println(rc.data);
     }
   }
  }
