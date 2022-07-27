@@ -24,28 +24,28 @@
   String OldState="000";
 
 void setup() {
-  Serial1.begin(9600);
+  Serial1.begin(9600); // Serial ColorRx
   delay(300);
-  Serial2.begin(9600);
+  Serial2.begin(9600);// Serial ColorRx
   delay(300);
-  Serial3.begin(9600);
+  Serial3.begin(9600);// Serial ColorRx
   delay(300);
-  Serial.begin(9600);
+  Serial.begin(9600);// Serial Pc interface
   delay(300);
-  e22ttl.begin();
-  pinMode(RelayRed, OUTPUT);
-  pinMode(RelayBlue, OUTPUT);
-  pinMode(RelayGreen, OUTPUT);
+  e22ttl.begin(); //Start e22ttl
+  pinMode(RelayRed, OUTPUT); //Output pin to Relay Red
+  pinMode(RelayBlue, OUTPUT); //Output pin to Relay Blue
+  pinMode(RelayGreen, OUTPUT); //Output pin to Relay Green
 }
 
 void loop() {
 
-Currentmillisx=millis(); 
+Currentmillisx=millis(); // Assign millis value to Currentmillisx for if statements
  if ((Currentmillisx-Timeserial1) > Delayserialx && (State=="200" || State=="100")) { //Delay time for receive serial data, if necessary...
   if (Serial1.available()){
     Dateserial1=Serial1.read();  //Assign incoming data from Serial1 to Dateserial1
     digitalWrite(RelayRed,HIGH); //Turn on stoplight
-    Timeserial1=millis();
+    Timeserial1=millis(); // Assign millis value for if statements
     }
   }
  if ((Currentmillisx-Timeserial1) > DelayLight) { // if red light is on for more than Delaylight
@@ -77,7 +77,7 @@ Currentmillisx=millis();
     }
 
  Currentmilliss=millis(); // millis assignments for send delay control
-  if ((Currentmilliss-Timesend) >= Delaysend && (State=="200" || State=="100")) {  //If the last trasmission is older than Delaysend, and state is race
+  if ((Currentmilliss-Timesend) >= Delaysend && (State=="200" || State=="100")) {  //If the last trasmission is older than Delaysend, and state is race or show
    if (Dateserial1 != "0" || Dateserial2 != "0" || Dateserial3 !="0")  { //If some button was pressed
     Dateserial=(Dateserial1); // Compose message for send with Lora
     Dateserial.concat(",");
@@ -92,27 +92,28 @@ Currentmillisx=millis();
     }
     }
   
-  if (e22ttl.available()>1) {
-  ResponseContainer rc = e22ttl.receiveMessage();
-    // Is something goes wrong print error
-    if (rc.status.code!=1){
-        rc.status.getResponseDescription();
+  if (e22ttl.available()>1) { //If there's something incoming from lora
+  ResponseContainer rc = e22ttl.receiveMessage(); //Receive message
+    if (rc.status.code!=1){// Is something goes wrong
+        rc.status.getResponseDescription(); //Get error response
     }
     else{ 
-     State=rc.data;    
+     State=rc.data; // if there isn't any error assign the incoming data to State
    }
     }
-if (Serial1.available() && OldState != State){
-    Dateserial1p=Serial1.read();
-    Serial1.println(State);
+if (OldState != State){ //If state was change on previous code
+  if (Serial1.available()){ //check if some press was incoming from receiver 1
+    Dateserial1p=Serial1.read(); //Assign useless press on Dateserial1
     }
-if (Serial2.available() && OldState != State){
-    Dateserial1p=Serial1.read();
+    Serial1.println(State); //Send to receiver 1 State
+  if (Serial2.available()){
+    Dateserial2p=Serial2.read();
+    }
     Serial2.println(State);
+  if (Serial3.available()){
+    Dateserial3p=Serial3.read();
     }
-if (Serial3.available() && OldState != State){
-    Dateserial1p=Serial1.read();
     Serial3.println(State);
-    }
-OldState=State;
+  OldState=State; //Reset condition for send State to the rx
+}
 }
