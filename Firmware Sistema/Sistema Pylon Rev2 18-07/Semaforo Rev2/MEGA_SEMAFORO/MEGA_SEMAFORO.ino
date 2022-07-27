@@ -42,7 +42,7 @@ void loop() {
 
 Currentmillisx=millis(); // Assign millis value to Currentmillisx for if statements
  if ((Currentmillisx-Timeserial1) > Delayserialx && (State=="200" || State=="100")) { //Delay time for receive serial data, if necessary...
-  if (Serial1.available()){
+  if (Serial1.available()>0){
     Dateserial1=Serial1.read();  //Assign incoming data from Serial1 to Dateserial1
     digitalWrite(RelayRed,HIGH); //Turn on stoplight
     Timeserial1=millis(); // Assign millis value for if statements
@@ -54,7 +54,7 @@ Currentmillisx=millis(); // Assign millis value to Currentmillisx for if stateme
 
  Currentmillisx=millis();
  if ((Currentmillisx-Timeserial2) > Delayserialx && (State=="200" || State=="100")) {
-  if (Serial2.available()){
+  if (Serial2.available()>0){
     Dateserial2=Serial2.read();
     digitalWrite(RelayGreen,HIGH);
    Timeserial2=millis();
@@ -66,7 +66,7 @@ Currentmillisx=millis(); // Assign millis value to Currentmillisx for if stateme
 
  Currentmillisx=millis();
  if ((Currentmillisx-Timeserial3) > Delayserialx && (State=="200" || State=="100")) {
-  if (Serial3.available()){
+  if (Serial3.available()>0){
     Dateserial3=Serial3.read();
     digitalWrite(RelayBlue,HIGH);
     Timeserial3=millis();
@@ -102,15 +102,15 @@ Currentmillisx=millis(); // Assign millis value to Currentmillisx for if stateme
    }
     }
 if (OldState != State){ //If state was change on previous code
-  if (Serial1.available()){ //check if some press was incoming from receiver 1
+  if (Serial1.available()>0){ //check if some press was incoming from receiver 1
     Dateserial1p=Serial1.read(); //Assign useless press on Dateserial1
     }
     Serial1.println(State); //Send to receiver 1 State
-  if (Serial2.available()){
+  if (Serial2.available()>0){
     Dateserial2p=Serial2.read();
     }
     Serial2.println(State);
-  if (Serial3.available()){
+  if (Serial3.available()>0){
     Dateserial3p=Serial3.read();
     }
     Serial3.println(State);

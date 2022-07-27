@@ -33,7 +33,7 @@ void loop() {
       TxData=rc.data; //Assign incoming data on TxData variable
     }
   if (TxData !="0" && (State=="200" && State=="300")){ //Condition for sent to mega press
-    if (SwSerial.available()){
+    if (SwSerial.available()>0){
       State=SwSerial.read();
       }
       if (State=="200" && State=="300"){ //If nothing has change in the previous condition

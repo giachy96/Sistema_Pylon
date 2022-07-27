@@ -31,9 +31,7 @@ LoRa_E22 e22ttl(2, 3); // Arduino RX --> e22 TX - Arduino TX --> e22 RX
 
 unsigned long previousMillis = 0;        // will store last time voltage was updated
 
-// constants won't change:
-long interval = 20000;
-
+long interval = 20000;// constants won't change:
 
 float readvoltage (int pin) {
   float tensione;
@@ -42,13 +40,10 @@ float readvoltage (int pin) {
   return tensione;
 }
 
-
 void draw(void) {
 
   tensione_float = readvoltage(pinbatt);
   dtostrf(tensione_float, 6, 2, vout); // Leave room for too large numbers!
-
-  //tensione_batt = char(tensione_float );// using a float and the decimal places
   u8g.setFont(u8g_font_9x15);
   u8g.setFontRefHeightExtendedText();
   u8g.setDefaultForegroundColor();
@@ -58,9 +53,7 @@ void draw(void) {
   u8g.drawStr(0, 18 , " Batteria");
   u8g.drawStr(60, 40 , " V");
   u8g.drawStr(10, 40, vout );
-  //Serial.println(vout);
 }
-
 
 void setup() {
   pinMode(pulsante , INPUT_PULLUP);
@@ -68,16 +61,8 @@ void setup() {
   pinMode (pinbatt , INPUT);
   Serial.begin(9600);
   delay(500);
-
-
-  // Startup all pins and UART
-  e22ttl.begin();
+  e22ttl.begin();  // Startup all pins and UART
   u8g.begin();
-
-  //  // Send message
-  //  ResponseStatus rs = e22ttl.sendFixedMessage(0,1,23,"Hello, world?");
-  //  // Check If there is some problem of succesfully send
-  //  Serial.println(rs.getResponseDescription());
 }
 
 void loop() {
@@ -85,10 +70,8 @@ void loop() {
   unsigned long currentMillis = millis();
 
   while (bootup < 10) {
-    // save the last time you blinked the LED
-    previousMillis = currentMillis;
-    // picture loop
-    u8g.firstPage();
+       previousMillis = currentMillis; // save the last time you blinked the LED
+        u8g.firstPage();// picture loop
     do {
       draw();
     } while ( u8g.nextPage() );
@@ -100,43 +83,23 @@ void loop() {
     float voltage = readvoltage(pinbatt);
     if (voltage < 2.9) {
       digitalWrite(buzzer , HIGH);
-
     } else {
-
       digitalWrite(buzzer, LOW);
-
     }
 
 
     if (currentMillis - previousMillis >= interval) {
-      // save the last time you blinked the LED
-      previousMillis = currentMillis;
-      // picture loop
-      u8g.firstPage();
+      previousMillis = currentMillis; // save the last time you blinked the LED
+            u8g.firstPage();// picture loop
       do {
         draw();
       } while ( u8g.nextPage() );
-
     }
 
 
 
-
-    //    // If something available
-    //  if (e22ttl.available()>1) {
-    //      // read the String message
-    //    ResponseContainer rc = e22ttl.receiveMessage();
-    //    // Is something goes wrong print error
-    //    if (rc.status.code!=1){
-    //        rc.status.getResponseDescription();
-    //    }else{
-    //        // Print the data received
-    //        Serial.println(rc.data);
-    //    }
-    //  }
-
     if (digitalRead(pulsante) == LOW) {
-      ResponseStatus rs = e22ttl.sendFixedMessage(0, 0, 3, "OK");
+      ResponseStatus rs = e22ttl.sendFixedMessage(0, 0, 3, "312");
       Serial.println(rs.getResponseDescription());
       Serial.println("Pulsante Premuto");
       digitalWrite(buzzer , HIGH);

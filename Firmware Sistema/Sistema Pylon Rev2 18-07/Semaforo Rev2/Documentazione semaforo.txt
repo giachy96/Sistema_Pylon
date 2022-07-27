@@ -35,7 +35,7 @@ COSA Z : 0 Stato Generico
          2--> SEMAFORO
 	 3--> TEMPI
 
-FORMATO DATI IN INPUT\OUTPUT
+FORMATO DATI OUTPUT
 
 Invio durante SHOW:
 Pressione Rosso:"212"
@@ -47,4 +47,11 @@ Pressione Rosso:"312"
 Pressione Verde:"322"
 Pressione Blu:"332"
 
-LOGICA DI FUNZIONAMENTO
+FORMATO DATI INPUT Da lora tabellone a mega semaforo
+"Stato,nome1,nome2,nome3"
+
+FORMATO DATI INPUT Da mega semaforo a nano rx
+"Stato,nome1,nome2,nome3"
+
+FORMATO DATI INPUT Da nano rx a telecomando
+"Stato,nome1,nome2,nome3"
