@@ -10,7 +10,7 @@ String State="000";
 String TxData="0";
 
 void setup() {
-     pinMode(SOFTTX, OUTPUT); // MT - Softrx - pin mapping output
+   pinMode(SOFTTX, OUTPUT); // MT - Softrx - pin mapping output
    pinMode(SOFTRX, INPUT); // MT - Softrx - pin mapping input
   Serial.begin(9600);
   delay(500); 
