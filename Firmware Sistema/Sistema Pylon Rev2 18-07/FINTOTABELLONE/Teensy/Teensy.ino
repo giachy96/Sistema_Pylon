@@ -1,3 +1,4 @@
+#include"SoftwareSerial.h"
 #include <SPI.h>
 #include <DMD2.h>
 #include <fonts/SystemFont5x7.h>
