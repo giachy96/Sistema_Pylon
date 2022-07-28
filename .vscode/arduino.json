@@ -1,6 +1,7 @@
 {
-    "configuration": "cpu=atmega2560",
-    "board": "arduino:avr:mega",
+    "configuration": "cpu=atmega328old",
+    "board": "arduino:avr:nano",
     "programmer": "arduino:avrisp",
-    "sketch": "Firmware Sistema\\Sistema Pylon Rev2 18-07\\Semaforo Rev2\\MEGA_SEMAFORO\\MEGA_SEMAFORO.ino"
+    "sketch": "Firmware Sistema\\Sistema Pylon Rev2 18-07\\Semaforo Rev2\\MEGA_SEMAFORO\\MEGA_SEMAFORO.ino",
+    "port": "COM3"
 }
