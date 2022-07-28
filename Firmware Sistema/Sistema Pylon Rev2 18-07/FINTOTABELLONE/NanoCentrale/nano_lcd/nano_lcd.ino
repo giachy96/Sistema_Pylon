@@ -9,9 +9,8 @@
 // const uint8_t *FONT = Arial14;
 const uint8_t *FONT = SystemFont5x7;
 
-SoftwareSerial Serial1(4, 5); // RX, TX
-
-int code;
+SoftwareSerial SSerial1(4,5); // RX, TX
+String code;
 
 #define DISPLAYS_ACROSS 2
 #define DISPLAYS_DOWN 3
@@ -23,7 +22,7 @@ DMD_TextBox box(dmd);                        // "box" provides a text box to aut
 void setup()
 {
   Serial.begin(9600);
-  Serial1.begin(9600);
+  SSerial1.begin(9600);
   dmd.setBrightness(255);
   dmd.selectFont(FONT);
   dmd.begin();
@@ -32,10 +31,11 @@ void setup()
 // the loop routine runs over and over again forever:
 void loop()
 {
-  if (Serial1.available())
+  if (SSerial1.available())
   {
-    code = Serial1.read();
-    if (code == 500)
+    code = SSerial1.read();
+    Serial.println(code);
+    if (code == "STOP")
     {
       dmd.drawString(1, 5, "STOP");
       dmd.drawString(1, 19, "STOP");
