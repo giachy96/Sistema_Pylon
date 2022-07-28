@@ -41,11 +41,11 @@ void setup() {
 void loop() {
 
 Currentmillisx=millis(); // Assign millis value to Currentmillisx for if statements
- if ((Currentmillisx-Timeserial1) > Delayserialx && (State=="200" || State=="100")) { //Delay time for receive serial data, if necessary...
+ if (State=="200" || State=="100") { //Delay time for receive serial data, if necessary...
   if (Serial1.available()>0){
     Dateserial1=Serial1.read();  //Assign incoming data from Serial1 to Dateserial1
     digitalWrite(RelayRed,HIGH); //Turn on stoplight
-    Timeserial1=millis(); // Assign millis value for if statements
+    Timeserial1=millis(); // Assign millis value for turning off relay
     }
   }
  if ((Currentmillisx-Timeserial1) > DelayLight) { // if red light is on for more than Delaylight
@@ -53,7 +53,7 @@ Currentmillisx=millis(); // Assign millis value to Currentmillisx for if stateme
    }
 
  Currentmillisx=millis();
- if ((Currentmillisx-Timeserial2) > Delayserialx && (State=="200" || State=="100")) {
+ if (State=="200" || State=="100") {
   if (Serial2.available()>0){
     Dateserial2=Serial2.read();
     digitalWrite(RelayGreen,HIGH);
@@ -65,7 +65,7 @@ Currentmillisx=millis(); // Assign millis value to Currentmillisx for if stateme
     }
 
  Currentmillisx=millis();
- if ((Currentmillisx-Timeserial3) > Delayserialx && (State=="200" || State=="100")) {
+ if (State=="200" || State=="100") {
   if (Serial3.available()>0){
     Dateserial3=Serial3.read();
     digitalWrite(RelayBlue,HIGH);
@@ -77,7 +77,7 @@ Currentmillisx=millis(); // Assign millis value to Currentmillisx for if stateme
     }
 
  Currentmilliss=millis(); // millis assignments for send delay control
-  if ((Currentmilliss-Timesend) >= Delaysend && (State=="200" || State=="100")) {  //If the last trasmission is older than Delaysend, and state is race or show
+  if ((Currentmilliss-Timesend) >= Delaysend && (State=="200" || State=="100")) {  //If the last receive is older than Delaysend, and state is race or show
    if (Dateserial1 != "0" || Dateserial2 != "0" || Dateserial3 !="0")  { //If some button was pressed
     Dateserial=(Dateserial1); // Compose message for send with Lora
     Dateserial.concat(",");
@@ -85,13 +85,11 @@ Currentmillisx=millis(); // Assign millis value to Currentmillisx for if stateme
     Dateserial.concat(",");
     Dateserial.concat(Dateserial3);
     ResponseStatus rs = e22ttl.sendFixedMessage(0, 1, 7, Dateserial); // Send fixedmessage Dateseria that contain all update of Dateserial1/2/3
-    Timesend=millis();
     Dateserial1="0"; //Reset condition for received press button
     Dateserial2="0";
     Dateserial3="0";
     }
     }
-  
   if (e22ttl.available()>1) { //If there's something incoming from lora
   ResponseContainer rc = e22ttl.receiveMessage(); //Receive message
     if (rc.status.code!=1){// Is something goes wrong
@@ -100,7 +98,9 @@ Currentmillisx=millis(); // Assign millis value to Currentmillisx for if stateme
     else{ 
      State=rc.data; // if there isn't any error assign the incoming data to State
    }
+    Timesend=millis(); // millis assigment for last data receive 
     }
+
 if (OldState != State){ //If state was change on previous code
   if (Serial1.available()>0){ //check if some press was incoming from receiver 1
     Dateserial1p=Serial1.read(); //Assign useless press on Dateserial1

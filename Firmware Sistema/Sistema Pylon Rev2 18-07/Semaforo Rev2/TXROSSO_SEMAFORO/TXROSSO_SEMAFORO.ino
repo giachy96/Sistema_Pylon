@@ -17,7 +17,6 @@
 #include "LoRa_E22.h"
 #include "U8glib.h"
 U8GLIB_SH1106_128X64 u8g(U8G_I2C_OPT_NONE);
-
 int pulsante = 9;
 int buzzer = 5;
 int pinbatt = A0;
@@ -25,14 +24,18 @@ int bootup = 1;
 float tensione_float = 0;
 char vout[8]; // Buffer big enough for 7-character float
 char t[5] = { '3', ',', '3', '3',  '\0' };
-
-
 LoRa_E22 e22ttl(2, 3); // Arduino RX --> e22 TX - Arduino TX --> e22 RX
-
 unsigned long previousMillis = 0;        // will store last time voltage was updated
-
+unsigned long currentMillis = 0;
+unsigned long Timesend=0;
+unsigned long CurrentPress=0;
+unsigned long Lastpress=0;
+unsigned long Delaypress=2500;
+unsigned long Delaysend=200;
+unsigned long Delaybuzzer=1000;
+int Press=0;
+String State="000";
 long interval = 20000;// constants won't change:
-
 float readvoltage (int pin) {
   float tensione;
   tensione = analogRead(pin);
@@ -67,7 +70,7 @@ void setup() {
 
 void loop() {
 
-  unsigned long currentMillis = millis();
+  currentMillis = millis();
 
   while (bootup < 10) {
        previousMillis = currentMillis; // save the last time you blinked the LED
@@ -79,7 +82,7 @@ void loop() {
   }
   while (!bootup < 10) {
     
-// ----------------------------------- controllo batteria 
+    // ----------------------------------- controllo batteria 
     float voltage = readvoltage(pinbatt);
     if (voltage < 2.9) {
       digitalWrite(buzzer , HIGH);
@@ -95,18 +98,32 @@ void loop() {
         draw();
       } while ( u8g.nextPage() );
     }
-
-
-
-    if (digitalRead(pulsante) == LOW) {
-      ResponseStatus rs = e22ttl.sendFixedMessage(0, 0, 3, "312");
-      Serial.println(rs.getResponseDescription());
-      Serial.println("Pulsante Premuto");
+  
+    if (e22ttl.available()>1){
+    ResponseContainer rc = e22ttl.receiveMessage();// Receive message
+      if (rc.status.code!=1){ // If there is some problem
+      rc.status.getResponseDescription(); //Get report
+      Timesend=millis();
+      }
+      else{ //If there isn't any problem we're going to receive press 
+      State=rc.data; //Assign incoming data on TxData variable
+      }
+    } 
+    CurrentPress=millis();
+    if (digitalRead(pulsante) == LOW && (State=="200" || State=="300") && (CurrentPress-Lastpress)>=Delaypress) {
+      Lastpress=millis();
+      Press=1;
       digitalWrite(buzzer , HIGH);
-      delay(1000);
-      digitalWrite(buzzer, LOW);
-
     }
-
+    CurrentPress=millis();
+    if (Press==1 && (CurrentPress-Timesend)>=Delaysend){
+      ResponseStatus rs = e22ttl.sendFixedMessage(0, 0, 3, "312");
+      Press=0;
+    }  
+    CurrentPress=millis();
+    if ((CurrentPress-Lastpress)<=Delaybuzzer){
+      digitalWrite(buzzer , LOW);
+    }
   }
 }
+
