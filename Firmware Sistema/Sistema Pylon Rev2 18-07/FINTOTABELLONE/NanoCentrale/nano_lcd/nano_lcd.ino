@@ -9,8 +9,9 @@
 // const uint8_t *FONT = Arial14;
 const uint8_t *FONT = SystemFont5x7;
 
-SoftwareSerial SSerial1(4,5); // RX, TX
-String code;
+SoftwareSerial SSerial(2,3); // RX, TX
+
+String dataS; //Initialized variable to store recieved data
 
 #define DISPLAYS_ACROSS 2
 #define DISPLAYS_DOWN 3
@@ -21,8 +22,10 @@ DMD_TextBox box(dmd);                        // "box" provides a text box to aut
 // the setup routine runs once when you press reset:
 void setup()
 {
+  pinMode(4,INPUT);
+  pinMode(5,OUTPUT);
   Serial.begin(9600);
-  SSerial1.begin(9600);
+  SSerial.begin(9600);
   dmd.setBrightness(255);
   dmd.selectFont(FONT);
   dmd.begin();
@@ -31,15 +34,20 @@ void setup()
 // the loop routine runs over and over again forever:
 void loop()
 {
-  if (SSerial1.available())
-  {
-    code = SSerial1.read();
-    Serial.println(code);
-    if (code == "STOP")
+  if (SSerial.available()) {
+    // SSerial.readBytes(mystr,5); //Read the serial data and store in var
+   dataS = SSerial.readStringUntil('@'); //Read the serial data and store in var
+    delay(100);
+    Serial.println(dataS); //Print data on Serial Monitor
+
+    if (dataS=="STOP")
     {
       dmd.drawString(1, 5, "STOP");
       dmd.drawString(1, 19, "STOP");
       dmd.drawString(1, 38, "STOP");
+    }
+    else {
+      dmd.clearScreen();
     }
   }
 }
