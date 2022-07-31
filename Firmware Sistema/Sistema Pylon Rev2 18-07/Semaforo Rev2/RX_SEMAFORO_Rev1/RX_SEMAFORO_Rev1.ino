@@ -14,8 +14,8 @@ unsigned long Currentmillis=0;
 unsigned long Delaysend=200;
 
 void setup() {
-   pinMode(SOFTTX, OUTPUT); // MT - Softrx - pin mapping output
-   pinMode(SOFTRX, INPUT); // MT - Softrx - pin mapping input
+   //pinMode(SOFTTX, OUTPUT); // MT - Softrx - pin mapping output
+   //pinMode(SOFTRX, INPUT); // MT - Softrx - pin mapping input
   Serial.begin(9600);
   delay(500); 
   SwSerial.begin(9600);
