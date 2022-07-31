@@ -19,8 +19,7 @@ void setup() {
   Serial.begin(9600);
   delay(500); 
   SwSerial.begin(9600);
-  delay(500);
-  
+  delay(500);  
   e22ttl.begin(); 
    Serial.println("prova");
 }
