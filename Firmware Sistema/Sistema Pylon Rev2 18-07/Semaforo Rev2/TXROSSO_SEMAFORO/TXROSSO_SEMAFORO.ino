@@ -30,9 +30,10 @@ unsigned long currentMillis = 0;
 unsigned long Timesend=0;
 unsigned long CurrentPress=0;
 unsigned long Lastpress=0;
+unsigned long CurrentLow = 0;
 unsigned long Delaypress=2500;
 unsigned long Delaysend=200;
-unsigned long Delaybuzzer=2500;
+unsigned long Delaybuzzer=300;
 int Press=0;
 String State="200";
 long interval = 20000;// constants won't change:
@@ -67,6 +68,8 @@ void setup() {
   delay(500);
   e22ttl.begin();  // Startup all pins and UART
   u8g.begin();
+  Serial.println("start");
+  Serial.println(State);
 }
 
 void loop() {
@@ -87,8 +90,9 @@ void loop() {
     float voltage = readvoltage(pinbatt);
     if (voltage < 2.9) {
       digitalWrite(buzzer , HIGH);
-    } else {
-      digitalWrite(buzzer, LOW);
+    // } else {
+    //   digitalWrite(buzzer, LOW);
+    //   Serial.println("Buzzer spento");
     }
 
 
@@ -108,6 +112,8 @@ void loop() {
       }
       else{ //If there isn't any problem we're going to receive press 
       State=rc.data; //Assign incoming data on TxData variable
+      Serial.println("Nuovo stato");
+      Serial.println(State);
       }
     } 
     CurrentPress=millis();
@@ -117,13 +123,13 @@ void loop() {
       digitalWrite(buzzer , HIGH);
     }
     CurrentPress=millis();
-    if (Press==1 && (CurrentPress-Timesend)>=Delaysend){
-      ResponseStatus rs = e22ttl.sendFixedMessage(0, 0, 3, "312");
+    if (Press==1 && ((CurrentPress-Timesend)>=Delaysend)){
+      ResponseStatus rs = e22ttl.sendFixedMessage(0, 0, 3,"312");
       Serial.println("invio");
       Press=0;
     }  
-    CurrentPress=millis();
-    if ((CurrentPress-Lastpress)<=Delaybuzzer){
+    CurrentLow=millis();
+    if ((CurrentLow-Lastpress)>=Delaybuzzer){
       digitalWrite(buzzer , LOW);
     }
   }

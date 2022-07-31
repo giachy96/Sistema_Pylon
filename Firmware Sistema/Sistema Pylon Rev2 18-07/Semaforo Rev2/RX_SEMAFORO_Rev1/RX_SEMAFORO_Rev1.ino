@@ -1,13 +1,13 @@
 #include "Arduino.h"
 #include "LoRa_E22.h"
-#include <SoftwareSerial.h> //MT - include softwareserial library
+#include <AltSoftSerial.h>
+//#include <SoftwareSerial.h> //MT - include softwareserial library
+AltSoftSerial SwSerial;
  
-//LoRa_E22 e22ttl(2, 3); // Arduino RX --> e22 TX - Arduino TX --> e22 RX
-LoRa_E22 e22ttl(3, 11);
+LoRa_E22 e22ttl(2, 3); // Arduino RX --> e22 TX - Arduino TX --> e22 RX
 //#define SOFTRX 11 // MT - define rx pin 10
-#define SOFTRX 2 // MT - define rx pin 10
-#define SOFTTX 10 // MT - define tx pin 11
-SoftwareSerial SwSerial(SOFTRX,SOFTTX);
+//#define SOFTTX 10 // MT - define tx pin 11
+//SoftwareSerial SwSerial(SOFTRX,SOFTTX);
 String State="200";
 String OldState="200";
 String TxData="0";
@@ -20,12 +20,10 @@ void setup() {
    //pinMode(SOFTRX, INPUT); // MT - Softrx - pin mapping input
   Serial.begin(9600);
   delay(500); 
-  e22ttl.begin(); 
-  delay(500);
   SwSerial.begin(9600);
-    
-  
-   Serial.println("prova");
+  delay(500);
+  e22ttl.begin(); 
+  Serial.println("prova");
 }
 void loop() { 
    if (SwSerial.available()>0){  // If mega will sent state to sem_rx
@@ -50,9 +48,9 @@ void loop() {
       State=SwSerial.readString(); //Assign system status to state
       }
       if (State=="200" || State=="300"){//if nothing has change from previous if-statements
-      SwSerial.println(TxData); //Send Txdata from rx to Mega
+      SwSerial.print(TxData); //Send Txdata from rx to Mega
       Serial.println("Scrivo in seriale");
-      Serial.println(TxData);
+      Serial.print(TxData);
       }
     TxData="0"; //Reset condition for set data
   }
@@ -60,6 +58,10 @@ void loop() {
  Currentmillis=millis();
 if ((Currentmillis-Timesend)>Delaysend && (OldState != State)) { //If statements who control that state was change and
   ResponseStatus rc = e22ttl.sendFixedMessage(0,1,3,State);
+  Serial.println("Mando Stato nuovo");
+  Serial.println(State);
+  Serial.println("plotto vecchio Stato");
+  Serial.println(OldState);
   OldState=State;
 }
 }
