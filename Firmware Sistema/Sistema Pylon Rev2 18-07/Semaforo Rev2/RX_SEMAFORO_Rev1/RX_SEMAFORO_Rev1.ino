@@ -2,8 +2,10 @@
 #include "LoRa_E22.h"
 #include <SoftwareSerial.h> //MT - include softwareserial library
  
-LoRa_E22 e22ttl(2, 3); // Arduino RX --> e22 TX - Arduino TX --> e22 RX
-#define SOFTRX 11 // MT - define rx pin 10
+//LoRa_E22 e22ttl(2, 3); // Arduino RX --> e22 TX - Arduino TX --> e22 RX
+LoRa_E22 e22ttl(3, 11);
+//#define SOFTRX 11 // MT - define rx pin 10
+#define SOFTRX 2 // MT - define rx pin 10
 #define SOFTTX 10 // MT - define tx pin 11
 SoftwareSerial SwSerial(SOFTRX,SOFTTX);
 String State="200";
@@ -18,13 +20,15 @@ void setup() {
    //pinMode(SOFTRX, INPUT); // MT - Softrx - pin mapping input
   Serial.begin(9600);
   delay(500); 
-  SwSerial.begin(9600);
-  delay(500);  
   e22ttl.begin(); 
+  delay(500);
+  SwSerial.begin(9600);
+    
+  
    Serial.println("prova");
 }
 void loop() { 
-   if (SwSerial.available()){  // If mega will sent state to sem_rx
+   if (SwSerial.available()>0){  // If mega will sent state to sem_rx
       Serial.println("C'è qualcosa in seriale");
       State=SwSerial.readString(); //Assign system status to state
       Serial.println(State);
@@ -41,7 +45,7 @@ void loop() {
       Serial.println(TxData);
     }
   if (TxData !="0" && (State=="200" || State=="300")){ //Condition for sent to mega press
-      if (SwSerial.available()){  // If mega will sent state to sem_rx
+      if (SwSerial.available()>0){  // If mega will sent state to sem_rx
       Serial.println("C'è qualcosa in seriale");
       State=SwSerial.readString(); //Assign system status to state
       }

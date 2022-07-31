@@ -40,7 +40,6 @@ void setup() {
 }
 
 void loop() {
-Serial1.println("diocane");
 Currentmillisx=millis(); // Assign millis value to Currentmillisx for if statements
  if (State=="200" || State=="100") { //Delay time for receive serial data, if necessary...
   if (Serial1.available()>0){
@@ -55,7 +54,7 @@ Currentmillisx=millis(); // Assign millis value to Currentmillisx for if stateme
    }
 
  Currentmillisx=millis();
- if (State=="200" || State=="100") {
+ if (State=="200" || State=="300") {
   if (Serial2.available()>0){
     Serial.println("C'è qualcosa in seriale");
     Dateserial2=Serial2.readString();
@@ -68,7 +67,7 @@ Currentmillisx=millis(); // Assign millis value to Currentmillisx for if stateme
     }
 
  Currentmillisx=millis();
- if (State=="200" || State=="100") {
+ if (State=="200" || State=="300") {
   if (Serial3.available()>0){
     Serial.println("C'è qualcosa in seriale");
     Dateserial3=Serial3.read();
