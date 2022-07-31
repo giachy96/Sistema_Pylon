@@ -1,11 +1,11 @@
-#include <SoftwareSerial.h>
+//#include <SoftwareSerial.h>
 #include <SPI.h>        //SPI.h must be included as DMD is written by SPI (the IDE complains otherwise)
 #include <DMD.h>        //
 #include <TimerOne.h>   //
 #include "SystemFont5x7.h"
 #include "Arial_black_16.h"
 
-SoftwareSerial ArduinoMaster(4, 5);
+//SoftwareSerial ArduinoMaster(4, 5);
 
 String msg;
 const int scandelaylcd = 0;
@@ -49,7 +49,7 @@ void setup() {
   delay(500);
   Serial.begin(9600);
   delay(200);
-  ArduinoMaster.begin(9600);
+  //ArduinoMaster.begin(9600);
 
 }
 
@@ -63,11 +63,11 @@ void loop() {
   //  }
   readMasterPort();
   // Send answer to master
-  if (msg != "") {
-    Serial.print("Master sent : " );
-    Serial.println(msg);
-
-  }
+//  if (msg != "") {
+//    Serial.print("Master sent : " );
+//    Serial.println(msg);
+//
+//  }
 
 
 
@@ -76,7 +76,7 @@ void loop() {
     //    dmd.drawString(1, 19, "STOP");
     //    dmd.drawString(1, 38, "STOP");
     dmd.selectFont(Arial_Black_16);
-    dmd.drawString( 1,  1, "OK", 5, GRAPHICS_NORMAL );
+    dmd.drawString( 1,  1, "STOP", 5, GRAPHICS_NORMAL );
     msg = "";
   }
   else {
@@ -84,7 +84,7 @@ void loop() {
     //    dmd.drawString(1, 19, "GO");
     //    dmd.drawString(1, 38, "GO");
     dmd.selectFont(Arial_Black_16);
-    dmd.drawString(  1, 1, "ronic", 5, GRAPHICS_NORMAL );
+    dmd.drawString(  1, 1, "GO", 5, GRAPHICS_NORMAL );
     msg = "";
 
   }
@@ -94,15 +94,15 @@ void loop() {
 
 void readMasterPort() {
    
-  while (ArduinoMaster.available()) {
+  while (Serial.available()) {
 
     delay(10);
-    if (ArduinoMaster.available() > 0) {
+    if (Serial.available() > 0) {
          
-      char c = ArduinoMaster.read();  //gets one byte from serial buffer
+      char c = Serial.read();  //gets one byte from serial buffer
       msg += c; //makes the string readString
     }
   }
-  ArduinoMaster.flush();
+  Serial.flush();
 
 }
