@@ -20,8 +20,8 @@
   int RelayRed=4;
   int RelayGreen=5;
   int RelayBlue=6;
-  String State="000"; //Startup state
-  String OldState="000";
+  String State="200"; //Startup state
+  String OldState="200";
 
 void setup() {
   Serial1.begin(9600); // Serial ColorRx
@@ -36,14 +36,16 @@ void setup() {
   pinMode(RelayRed, OUTPUT); //Output pin to Relay Red
   pinMode(RelayBlue, OUTPUT); //Output pin to Relay Blue
   pinMode(RelayGreen, OUTPUT); //Output pin to Relay Green
+  Serial.println("prova");
 }
 
 void loop() {
-
+Serial1.println("diocane");
 Currentmillisx=millis(); // Assign millis value to Currentmillisx for if statements
  if (State=="200" || State=="100") { //Delay time for receive serial data, if necessary...
   if (Serial1.available()>0){
-    Dateserial1=Serial1.read();  //Assign incoming data from Serial1 to Dateserial1
+    Serial.println("C'è qualcosa in seriale");
+    Dateserial1=Serial1.readString();  //Assign incoming data from Serial1 to Dateserial1
     digitalWrite(RelayRed,HIGH); //Turn on stoplight
     Timeserial1=millis(); // Assign millis value for turning off relay
     }
@@ -55,7 +57,8 @@ Currentmillisx=millis(); // Assign millis value to Currentmillisx for if stateme
  Currentmillisx=millis();
  if (State=="200" || State=="100") {
   if (Serial2.available()>0){
-    Dateserial2=Serial2.read();
+    Serial.println("C'è qualcosa in seriale");
+    Dateserial2=Serial2.readString();
     digitalWrite(RelayGreen,HIGH);
    Timeserial2=millis();
     }
@@ -67,6 +70,7 @@ Currentmillisx=millis(); // Assign millis value to Currentmillisx for if stateme
  Currentmillisx=millis();
  if (State=="200" || State=="100") {
   if (Serial3.available()>0){
+    Serial.println("C'è qualcosa in seriale");
     Dateserial3=Serial3.read();
     digitalWrite(RelayBlue,HIGH);
     Timeserial3=millis();
@@ -85,6 +89,7 @@ Currentmillisx=millis(); // Assign millis value to Currentmillisx for if stateme
     Dateserial.concat(",");
     Dateserial.concat(Dateserial3);
     ResponseStatus rs = e22ttl.sendFixedMessage(0, 1, 7, Dateserial); // Send fixedmessage Dateseria that contain all update of Dateserial1/2/3
+    Serial.println(Dateserial); // DEBUG
     Dateserial1="0"; //Reset condition for received press button
     Dateserial2="0";
     Dateserial3="0";
@@ -100,20 +105,37 @@ Currentmillisx=millis(); // Assign millis value to Currentmillisx for if stateme
    }
     Timesend=millis(); // millis assigment for last data receive 
     }
+  if (Serial.available()>0){ // DEBUG
+  Serial.println("Ricezione Dato");
+    State=Serial.readString(); // DEBUG
+    Timesend=millis(); // DEBUG
+    Serial.println(State);
+  }
+    
 
 if (OldState != State){ //If state was change on previous code
+Serial.println("Cambio stato");
   if (Serial1.available()>0){ //check if some press was incoming from receiver 1
-    Dateserial1p=Serial1.read(); //Assign useless press on Dateserial1
+    Serial.println("C'è qualcosa in seriale1");
+    Dateserial1p=Serial1.readString(); //Assign useless press on Dateserial1
+    Serial.println(Dateserial1p);
     }
     Serial1.println(State); //Send to receiver 1 State
-  if (Serial2.available()>0){
-    Dateserial2p=Serial2.read();
+    Serial.println("Scrivo in seriale1");
+    Serial.println(State);
+
+     if (Serial2.available()>0){
+    Dateserial2p=Serial2.readString();
+    Serial.println("C'è qualcosa in seriale2");
     }
     Serial2.println(State);
+    Serial.println("Scrivo in seriale2");
   if (Serial3.available()>0){
-    Dateserial3p=Serial3.read();
+    Dateserial3p=Serial3.readString();
+    Serial.println("C'è qualcosa in seriale3");
     }
     Serial3.println(State);
+    Serial.println("Scrivo in seriale3");
   OldState=State; //Reset condition for send State to the rx
 }
 }

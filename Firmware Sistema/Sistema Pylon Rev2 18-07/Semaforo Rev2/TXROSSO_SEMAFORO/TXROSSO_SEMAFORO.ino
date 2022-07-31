@@ -32,9 +32,9 @@ unsigned long CurrentPress=0;
 unsigned long Lastpress=0;
 unsigned long Delaypress=2500;
 unsigned long Delaysend=200;
-unsigned long Delaybuzzer=1000;
+unsigned long Delaybuzzer=2500;
 int Press=0;
-String State="000";
+String State="200";
 long interval = 20000;// constants won't change:
 float readvoltage (int pin) {
   float tensione;
@@ -54,8 +54,9 @@ void draw(void) {
   u8g.drawFrame(0, 0, 125, 64);
   u8g.drawStr(0, 5 , " Voltaggio");
   u8g.drawStr(0, 18 , " Batteria");
-  u8g.drawStr(60, 40 , " V");
-  u8g.drawStr(10, 40, vout );
+  u8g.drawStr(60, 31 , " V");
+  u8g.drawStr(10, 31, vout );
+  u8g.drawStr(10, 44,State.c_str());
 }
 
 void setup() {
@@ -118,6 +119,7 @@ void loop() {
     CurrentPress=millis();
     if (Press==1 && (CurrentPress-Timesend)>=Delaysend){
       ResponseStatus rs = e22ttl.sendFixedMessage(0, 0, 3, "312");
+      Serial.println("invio");
       Press=0;
     }  
     CurrentPress=millis();
@@ -126,4 +128,3 @@ void loop() {
     }
   }
 }
-
