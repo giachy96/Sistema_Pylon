@@ -44,7 +44,7 @@ Currentmillisx=millis(); // Assign millis value to Currentmillisx for if stateme
  if (State=="200" || State=="100") { //Delay time for receive serial data, if necessary...
   if (Serial1.available()>0){
     Serial.println("C'è qualcosa in seriale");
-    Dateserial1=Serial1.readString();  //Assign incoming data from Serial1 to Dateserial1
+    Dateserial1=Serial1.readStringUntil('\n');  //Assign incoming data from Serial1 to Dateserial1
     digitalWrite(RelayRed,HIGH); //Turn on stoplight
     Timeserial1=millis(); // Assign millis value for turning off relay
     }
@@ -57,7 +57,7 @@ Currentmillisx=millis(); // Assign millis value to Currentmillisx for if stateme
  if (State=="200" || State=="300") {
   if (Serial2.available()>0){
     Serial.println("C'è qualcosa in seriale");
-    Dateserial2=Serial2.readString();
+    Dateserial2=Serial2.readStringUntil('\n');
     digitalWrite(RelayGreen,HIGH);
    Timeserial2=millis();
     }
@@ -70,7 +70,7 @@ Currentmillisx=millis(); // Assign millis value to Currentmillisx for if stateme
  if (State=="200" || State=="300") {
   if (Serial3.available()>0){
     Serial.println("C'è qualcosa in seriale");
-    Dateserial3=Serial3.read();
+    Dateserial3=Serial3.readStringUntil('\n');
     digitalWrite(RelayBlue,HIGH);
     Timeserial3=millis();
     }
@@ -106,7 +106,7 @@ Currentmillisx=millis(); // Assign millis value to Currentmillisx for if stateme
     }
   if (Serial.available()>0){ // DEBUG
   Serial.println("Ricezione Dato");
-    State=Serial.readString(); // DEBUG
+    State=Serial.readStringUntil('\n'); // DEBUG
     Timesend=millis(); // DEBUG
     Serial.print(State);
   }
@@ -116,24 +116,24 @@ if (OldState != State){ //If state was change on previous code
 Serial.println("Cambio stato");
   if (Serial1.available()>0){ //check if some press was incoming from receiver 1
     Serial.println("C'è qualcosa in seriale1");
-    Dateserial1p=Serial1.readString(); //Assign useless press on Dateserial1
+    Dateserial1p=Serial1.readStringUntil('\n'); //Assign useless press on Dateserial1
     Serial.print(Dateserial1p);
     }
-    Serial1.print(State); //Send to receiver 1 State
+    Serial1.println(State); //Send to receiver 1 State
     Serial.println("Scrivo in seriale1");
     Serial.print(State);
 
      if (Serial2.available()>0){
-    Dateserial2p=Serial2.readString();
+    Dateserial2p=Serial2.readStringUntil('\n');
     Serial.println("C'è qualcosa in seriale2");
     }
-    Serial2.print(State);
+    Serial2.println(State);
     Serial.println("Scrivo in seriale2");
   if (Serial3.available()>0){
-    Dateserial3p=Serial3.readString();
+    Dateserial3p=Serial3.readStringUntil('\n');
     Serial.println("C'è qualcosa in seriale3");
     }
-    Serial3.print(State);
+    Serial3.println(State);
     Serial.println("Scrivo in seriale3");
   OldState=State; //Reset condition for send State to the rx
 }

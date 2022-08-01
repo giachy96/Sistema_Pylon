@@ -28,7 +28,7 @@ void setup() {
 void loop() { 
    if (SwSerial.available()>0){  // If mega will sent state to sem_rx
       Serial.println("C'è qualcosa in seriale");
-      State=SwSerial.readString(); //Assign system status to state
+      State=SwSerial.readStringUntil('\n'); //Assign system status to state
       Serial.println(State);
       }
   if (e22ttl.available()>1) {  // If there is something arrived from lora (Transmitter)
@@ -45,10 +45,10 @@ void loop() {
   if (TxData !="0" && (State=="200" || State=="300")){ //Condition for sent to mega press
       if (SwSerial.available()>0){  // If mega will sent state to sem_rx
       Serial.println("C'è qualcosa in seriale");
-      State=SwSerial.readString(); //Assign system status to state
+      State=SwSerial.readStringUntil('\n'); //Assign system status to state
       }
       if (State=="200" || State=="300"){//if nothing has change from previous if-statements
-      SwSerial.print(TxData); //Send Txdata from rx to Mega
+      SwSerial.println(TxData); //Send Txdata from rx to Mega
       Serial.println("Scrivo in seriale");
       Serial.print(TxData);
       }
