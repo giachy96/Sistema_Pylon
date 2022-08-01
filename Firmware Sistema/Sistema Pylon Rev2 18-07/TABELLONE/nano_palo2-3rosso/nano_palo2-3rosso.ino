@@ -27,7 +27,7 @@ void loop() {
   //    Serial.println(msg);
   //  }
 
-  altSerial.println("<SONO IL PALO2/3 verde>");
+  altSerial.println("<SONO IL PALO2/3 rosso>");
   delay(1000);
 
 

@@ -1,9 +1,12 @@
+
 #include <AltSoftSerial.h>
 
 AltSoftSerial altSerial;
 
 
+
 String msg;
+
 
 
 
@@ -19,13 +22,15 @@ void setup() {
 void loop() {
 
 
-if (altSerial.available()) {
-    msg = altSerial.read();
-    Serial.println(msg);
-  }
+  //if (altSerial.available()) {
+  //    msg = altSerial.read();
+  //    Serial.println(msg);
+  //  }
 
- altSerial.println("SONO IL PALO1");
- delay(1000);
+  altSerial.println("<SONO IL PALO1>");
+  delay(1000);
+
+
 
 
 
@@ -35,16 +40,16 @@ if (altSerial.available()) {
 
 
 void readMasterPort() {
-   
-  while (ArduinoMaster.available()) {
+
+  while (altSerial.available()) {
 
     delay(10);
-    if (ArduinoMaster.available() > 0) {
-         
-      char c = ArduinoMaster.read();  //gets one byte from serial buffer
+    if (altSerial.available() > 0) {
+
+      char c = altSerial.read();  //gets one byte from serial buffer
       msg += c; //makes the string readString
     }
   }
-  ArduinoMaster.flush();
+  altSerial.flush();
 
 }
