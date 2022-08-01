@@ -70,27 +70,27 @@ void loop() {
   //      }
   //        Serial.println(msg2);
 
-//  recvWithStartEndMarkers(Serial1 , receivedChars1 );
-//  showNewData(receivedChars1);
-//  delay(150);
-//  recvWithStartEndMarkers(Serial2 , receivedChars2 );
-//  showNewData(receivedChars2);
-//  delay(150);
-//  recvWithStartEndMarkers(Serial4 , receivedChars4 );
-//  showNewData(receivedChars4);
-//  delay(150);
-//  recvWithStartEndMarkers(Serial5 , receivedChars5 );
-//  showNewData(receivedChars5);
-//  delay(150);
-//  recvWithStartEndMarkers(Serial6 , receivedChars6 );
-//  showNewData(receivedChars6);
-//  delay(150);
-//  recvWithStartEndMarkers(Serial7 , receivedChars7 );
-//  showNewData(receivedChars7);
-//  delay(150);
-//  recvWithStartEndMarkers(Serial8 , receivedChars8 );
-//  showNewData(receivedChars8);
-//  delay(150);
+  recvWithStartEndMarkers(Serial1 , receivedChars1 );
+  showNewData(receivedChars1);
+  delay(200);
+  recvWithStartEndMarkers(Serial2 , receivedChars2 );
+  showNewData(receivedChars2);
+  delay(200);
+  recvWithStartEndMarkers(Serial4 , receivedChars4 );
+  showNewData(receivedChars4);
+  delay(200);
+  recvWithStartEndMarkers(Serial5 , receivedChars5 );
+  showNewData(receivedChars5);
+  delay(200);
+  recvWithStartEndMarkers(Serial6 , receivedChars6 );
+  showNewData(receivedChars6);
+  delay(200);
+  recvWithStartEndMarkers(Serial7 , receivedChars7 );
+  showNewData(receivedChars7);
+  delay(200);
+  recvWithStartEndMarkers(Serial8 , receivedChars8 );
+  showNewData(receivedChars8);
+  delay(250);
   Serial6.print("<STOP>");
   delay(2000);
   Serial6.print("<GOOO>");
@@ -127,30 +127,34 @@ void  recvWithStartEndMarkers( HardwareSerial &port , char receivedChars[numChar
   char endMarker = '>';
   char rc;
 
+
   while (port.available() > 0 && newData == false) {
     rc = port.read();
 
     if (recvInProgress == true) {
-      if (rc != endMarker) {
-        receivedChars[ndx] = rc;
-        ndx++;
-        if (ndx >= numChars) {
-          ndx = numChars - 1;
+
+     
+        if (rc != endMarker) {
+          receivedChars[ndx] = rc;
+          ndx++;
+          if (ndx >= numChars) {
+            ndx = numChars - 1;
+          }
         }
-      }
-      else {
-        receivedChars[ndx] = '\0'; // terminate the string
-        recvInProgress = false;
-        ndx = 0;
-        newData = true;
-      }
+        else {
+          receivedChars[ndx] = '\0'; // terminate the string
+          recvInProgress = false;
+          ndx = 0;
+          newData = true;
+        }
+      
     }
 
     else if (rc == startMarker) {
       recvInProgress = true;
     }
   }
-  port.flush();
+
 }
 
 void showNewData(char receivedChars[numChars]) {
