@@ -36,7 +36,8 @@ unsigned long Delaysend=200;
 unsigned long Delaybuzzer=300;
 int Press=0;
 String State="200";
-long interval = 20000;// constants won't change:
+long interval = 5000;// constants won't change:
+
 float readvoltage (int pin) {
   float tensione;
   tensione = analogRead(pin);
@@ -44,8 +45,16 @@ float readvoltage (int pin) {
   return tensione;
 }
 
-void draw(void) {
-
+void draw(String State1) {
+  if (State1=="300"){
+    State1="Race";
+    }
+  else if (State1=="200"){
+    State1="Show";
+    }
+  else {
+    State1="Other";
+    }
   tensione_float = readvoltage(pinbatt);
   dtostrf(tensione_float, 6, 2, vout); // Leave room for too large numbers!
   u8g.setFont(u8g_font_9x15);
@@ -57,7 +66,7 @@ void draw(void) {
   u8g.drawStr(0, 18 , " Batteria");
   u8g.drawStr(60, 31 , " V");
   u8g.drawStr(10, 31, vout );
-  u8g.drawStr(10, 44,State.c_str());
+  u8g.drawStr(10, 44, State1.c_str());
 }
 
 void setup() {
@@ -74,13 +83,13 @@ void setup() {
 
 void loop() {
 
-  currentMillis = millis();
+ unsigned long currentMillis = millis();
 
   while (bootup < 10) {
        previousMillis = currentMillis; // save the last time you blinked the LED
         u8g.firstPage();// picture loop
     do {
-      draw();
+      draw(State);
     } while ( u8g.nextPage() );
     bootup++;
   }
@@ -94,13 +103,12 @@ void loop() {
     //   digitalWrite(buzzer, LOW);
     //   Serial.println("Buzzer spento");
     }
-
-
+    currentMillis=millis();
     if (currentMillis - previousMillis >= interval) {
       previousMillis = currentMillis; // save the last time you blinked the LED
             u8g.firstPage();// picture loop
       do {
-        draw();
+        draw(State);
       } while ( u8g.nextPage() );
     }
   
@@ -113,7 +121,7 @@ void loop() {
       else{ //If there isn't any problem we're going to receive press 
       State=rc.data; //Assign incoming data on TxData variable
       Serial.println("Nuovo stato");
-      Serial.println(State);
+      Serial.print(State);
       }
     } 
     CurrentPress=millis();
