@@ -12,8 +12,10 @@ void setup() {
 void loop() {
   msg = "STOP";
   Serial3.print(msg);
+  Serial.print(msg);
   delay(5000);
   msg = "GO";
   Serial3.print(msg);
+  Serial.print(msg);
   delay(5000);
 }
