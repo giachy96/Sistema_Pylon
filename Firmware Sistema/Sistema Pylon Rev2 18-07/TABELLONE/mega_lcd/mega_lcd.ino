@@ -1,6 +1,3 @@
-
-#include <AltSoftSerial.h>
-
 #include <SPI.h>
 #include <DMD2.h>
 #include <fonts/SystemFont5x7.h>
@@ -8,11 +5,12 @@
 #include "SystemFont5x7.h"
 #include "Arial_black_16.h"
 
-const byte numChars = 64;
+const byte numChars = 5;
 char receivedChars1[numChars];
+char oldreceivedChars1[numChars];
 boolean newData = false;
 String msg;
-
+int updatescreen = 0;
 /*
   Pin Defination
   nOE - 11
@@ -47,26 +45,28 @@ void loop() {
   recvWithStartEndMarkers( Serial1,  receivedChars1) ;
   showNewData( receivedChars1);
 
+  if (strcmp(receivedChars1, oldreceivedChars1) != 0) {
+    updatescreen = 0;
 
-  if (msg == "STOP") {
-    //    dmd.drawString(1, 0, "STOP");
-    //    dmd.drawString(1, 19, "STOP");
-    //    dmd.drawString(1, 38, "STOP");
+    if (strcmp(receivedChars1, "STOP") == 0 && updatescreen == 0 ) {
+      //    dmd.drawString(1, 0, "STOP");
+      //    dmd.drawString(1, 19, "STOP");
+      //    dmd.drawString(1, 38, "STOP");
+      dmd.clearScreen();
+      dmd.drawString( 1,  1, "STRONZO" );
+      updatescreen = 1;
+      memcpy(oldreceivedChars1, receivedChars1, sizeof(receivedChars1));
+    }
+    if (strcmp(receivedChars1, "GOOO") == 0 && updatescreen == 0  ) {
+      //    dmd.drawString(1, 0, "GO");
+      //    dmd.drawString(1, 19, "GO");
+      //    dmd.drawString(1, 38, "GO");
+      dmd.clearScreen();
+      dmd.drawString(  1, 1, "FUNZIONA" );
+      updatescreen = 1;
+      memcpy(oldreceivedChars1, receivedChars1, sizeof(receivedChars1));
 
-    dmd.drawString( 1,  1, "STOP" );
-    msg = "";
-  }
-  else {
-    //    dmd.drawString(1, 0, "GO");
-    //    dmd.drawString(1, 19, "GO");
-    //    dmd.drawString(1, 38, "GO");
-    dmd.clearScreen();
-    dmd.drawString(  1, 1, "FORSE" );
-    delay(5000);
-    dmd.clearScreen();
-    dmd.drawString(  1, 1, "FUNZIONA" );
-    msg = "";
-    delay(5000);
+    }
 
   }
 }
@@ -103,6 +103,7 @@ void  recvWithStartEndMarkers( HardwareSerial &port , char receivedChars[numChar
     }
   }
   port.flush();
+
 }
 
 void showNewData(char receivedChars[numChars]) {

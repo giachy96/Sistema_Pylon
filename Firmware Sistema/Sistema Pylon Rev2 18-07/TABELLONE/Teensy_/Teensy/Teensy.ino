@@ -43,12 +43,12 @@ void setup() {
   Serial.begin(9600);
   Serial1.begin(9600); // cronoblu
   Serial2.begin(9600); // palo 2/3 blu
-  Serial3.begin(9600); // centrale
+  Serial3.begin(9600); // palo1
   Serial4.begin(9600); // palo 2/3 verde
   Serial5.begin(9600); // palo 2/3 rosso
-  Serial6.begin(9600); // cronoverde
-  Serial7.begin(9600); // cronorosso
-  Serial8.begin(9600); // palo 1
+  Serial6.begin(9600); // centrale
+  Serial7.begin(9600); // cronoverde
+  Serial8.begin(9600); // cronorosso
 
 }
 
@@ -70,27 +70,31 @@ void loop() {
   //      }
   //        Serial.println(msg2);
 
-  recvWithStartEndMarkers(Serial1 , receivedChars1 );
-  showNewData(receivedChars1);
-  delay(150);
-  recvWithStartEndMarkers(Serial2 , receivedChars2 );
-  showNewData(receivedChars2);
-  delay(150);
-  recvWithStartEndMarkers(Serial4 , receivedChars4 );
-  showNewData(receivedChars4);
-  delay(150);
-  recvWithStartEndMarkers(Serial5 , receivedChars5 );
-  showNewData(receivedChars5);
-  delay(150);
-  recvWithStartEndMarkers(Serial6 , receivedChars6 );
-  showNewData(receivedChars6);
-  delay(150);
-  recvWithStartEndMarkers(Serial7 , receivedChars7 );
-  showNewData(receivedChars7);
-  delay(150);
-  recvWithStartEndMarkers(Serial8 , receivedChars8 );
-  showNewData(receivedChars8);
-  delay(150);
+//  recvWithStartEndMarkers(Serial1 , receivedChars1 );
+//  showNewData(receivedChars1);
+//  delay(150);
+//  recvWithStartEndMarkers(Serial2 , receivedChars2 );
+//  showNewData(receivedChars2);
+//  delay(150);
+//  recvWithStartEndMarkers(Serial4 , receivedChars4 );
+//  showNewData(receivedChars4);
+//  delay(150);
+//  recvWithStartEndMarkers(Serial5 , receivedChars5 );
+//  showNewData(receivedChars5);
+//  delay(150);
+//  recvWithStartEndMarkers(Serial6 , receivedChars6 );
+//  showNewData(receivedChars6);
+//  delay(150);
+//  recvWithStartEndMarkers(Serial7 , receivedChars7 );
+//  showNewData(receivedChars7);
+//  delay(150);
+//  recvWithStartEndMarkers(Serial8 , receivedChars8 );
+//  showNewData(receivedChars8);
+//  delay(150);
+  Serial6.print("<STOP>");
+  delay(2000);
+  Serial6.print("<GOOO>");
+  delay(2000);
 
 
   //
