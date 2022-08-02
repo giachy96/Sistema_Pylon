@@ -28,7 +28,7 @@ void loop() {
   //  }
 
   altSerial.println("<SONO IL PALO2/3 rosso>");
-  delay(1000);
+  delay(5000);
 
 
 

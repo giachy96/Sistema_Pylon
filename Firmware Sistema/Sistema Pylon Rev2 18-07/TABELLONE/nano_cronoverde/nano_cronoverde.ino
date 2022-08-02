@@ -28,7 +28,7 @@ void loop() {
   //  }
 
   altSerial.println("<SONO IL CRONOVERDE>");
-  delay(1000);
+  delay(5000);
 
 
 
