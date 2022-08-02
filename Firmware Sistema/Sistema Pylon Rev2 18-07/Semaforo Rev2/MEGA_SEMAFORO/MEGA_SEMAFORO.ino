@@ -22,11 +22,6 @@
   int RelayBlue=6;
   String State="200"; //Startup state
   String OldState="200";
-
-  const byte numChars=32;
-  char receivedChars[numChars];
-  boolean newData=false;
-
   void setup() {
   Serial1.begin(9600); // Serial ColorRx
   delay(300);
@@ -141,42 +136,4 @@ Serial.println("Cambio stato");
     Serial.println("Scrivo in seriale3");
   OldState=State; //Reset condition for send State to the rx
 }
-}
-
-void recvWithStartEndMarkers() {
-    static boolean recvInProgress = false;
-    static byte ndx = 0;
-    char startMarker = '<';
-    char endMarker = '>';
-    char rc;
- 
-    while (Serial.available() > 0 && newData == false) {
-        rc = Serial.read();
-
-        if (recvInProgress == true) {
-            if (rc != endMarker) {
-                receivedChars[ndx] = rc;
-                ndx++;
-                if (ndx >= numChars) {
-                    ndx = numChars - 1;
-                }
-            }
-            else {
-                receivedChars[ndx] = '\0'; // terminate the string
-                recvInProgress = false;
-                ndx = 0;
-                newData = true;
-            }
-        }
-
-        else if (rc == startMarker) {
-            recvInProgress = true;
-        }
-    }
-    void showNewData() {
-    if (newData == true) {
-        Serial.print("This just in ... ");
-        Serial.println(receivedChars);
-        newData = false;
-    }
 }
