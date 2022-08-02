@@ -26,6 +26,10 @@ int updatescreen = 0;
 #define DISPLAYS_DOWN 3
 SPIDMD dmd(DISPLAYS_ACROSS, DISPLAYS_DOWN, 11, 6, 7, 8); // DMD controls the entire display
 
+unsigned long currentMillis;
+unsigned long lastdiplayupdate;
+unsigned long intervalstandby =5000;
+
 void setup() {
 
 
@@ -41,34 +45,60 @@ void setup() {
 
 
 void loop() {
-
+  currentMillis = millis();
   recvWithStartEndMarkers( Serial1,  receivedChars1) ;
   showNewData( receivedChars1);
+
+
+
 
   if (strcmp(receivedChars1, oldreceivedChars1) != 0) {
     updatescreen = 0;
 
     if (strcmp(receivedChars1, "STOP") == 0 && updatescreen == 0 ) {
-      //    dmd.drawString(1, 0, "STOP");
-      //    dmd.drawString(1, 19, "STOP");
-      //    dmd.drawString(1, 38, "STOP");
       dmd.clearScreen();
-      dmd.drawString( 1,  1, "STRONZO" );
+      dmd.drawString(0, 4 , "STOP");
+      dmd.drawString(0, 20, "STOP");
+      dmd.drawString(0, 36, "STOP");
+      
       updatescreen = 1;
       memcpy(oldreceivedChars1, receivedChars1, sizeof(receivedChars1));
     }
-    if (strcmp(receivedChars1, "GOOO") == 0 && updatescreen == 0  ) {
-      //    dmd.drawString(1, 0, "GO");
-      //    dmd.drawString(1, 19, "GO");
-      //    dmd.drawString(1, 38, "GO");
+    if (strcmp(receivedChars1, "GO") == 0 && updatescreen == 0  ) {
       dmd.clearScreen();
-      dmd.drawString(  1, 1, "FUNZIONA" );
+      dmd.drawString(0, 4, "GO");
+      dmd.drawString(0, 20, "GO");
+      dmd.drawString(0, 36, "GO");
+      
+
+
       updatescreen = 1;
       memcpy(oldreceivedChars1, receivedChars1, sizeof(receivedChars1));
 
+    }
+    if (strcmp(receivedChars1, "SHOW") == 0 && updatescreen == 0  ) {
+      dmd.clearScreen();
+      dmd.drawString(0, 4, "SHOW");
+      dmd.drawString(0, 20, "SHOW");
+      dmd.drawString(0, 36, "SHOW");
+     
+
+      updatescreen = 1;
+      memcpy(oldreceivedChars1, receivedChars1, sizeof(receivedChars1));
     }
 
   }
+
+//  if (  currentMillis -  lastdiplayupdate >= intervalstandby  && strcmp(receivedChars1, oldreceivedChars1) == 0 && updatescreen ==  ) {
+//
+//
+//    dmd.clearScreen();
+//    dmd.drawString(0, 4, "ATTESA");
+//    dmd.drawString(0, 20, "SISTEMA IN");
+//    dmd.drawString(0, 36, "FT MODELS");
+//    lastdiplayupdate = millis();
+//
+//  }
 }
 
 

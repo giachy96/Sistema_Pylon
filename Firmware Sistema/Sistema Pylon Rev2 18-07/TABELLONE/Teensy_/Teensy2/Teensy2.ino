@@ -17,7 +17,7 @@ boolean newData7 = false;
 boolean newData8 = false;
 unsigned long currentMillis ;
 unsigned long oldMillis;
-unsigned long intervalcd = 100;
+unsigned long pressbutton = 2000;
 
 String cnc ;
 
@@ -65,14 +65,18 @@ void loop() {
   recvSerial8();
   showSerial8();
 
-  if (currentMillis - oldMillis >= intervalcd) {
-    if (digitalRead(pStop) == LOW ) {
+  if (currentMillis - oldMillis >= pressbutton) {
+    if (digitalRead(pStop) == HIGH) {
       Serial6.print("<STOP>");
       oldMillis = millis();
-
-    }else{
-    Serial6.print("<GOOO>");
-    oldMillis = millis();
+    }
+   if (digitalRead(pGo) == LOW ) {
+      Serial6.print("<GO>");
+      oldMillis = millis();
+    } 
+ if (digitalRead(pShow) == LOW ) {
+      Serial6.print("<SHOW>");
+      oldMillis = millis();
     }
 
 
