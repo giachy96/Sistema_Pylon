@@ -17,7 +17,7 @@ boolean newData7 = false;
 boolean newData8 = false;
 unsigned long currentMillis ;
 unsigned long oldMillis;
-unsigned long pressbutton = 2000;
+unsigned long pressbutton = 1000;
 
 String cnc ;
 

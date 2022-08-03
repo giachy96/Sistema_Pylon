@@ -3,7 +3,7 @@
 #include <fonts/SystemFont5x7.h>
 
 #include "SystemFont5x7.h"
-#include "Arial_black_16.h"
+#include "Arial_Black_16.h"
 
 const byte numChars = 5;
 char receivedChars1[numChars];
@@ -30,9 +30,12 @@ unsigned long currentMillis;
 unsigned long lastdiplayupdate;
 unsigned long intervalstandby = 5000;
 unsigned long milliscountdown;
-int sec = 63;
+unsigned long sirenamillis;
+unsigned long startsirena;
+int sec;
 int sirena = 10;
-
+int sirenaflag = 0;
+  int k = 0;
 boolean flagcount;
 void setup() {
 
@@ -53,9 +56,27 @@ void loop() {
   recvWithStartEndMarkers( Serial1,  receivedChars1) ;
   showNewData( receivedChars1);
 
-  if (flagcount == true) {
-    countdown(flagcount);
+
+
+  flagcount = countdown(flagcount);
+
+  if (sirenaflag == 1) {
+  
+    if (k == 0) {
+      startsirena = millis();
+      digitalWrite(sirena ,HIGH);
+      k = 1;
+    }
+   sirenamillis = millis();
+
+   if(sirenamillis - startsirena >= 500){
+    
+     digitalWrite(sirena ,LOW);
+     sirenaflag = 0;
+    }
+
   }
+
 
 
 
@@ -67,6 +88,7 @@ void loop() {
       dmd.drawString(0, 4 , "STOP");
       dmd.drawString(0, 20, "STOP");
       dmd.drawString(0, 36, "STOP");
+      flagcount = false;
 
       updatescreen = 1;
       memcpy(oldreceivedChars1, receivedChars1, sizeof(receivedChars1));
@@ -110,96 +132,95 @@ void loop() {
   //  }
 }
 
-void countdown(boolean flag) {
+boolean countdown(boolean flag) {
 
   if (flag == true) {
 
 
     if (currentMillis - milliscountdown >= 1000) {
-      if (sec > 0) {
+      dmd.selectFont(Arial_Black_16);
+      if (sec > 2 && sec != 32 ) {
         char cstr[10];
 
-        int n = sec - 3;
+        int n = sec - 2;
         itoa(n, cstr, 10);
-
         dmd.clearScreen();
-        dmd.drawString(0, 4, cstr);
-        dmd.drawString(0, 20, cstr);
-        dmd.drawString(0, 36, cstr);
+        dmd.drawString(24, 1, cstr);
+        dmd.drawString(24, 17, cstr);
+        dmd.drawString(24, 33, cstr);
         milliscountdown = millis();
+        Serial.println(sec);
+        Serial.println(flag);
+        sec = sec - 1;
+      }  else if (sec == 32) {
+
+        char cstr[10];
+
+        int n = sec - 2;
+        itoa(n, cstr, 10);
+        dmd.clearScreen();
+        dmd.drawString(24, 1, cstr);
+        dmd.drawString(24, 17, cstr);
+        dmd.drawString(24, 33, cstr);
+        milliscountdown = millis();
+
+        sirenaflag = 1;
 
         sec = sec - 1;
-      } else if (sec = 3) {
+      }  else if (sec == 2) {
         char cstr[10];
-        int n = sec - 3;
+
+        int n = sec - 2;
         itoa(n, cstr, 10);
 
         dmd.clearScreen();
-        dmd.drawString(0, 4, cstr);
-        dmd.drawString(0, 20, cstr);
-        dmd.drawString(0, 36, "GO");
+        dmd.drawString(24, 33, "GO");
         milliscountdown = millis();
-
-        sec = sec - 1;
-      }
-      else if (sec = 2) {
-        char cstr[10];
-        int n = sec - 3;
-        itoa(n, cstr, 10);
-
-        dmd.clearScreen();
-        dmd.drawString(0, 4, cstr);
-        dmd.drawString(0, 20, "GO");
-        dmd.drawString(0, 36, "GO");
-        milliscountdown = millis();
-
-        sec = sec - 1;
-      } else if (sec = 1) {
-        char cstr[10];
-
-        int n = sec - 3;
-        itoa(n, cstr, 10);
-
-        dmd.clearScreen();
-        dmd.drawString(0, 4, "GO");
-        dmd.drawString(0, 20, "GO");
-        dmd.drawString(0, 36, "GO");
-        milliscountdown = millis();
-
-        sec = sec - 1;
-      } else if (sec = 30) {
-        char cstr[10];
-
-
-
-        int n = sec - 3;
-        itoa(n, cstr, 10);
-
-        dmd.clearScreen();
-        dmd.drawString(0, 4, cstr);
-        dmd.drawString(0, 20, cstr);
-        dmd.drawString(0, 36, cstr);
-        milliscountdown = millis();
-        sirena.tone(500);
-
+        Serial.println(sec);
+        Serial.println(flag);
         sec = sec - 1;
       }
-      else {
+      else if (sec == 1) {
+        char cstr[10];
+
+        int n = sec - 2;
+        itoa(n, cstr, 10);
+
+        dmd.clearScreen();
+        dmd.drawString(24, 17, "GO");
+        dmd.drawString(24, 33, "GO");
+        milliscountdown = millis();
+        Serial.println(sec);
+        Serial.println(flag);
+        sec = sec - 1;
+      }
+      else if (sec == 0) {
         char cstr[10];
 
         int n = sec - 3;
         itoa(n, cstr, 10);
 
         dmd.clearScreen();
-        dmd.drawString(0, 4, cstr);
-        dmd.drawString(0, 20, cstr);
-        dmd.drawString(0, 36, cstr);
+        dmd.drawString(24, 1, "GO");
+        dmd.drawString(24, 17, "GO");
+        dmd.drawString(24, 33, "GO");
         milliscountdown = millis();
         flag = false;
-        sec = 63;
+        sec = 62;
+        Serial.println(sec);
+        Serial.println(flag);
       }
+
     }
+  } else {
+
+    milliscountdown = millis();
+    flag = false;
+    sec = 62;
+
+
   }
+  return flag;
 }
 
 
