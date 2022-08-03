@@ -55,7 +55,7 @@ Currentmillisx=millis(); // Assign millis value to Currentmillisx for if stateme
  if (State=="200" || State=="300") { //Delay time for receive serial data, if necessary...
   if (Serial1.available()>0){
     Serial.println("C'è qualcosa in seriale");
-    Dateserial1=RecStr1();  //Assign incoming data from Serial1 to Dateserial1
+    RecStr1();  //Assign incoming data from Serial1 to Dateserial1
     digitalWrite(RelayRed,HIGH); //Turn on stoplight
     Timeserial1=millis(); // Assign millis value for turning off relay
     }
