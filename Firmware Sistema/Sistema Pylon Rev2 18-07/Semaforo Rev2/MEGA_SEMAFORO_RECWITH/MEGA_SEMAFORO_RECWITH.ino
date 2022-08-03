@@ -23,9 +23,17 @@
   String State="200"; //Startup state
   String OldState="200";
 
-  const byte numChars=32;
-  char receivedChars[numChars];
-  boolean newData=false;
+  const byte numChars1=32;
+  char receivedChars1[numChars1];
+  boolean newData1=false;
+
+  const byte numChars2=32;
+  char receivedChars2[numChars2];
+  boolean newData2=false;
+
+  const byte numChars3=32;
+  char receivedChars3[numChars3];
+  boolean newData3=false;
 
   void setup() {
   Serial1.begin(9600); // Serial ColorRx
@@ -42,13 +50,12 @@
   pinMode(RelayGreen, OUTPUT); //Output pin to Relay Green
   Serial.println("prova");
 }
-
 void loop() {
 Currentmillisx=millis(); // Assign millis value to Currentmillisx for if statements
  if (State=="200" || State=="300") { //Delay time for receive serial data, if necessary...
   if (Serial1.available()>0){
     Serial.println("C'è qualcosa in seriale");
-    Dateserial1=Serial1.readString();  //Assign incoming data from Serial1 to Dateserial1
+    Dateserial1=RecStr1();  //Assign incoming data from Serial1 to Dateserial1
     digitalWrite(RelayRed,HIGH); //Turn on stoplight
     Timeserial1=millis(); // Assign millis value for turning off relay
     }
@@ -143,40 +150,100 @@ Serial.println("Cambio stato");
 }
 }
 
-void recvWithStartEndMarkers() {
-    static boolean recvInProgress = false;
-    static byte ndx = 0;
-    char startMarker = '<';
-    char endMarker = '>';
-    char rc;
+void RecStr1() {
+    static boolean recvInProgress1 = false;
+    static byte ndx1 = 0;
+    char startMarker1 = '<';
+    char endMarker1 = '>';
+    char rc1;
  
-    while (Serial.available() > 0 && newData == false) {
-        rc = Serial.read();
+    while (Serial1.available() > 0 && newData1 == false) {
+        rc1 = Serial1.read();
 
-        if (recvInProgress == true) {
-            if (rc != endMarker) {
-                receivedChars[ndx] = rc;
-                ndx++;
-                if (ndx >= numChars) {
-                    ndx = numChars - 1;
+        if (recvInProgress1 == true) {
+            if (rc1 != endMarker1) {
+                receivedChars1[ndx1] = rc1;
+                ndx1++;
+                if (ndx1 >= numChars1) {
+                    ndx1 = numChars1 - 1;
                 }
             }
             else {
-                receivedChars[ndx] = '\0'; // terminate the string
-                recvInProgress = false;
-                ndx = 0;
-                newData = true;
+                receivedChars1[ndx1] = '\0'; // terminate the string
+                recvInProgress1 = false;
+                ndx1 = 0;
+                newData1 = true;
             }
         }
 
-        else if (rc == startMarker) {
-            recvInProgress = true;
+        else if (rc1 == startMarker1) {
+            recvInProgress1 = true;
         }
     }
-    void showNewData() {
-    if (newData == true) {
-        Serial.print("This just in ... ");
-        Serial.println(receivedChars);
-        newData = false;
+    return receivedChars1;
+}
+
+void RecStr2(void) {
+    static boolean recvInProgress2 = false;
+    static byte ndx2 = 0;
+    char startMarker2 = '<';
+    char endMarker2 = '>';
+    char rc2;
+    while (Serial2.available() > 0 && newData2 == false) {
+        rc2 = Serial2.read();
+
+        if (recvInProgress2 == true) {
+            if (rc2 != endMarker2) {
+                receivedChars2[ndx2] = rc2;
+                ndx2++;
+                if (ndx2 >= numChars2) {
+                    ndx2 = numChars2 - 1;
+                }
+            }
+            else {
+                receivedChars2[ndx2] = '\0'; // terminate the string
+                recvInProgress2 = false;
+                ndx2 = 0;
+                newData2 = true;
+            }
+        }
+
+        else if (rc2 == startMarker2) {
+            recvInProgress2 = true;
+        }
     }
+    return receivedChars2;
+}
+
+void RecStr3(void) {
+    static boolean recvInProgress3 = false;
+    static byte ndx3 = 0;
+    char startMarker3 = '<';
+    char endMarker3 = '>';
+    char rc3;
+
+    while (Serial3.available() > 0 && newData3 == false) {
+        rc3 = Serial3.read();
+
+        if (recvInProgress3 == true) {
+            if (rc3 != endMarker3) {
+                receivedChars3[ndx3] = rc3;
+                ndx3++;
+                if (ndx3 >= numChars3) {
+                    ndx3 = numChars3 - 1;
+                }
+            }
+            else {
+                receivedChars3[ndx3] = '\0'; // terminate the string
+                recvInProgress3 = false;
+                ndx3 = 0;
+                newData3 = true;
+            }
+        }
+
+        else if (rc3 == startMarker3) {
+            recvInProgress3 = true;
+        }
+    }
+    return receivedChars3;
 }
