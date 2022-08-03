@@ -55,7 +55,7 @@ Currentmillisx=millis(); // Assign millis value to Currentmillisx for if stateme
  if (State=="200" || State=="300") { //Delay time for receive serial data, if necessary...
   if (Serial1.available()>0){
     Serial.println("C'è qualcosa in seriale");
-    RecStr1();  //Assign incoming data from Serial1 to Dateserial1
+    RecStr1(); //Assign incoming data from Serial1 to Dateserial1
     digitalWrite(RelayRed,HIGH); //Turn on stoplight
     Timeserial1=millis(); // Assign millis value for turning off relay
     }
@@ -180,10 +180,9 @@ void RecStr1() {
             recvInProgress1 = true;
         }
     }
-    return receivedChars1;
 }
 
-void RecStr2(void) {
+void RecStr2() {
     static boolean recvInProgress2 = false;
     static byte ndx2 = 0;
     char startMarker2 = '<';
@@ -215,7 +214,7 @@ void RecStr2(void) {
     return receivedChars2;
 }
 
-void RecStr3(void) {
+void RecStr3() {
     static boolean recvInProgress3 = false;
     static byte ndx3 = 0;
     char startMarker3 = '<';
