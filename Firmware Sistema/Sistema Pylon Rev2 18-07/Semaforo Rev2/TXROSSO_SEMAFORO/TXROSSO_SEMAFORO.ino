@@ -35,7 +35,10 @@ unsigned long Delaypress=2500;
 unsigned long Delaysend=200;
 unsigned long Delaybuzzer=300;
 int Press=0;
-String State="200";
+String Race="<300>";
+String Show="<200>";
+String Startup="<100>";
+String State=Show; //Startup state
 long interval = 5000;// constants won't change:
 
 float readvoltage (int pin) {
@@ -45,15 +48,15 @@ float readvoltage (int pin) {
   return tensione;
 }
 
-void draw(String State1) {
-  if (State1=="300"){
-    State1="Race";
+void draw(String Statev) {
+  if (Statev==Race){
+    Statev="Race";
     }
-  else if (State1=="200"){
-    State1="Show";
+  else if (Statev==Show){
+    Statev="Show";
     }
   else {
-    State1="Other";
+    Statev="Other";
     }
   tensione_float = readvoltage(pinbatt);
   dtostrf(tensione_float, 6, 2, vout); // Leave room for too large numbers!
@@ -66,7 +69,7 @@ void draw(String State1) {
   u8g.drawStr(0, 18 , " Batteria");
   u8g.drawStr(60, 31 , " V");
   u8g.drawStr(10, 31, vout );
-  u8g.drawStr(10, 44, State1.c_str());
+  u8g.drawStr(10, 44, Statev.c_str());
 }
 
 void setup() {
@@ -125,7 +128,7 @@ void loop() {
       }
     } 
     CurrentPress=millis();
-    if (digitalRead(pulsante) == LOW && (State=="200" || State=="300") && (CurrentPress-Lastpress)>=Delaypress) {
+    if (digitalRead(pulsante) == LOW && (State==Show || State==Race) && (CurrentPress-Lastpress)>=Delaypress) {
       Lastpress=millis();
       Press=1;
       digitalWrite(buzzer , HIGH);
