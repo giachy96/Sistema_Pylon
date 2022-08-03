@@ -20,22 +20,17 @@
   int RelayRed=4;
   int RelayGreen=5;
   int RelayBlue=6;
-  String State="200"; //Startup state
-  String OldState="200";
-
-  const byte numChars1=32;
-  char receivedChars1[numChars1];
-  boolean newData1=false;
-
-  const byte numChars2=32;
-  char receivedChars2[numChars2];
-  boolean newData2=false;
-
-  const byte numChars3=32;
-  char receivedChars3[numChars3];
-  boolean newData3=false;
-
-  void setup() {
+  const byte numChars=32;
+  char RecCh1[numChars];
+  char RecCh2[numChars];
+  char RecCh3[numChars];
+  String Race="<300>";
+  String Show="<200>";
+  String Startup="<100>";
+  String State=Show; //Startup state
+  String OldState=Show;
+  
+void setup() {
   Serial1.begin(9600); // Serial ColorRx
   delay(300);
   Serial2.begin(9600);// Serial ColorRx
@@ -52,10 +47,11 @@
 }
 void loop() {
 Currentmillisx=millis(); // Assign millis value to Currentmillisx for if statements
- if (State=="200" || State=="300") { //Delay time for receive serial data, if necessary...
+ if (State==Show || State==Race) { //Delay time for receive serial data, if necessary...
   if (Serial1.available()>0){
     Serial.println("C'è qualcosa in seriale");
-    RecStr1(); //Assign incoming data from Serial1 to Dateserial1
+    RecStr1();
+    String Dateserial1(RecCh1); //Assign incoming data from Serial1 to Dateserial1
     digitalWrite(RelayRed,HIGH); //Turn on stoplight
     Timeserial1=millis(); // Assign millis value for turning off relay
     }
@@ -65,10 +61,11 @@ Currentmillisx=millis(); // Assign millis value to Currentmillisx for if stateme
    }
 
  Currentmillisx=millis();
- if (State=="200" || State=="300") {
+ if (State==Show || State==Race) {
   if (Serial2.available()>0){
     Serial.println("C'è qualcosa in seriale");
-    Dateserial2=Serial2.readString();
+    RecStr2();
+    String Dateserial2(RecCh2); //Assign incoming data from Serial1 to Dateserial2
     digitalWrite(RelayGreen,HIGH);
    Timeserial2=millis();
     }
@@ -78,10 +75,11 @@ Currentmillisx=millis(); // Assign millis value to Currentmillisx for if stateme
     }
 
  Currentmillisx=millis();
- if (State=="200" || State=="300") {
+ if (State==Show || State==Race) {
   if (Serial3.available()>0){
     Serial.println("C'è qualcosa in seriale");
-    Dateserial3=Serial3.readString();
+    RecStr3();
+    String Dateserial13(RecCh3); //Assign incoming data from Serial3 to Dateserial3
     digitalWrite(RelayBlue,HIGH);
     Timeserial3=millis();
     }
@@ -91,7 +89,7 @@ Currentmillisx=millis(); // Assign millis value to Currentmillisx for if stateme
     }
 
  Currentmilliss=millis(); // millis assignments for send delay control
-  if ((Currentmilliss-Timesend) >= Delaysend && (State=="200" || State=="300")) {  //If the last receive is older than Delaysend, and state is race or show
+  if ((Currentmilliss-Timesend) >= Delaysend && (State==Show || State==Race)) {  //If the last receive is older than Delaysend, and state is race or show
    if (Dateserial1 != "0" || Dateserial2 != "0" || Dateserial3 !="0")  { //If some button was pressed
     Dateserial=(Dateserial1); // Compose message for send with Lora
     Dateserial.concat(",");
@@ -123,11 +121,12 @@ Currentmillisx=millis(); // Assign millis value to Currentmillisx for if stateme
   }
     
 
-if (OldState != State){ //If state was change on previous code
-Serial.println("Cambio stato");
+  if (OldState != State){ //If state was change on previous code
+  Serial.println("Cambio stato");
   if (Serial1.available()>0){ //check if some press was incoming from receiver 1
     Serial.println("C'è qualcosa in seriale1");
-    Dateserial1p=Serial1.readString(); //Assign useless press on Dateserial1
+    RecStr1();
+    String Dateserial1p(RecCh1); //Assign incoming data from Serial1 to Dateserial1//Assign useless press on Dateserial1
     Serial.println(Dateserial1p);
     }
     Serial1.print(State); //Send to receiver 1 State
@@ -135,19 +134,21 @@ Serial.println("Cambio stato");
     Serial.println(State);
 
      if (Serial2.available()>0){
-    Dateserial2p=Serial2.readString();
+    RecStr2();
+    String Dateserial2p(RecCh2); //Assign incoming data from Serial1 to Dateserial1
     Serial.println("C'è qualcosa in seriale2");
     }
     Serial2.print(State);
     Serial.println("Scrivo in seriale2");
   if (Serial3.available()>0){
-    Dateserial3p=Serial3.readString();
+    RecStr3();
+    String Dateserial3p(RecCh3); //Assign incoming data from Serial1 to Dateserial1
     Serial.println("C'è qualcosa in seriale3");
     }
     Serial3.print(State);
     Serial.println("Scrivo in seriale3");
   OldState=State; //Reset condition for send State to the rx
-}
+  }
 }
 
 void RecStr1() {
@@ -156,20 +157,21 @@ void RecStr1() {
     char startMarker1 = '<';
     char endMarker1 = '>';
     char rc1;
+    boolean newData1=false;
  
     while (Serial1.available() > 0 && newData1 == false) {
         rc1 = Serial1.read();
 
         if (recvInProgress1 == true) {
             if (rc1 != endMarker1) {
-                receivedChars1[ndx1] = rc1;
+                RecCh1[ndx1] = rc1;
                 ndx1++;
-                if (ndx1 >= numChars1) {
-                    ndx1 = numChars1 - 1;
+                if (ndx1 >= numChars) {
+                    ndx1 = numChars - 1;
                 }
             }
             else {
-                receivedChars1[ndx1] = '\0'; // terminate the string
+                RecCh1[ndx1] = '\0'; // terminate the string
                 recvInProgress1 = false;
                 ndx1 = 0;
                 newData1 = true;
@@ -188,19 +190,20 @@ void RecStr2() {
     char startMarker2 = '<';
     char endMarker2 = '>';
     char rc2;
+  boolean newData2=false;
     while (Serial2.available() > 0 && newData2 == false) {
         rc2 = Serial2.read();
 
         if (recvInProgress2 == true) {
             if (rc2 != endMarker2) {
-                receivedChars2[ndx2] = rc2;
+                RecCh2[ndx2] = rc2;
                 ndx2++;
-                if (ndx2 >= numChars2) {
-                    ndx2 = numChars2 - 1;
+                if (ndx2 >= numChars) {
+                    ndx2 = numChars - 1;
                 }
             }
             else {
-                receivedChars2[ndx2] = '\0'; // terminate the string
+                RecCh2[ndx2] = '\0'; // terminate the string
                 recvInProgress2 = false;
                 ndx2 = 0;
                 newData2 = true;
@@ -211,10 +214,11 @@ void RecStr2() {
             recvInProgress2 = true;
         }
     }
-    return receivedChars2;
 }
 
 void RecStr3() {
+  const byte numChars3=32;
+  boolean newData3=false;
     static boolean recvInProgress3 = false;
     static byte ndx3 = 0;
     char startMarker3 = '<';
@@ -226,14 +230,14 @@ void RecStr3() {
 
         if (recvInProgress3 == true) {
             if (rc3 != endMarker3) {
-                receivedChars3[ndx3] = rc3;
+                RecCh3[ndx3] = rc3;
                 ndx3++;
-                if (ndx3 >= numChars3) {
-                    ndx3 = numChars3 - 1;
+                if (ndx3 >= numChars) {
+                    ndx3 = numChars - 1;
                 }
             }
             else {
-                receivedChars3[ndx3] = '\0'; // terminate the string
+                RecCh3[ndx3] = '\0'; // terminate the string
                 recvInProgress3 = false;
                 ndx3 = 0;
                 newData3 = true;
@@ -244,5 +248,4 @@ void RecStr3() {
             recvInProgress3 = true;
         }
     }
-    return receivedChars3;
 }
