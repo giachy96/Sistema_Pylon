@@ -67,9 +67,7 @@ void setup() {
 
 void loop() {
 
-  currentMillis = millis();
-
-  currentMillis = millis();
+ 
 
   // fase di avvio
   while (bootup < 5) {
@@ -84,6 +82,7 @@ void loop() {
   // fine fase di avvio
 
   while (!bootup < 10) {
+     currentMillis = millis();
 
     // ----------------------------------- controllo batteria
     float voltage = readvoltage(pinbatt);
