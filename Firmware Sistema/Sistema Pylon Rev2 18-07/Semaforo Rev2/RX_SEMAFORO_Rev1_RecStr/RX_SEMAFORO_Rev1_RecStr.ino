@@ -41,10 +41,10 @@ void loop() {
       }
   if (e22ttl.available()>1) {  // If there is something arrived from lora (Transmitter)
     ResponseContainer rc = e22ttl.receiveMessage();// Receive message
+    Timesend=millis();
     if (rc.status.code!=1){ // If there is some problem
       rc.status.getResponseDescription(); //Get report
-      Timesend=millis();
-    }
+      }
     else{ //If there isn't any problem we're going to receive press 
       TxData=rc.data; //Assign incoming data on TxData variable
       Serial.println("Ricevo dal lora");
