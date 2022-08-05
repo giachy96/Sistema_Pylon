@@ -165,7 +165,7 @@ void loop() {
         String msg = "423,";
         msg.concat(lapcounter);
         msg.concat(",");
-        msg.concat(String(ultimo_tempo));
+        msg.concat(bu);
         ResponseStatus rs = e22ttl.sendFixedMessage(0, 0, 6, msg);
         tone(buzzer, 4000, 200);
         Lastpress = millis();
