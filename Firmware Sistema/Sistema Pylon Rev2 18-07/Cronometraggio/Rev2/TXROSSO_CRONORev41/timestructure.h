@@ -2,7 +2,7 @@ float lontoflt ( unsigned long loong ) {
   float flt;
   loong = loong;
   flt = (float)loong;
-  flt = flt / 1000;
+  flt = flt / 100;
   return flt;
 }
 
@@ -19,7 +19,7 @@ void Catturatempo ( float* tempo_flt, long* tempo_parziale, int indice , unsigne
   }
   else if (indice == 0) {
     tempo_cronometrato = millis() - tempobase;
-   //  tempo_cronometrato = tempo_cronometrato/10; // per ridurre al centesimo
+     tempo_cronometrato = tempo_cronometrato/10; // per ridurre al centesimo
     *(tempo_parziale ) =  tempo_cronometrato;
     *(tempo_flt ) = lontoflt(tempo_parziale[0] );
    // Serial.println("uguale");
@@ -27,7 +27,7 @@ void Catturatempo ( float* tempo_flt, long* tempo_parziale, int indice , unsigne
   }
   else if ( indice > 0) {
     tempo_cronometrato = millis() - tempobase;
-    //tempo_cronometrato = tempo_cronometrato/10; // per ridurre al centesimo
+    tempo_cronometrato = tempo_cronometrato/10; // per ridurre al centesimo
     *(tempo_parziale + indice) =  tempo_cronometrato;
     for (int i = 1; i <= indice  ; i++) {
 

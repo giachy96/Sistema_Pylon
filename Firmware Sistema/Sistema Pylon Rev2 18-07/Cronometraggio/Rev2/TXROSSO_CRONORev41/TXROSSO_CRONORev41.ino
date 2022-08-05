@@ -1,9 +1,9 @@
 /*
-   LoRa E22
+   LoRa e220
    Write on serial to transfer a message to other device
    https://www.mischianti.org
 
-   E22        ----- Arduino UNO
+   e220        ----- Arduino UNO
    M0         ----- GND
    M1         ----- GND
    TX         ----- PIN 2 (PullUP)
@@ -13,10 +13,10 @@
    GND        ----- GND
 
 */
-#include <U8x8lib.h>
-#include "Arduino.h"
-#include "LoRa_E22.h"
-//#include "lcdcases.h"
+
+#include <ss_oled.h>
+#include "LoRa_E220.h"
+#include "lcdcases.h"
 #include "timestructure.h"
 
 int pulsante = 9;
@@ -39,7 +39,8 @@ int ultimo_inviato = 0;
 float* poitem = &tempo_flt[0];
 
 
-LoRa_E22 e22ttl(2, 3);             // Arduino RX --> e22 TX - Arduino TX --> e22 RX
+LoRa_E220 e220ttl(2, 3, UART_BPS_RATE_9600 );        // Arduino RX --> e220 TX - Arduino TX --> e220 RX
+
 unsigned long previousMillis = 0;  // will store last time voltage was updated
 unsigned long currentMillis = 0;
 unsigned long Timesend = 0;
@@ -49,11 +50,21 @@ unsigned long Delaypress = 2000;
 unsigned long Delaysend = 200;
 
 int Press = 0;
-String State ;
+String State;
 long interval = 20000;  // constants won't change:
 
-U8X8_SH1106_128X64_NONAME_HW_I2C u8x8(/* reset=*/ U8X8_PIN_NONE);
-
+// Display
+//SSOLED ssoled;
+#define SDA_PIN -1
+#define SCL_PIN -1
+// no reset pin needed
+#define RESET_PIN -1
+// let ss_oled find the address of our display
+#define OLED_ADDR -1
+#define FLIP180 1
+#define INVERT 0
+// Use the default Wire library
+#define USE_HW_I2C 1
 
 
 void setup() {
@@ -62,10 +73,8 @@ void setup() {
   pinMode(pinbatt, INPUT);
   Serial.begin(9600);
   delay(500);
-  e22ttl.begin();  // Startup all pins and UART
+  e220ttl.begin();  // Startup all pins and UART
 
-  u8x8.begin();
-  u8x8.setPowerSave(0);
 }
 
 void loop() {
@@ -86,31 +95,29 @@ void loop() {
     currentMillis = millis();
 
     // ----------------------------------- controllo batteria
-    //    float voltage = readvoltage(pinbatt);
-    //    if (voltage < 2.9) {
-    //      digitalWrite(buzzer, HIGH);
-    //    } else {
-    //      digitalWrite(buzzer, LOW);
-    //    }
-    //
-    //    // allarme tensione
-    //    if (readvoltage(pinbatt) < 2.9) {
-    //      tone(buzzer, 5000, 200);
-    //    }
+    float voltage = readvoltage(pinbatt);
+    if (voltage < 2.9) {
+      digitalWrite(buzzer, HIGH);
+    } else {
+      digitalWrite(buzzer, LOW);
+    }
+
+    // allarme tensione
+    if (readvoltage(pinbatt) < 2.9) {
+      tone(buzzer, 5000, 200);
+    }
 
     if (currentMillis - previousMillis >= interval || aggiornamentolcd == 1) {
 
       previousMillis = currentMillis;
       aggiornamentolcd = 0;
       // picture loop
-
-
     }
 
-    if (e22ttl.available() > 1) {
-      ResponseContainer rc = e22ttl.receiveMessage();  // Receive message
-      if (rc.status.code != 1) {                       // If there is some problem
-        rc.status.getResponseDescription();            //Get report
+    if (e220ttl.available() > 1) {
+      ResponseContainer rc = e220ttl.receiveMessage();  // Receive message
+      if (rc.status.code != 1) {                        // If there is some problem
+        rc.status.getResponseDescription();             //Get report
         Timesend = millis();
       } else {            //If there isn't any problem we're going to receive press
         State = rc.data;  //Assign incoming data on TxData variable
@@ -121,7 +128,7 @@ void loop() {
     if (State == "200") {  // SSHOW
 
       if (digitalRead(pulsante) == LOW && (CurrentPress - Lastpress) >= Delaypress) {
-        ResponseStatus rs = e22ttl.sendFixedMessage(0, 0, 6, "220");
+        ResponseStatus rs = e220ttl.sendFixedMessage(0, 0, 6, "220");
         tone(buzzer, 4000, 200);
         Lastpress = millis();
       }
@@ -139,15 +146,15 @@ void loop() {
         dcase = 3;
       }
       if (lapcounter == 10) {
-        float tot =  CalcoloTempo(tempo_flt);
+        float tot = CalcoloTempo(tempo_flt);
         tempo_flt[11] = tot;
-        tempo_parziale[11] = (int)(tot * 100); // per inserire il totale sulla stringa con virgole
+        tempo_parziale[11] = (int)(tot * 100);  // per inserire il totale sulla stringa con virgole
         float ultimo_tempo = tempo_flt[11];
         String msg = "523,";
         msg.concat("11");
         msg.concat(",");
         msg.concat(String(ultimo_tempo));
-        ResponseStatus rs = e22ttl.sendFixedMessage(0, 0, 6, msg);
+        ResponseStatus rs = e220ttl.sendFixedMessage(0, 0, 6, msg);
         State = "400";
         lapcounter = -2;
         dcase = 4;
@@ -157,16 +164,13 @@ void loop() {
         lapcounter = lapcounter + 1;
         Catturatempo(poitem, poiparz, lapcounter, tempo_base);  //balza l'indice a 1Lastpress = millis()
         float ultimo_tempo = tempo_flt[lapcounter];
-        u8x8.setFont(u8x8_font_8x13B_1x2_r);
-        char bu[10];
-        dtostrf(ultimo_tempo, 4, 3, bu);  //4 is mininum width, 6 is precision
-        u8x8.drawString(0, 9, bu);
-        Serial.println(ultimo_tempo ,3);
+
+        Serial.println(ultimo_tempo);
         String msg = "423,";
         msg.concat(lapcounter);
         msg.concat(",");
         msg.concat(String(ultimo_tempo));
-        ResponseStatus rs = e22ttl.sendFixedMessage(0, 0, 6, msg);
+        ResponseStatus rs = e220ttl.sendFixedMessage(0, 0, 6, msg);
         tone(buzzer, 4000, 200);
         Lastpress = millis();
         dcase = 3;
@@ -183,7 +187,7 @@ void loop() {
     CurrentPress = millis();
     if (Press == 1 && (CurrentPress - Timesend) >= Delaysend) {
       String msg = "312,";
-      ResponseStatus rs = e22ttl.sendFixedMessage(0, 0, 6, msg);
+      ResponseStatus rs = e220ttl.sendFixedMessage(0, 0, 6, msg);
       Serial.println("invio");
       Press = 0;
     }
