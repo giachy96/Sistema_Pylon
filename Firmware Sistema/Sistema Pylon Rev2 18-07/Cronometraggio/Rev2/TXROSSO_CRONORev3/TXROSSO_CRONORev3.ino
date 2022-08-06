@@ -16,14 +16,14 @@
 #include <U8x8lib.h>
 #include "Arduino.h"
 #include "LoRa_E22.h"
-//#include "lcdcases.h"
+#include "lcdcases.h"
 #include "timestructure.h"
 
 int pulsante = 9;
 int buzzer = 5;
 int pinbatt = A0;
 int bootup = 1;
-int aggiornamentolcd = 0;
+int altupdatelcd = 0;
 int dcase = 0;
 char t[5] = { '3', ',', '3', '3', '\0' };
 
@@ -76,7 +76,7 @@ void loop() {
   while (bootup < 5) {
     previousMillis = currentMillis;
     // picture loop
-
+    draw(0, u8x8);
 
     bootup++;
   }
@@ -86,26 +86,30 @@ void loop() {
     currentMillis = millis();
 
     // ----------------------------------- controllo batteria
-    //    float voltage = readvoltage(pinbatt);
-    //    if (voltage < 2.9) {
-    //      digitalWrite(buzzer, HIGH);
-    //    } else {
-    //      digitalWrite(buzzer, LOW);
-    //    }
-    //
-    //    // allarme tensione
-    //    if (readvoltage(pinbatt) < 2.9) {
-    //      tone(buzzer, 5000, 200);
-    //    }
+    float voltage = readvoltage(pinbatt);
+    if (voltage < 2.9) {
+      digitalWrite(buzzer, HIGH);
+    } else {
+      digitalWrite(buzzer, LOW);
+    }
 
-    if (currentMillis - previousMillis >= interval || aggiornamentolcd == 1) {
+    //    // allarme tensione
+    if (readvoltage(pinbatt) < 2.9) {
+      tone(buzzer, 5000, 200);
+    }
+
+    if (currentMillis - previousMillis >= interval  && altupdatelcd == 0) {
 
       previousMillis = currentMillis;
-      aggiornamentolcd = 0;
+      altupdatelcd= 0;
       // picture loop
-
-
+      draw(0, u8x8);
     }
+
+    if (currentMillis - previousMillis >= 10000  && altupdatelcd == 2) {
+
+    altupdatelcd = 0;
+    }  
 
     if (e22ttl.available() > 1) {
       ResponseContainer rc = e22ttl.receiveMessage();  // Receive message
@@ -125,18 +129,18 @@ void loop() {
         tone(buzzer, 4000, 200);
         Lastpress = millis();
       }
-      dcase = 1;
-      aggiornamentolcd = 1;
+      draw(1, u8x8);
+      altupdatelcd = 1;
     }
 
     if (State == "300") {  // START
+      altupdatelcd = 1;
       if (lapcounter == -2) {
-        dcase = 2;
+        draw(2 , u8x8);
         lapcounter = -1;
       }
       if (lapcounter == -1 && digitalRead(pulsante) == LOW && (CurrentPress - Lastpress) >= Delaypress) {
         tempo_base = millis();
-        dcase = 3;
       }
       if (lapcounter == 10) {
         float tot =  CalcoloTempo(tempo_flt);
@@ -149,19 +153,19 @@ void loop() {
         msg.concat(String(ultimo_tempo));
         ResponseStatus rs = e22ttl.sendFixedMessage(0, 0, 6, msg);
         State = "400";
+        draw(4 , u8x8);
         lapcounter = -2;
-        dcase = 4;
+        altupdatelcd = 2;
+        previousMillis = millis();
+
       }
       if (digitalRead(pulsante) == LOW && (CurrentPress - Lastpress) >= Delaypress) {
 
         lapcounter = lapcounter + 1;
         Catturatempo(poitem, poiparz, lapcounter, tempo_base);  //balza l'indice a 1Lastpress = millis()
         float ultimo_tempo = tempo_flt[lapcounter];
-        u8x8.setFont(u8x8_font_8x13B_1x2_r);
         char bu[10];
         dtostrf(ultimo_tempo, 4, 3, bu);  //4 is mininum width, 6 is precision
-        u8x8.drawString(0, 9, bu);
-        Serial.println(ultimo_tempo ,3);
         String msg = "423,";
         msg.concat(lapcounter);
         msg.concat(",");
@@ -169,11 +173,13 @@ void loop() {
         ResponseStatus rs = e22ttl.sendFixedMessage(0, 0, 6, msg);
         tone(buzzer, 4000, 200);
         Lastpress = millis();
-        dcase = 3;
+        draw(3 , u8x8);
+        altupdatelcd = 1;
+
       }
 
 
-      aggiornamentolcd = 1;
+
     }
 
 
