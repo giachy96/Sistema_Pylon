@@ -63,25 +63,39 @@ void loop() {
   recvSerial7();
   showSerial7();
   recvSerial8();
-  showSerial8();
+  //showSerial8(); attenziona al new data
 
   if (currentMillis - oldMillis >= pressbutton) {
     if (digitalRead(pStop) == HIGH) {
       Serial6.print("<STOP>");
+      Serial8.print("<500>");
       oldMillis = millis();
     }
-   if (digitalRead(pGo) == LOW ) {
+    if (digitalRead(pGo) == LOW ) {
       Serial6.print("<GO>");
-      oldMillis = millis();
-    } 
- if (digitalRead(pShow) == LOW ) {
-      Serial6.print("<SHOW>");
+      Serial8.print("<300>");
       oldMillis = millis();
     }
-
-
-
+    if (digitalRead(pShow) == LOW ) {
+      Serial6.print("<SHOW>");
+      Serial8.print("<200>");
+      oldMillis = millis();
+    }
   }
+
+  if (newData8 == true) {
+    String Rxs8;
+    Rxs8 = receivedChars8;
+    if (Rxs8.indexOf("423") != -1) {
+      String pack = "<";
+      pack.concat(receivedChars8);
+      pack.concat(">");
+      Serial6.print(pack);
+
+    }
+    newData8= false;
+  }
+
 }
 
 

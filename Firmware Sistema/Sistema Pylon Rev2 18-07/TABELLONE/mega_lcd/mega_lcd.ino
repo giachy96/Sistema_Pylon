@@ -5,7 +5,7 @@
 #include "SystemFont5x7.h"
 #include "Arial_Black_16.h"
 
-const byte numChars = 5;
+const byte numChars = 32;
 char receivedChars1[numChars];
 char oldreceivedChars1[numChars];
 boolean newData = false;
@@ -59,7 +59,26 @@ void setup() {
 void loop() {
   currentMillis = millis();
   recvWithStartEndMarkers( Serial1,  receivedChars1) ;
-  showNewData( receivedChars1);
+  //showNewData( receivedChars1); attenazione al new Data
+
+ if (newData == true) {
+    String Rxs;
+    Rxs = receivedChars1;
+    if (Rxs.indexOf("423") != -1) {
+    String values [5];
+    decodecomma(Rxs,values);
+    Serial.println("valore1");
+    Serial.println(values[1]);
+    Serial.println("valore2");
+    Serial.println(values[2]);
+    Serial.println("valore3");
+    Serial.println(values[3]);
+    dmd.clearScreen();
+    dmd.drawString(0, 33, values[1]);// 24/33
+    dmd.drawString(20, 33, values[2]);// 24/33
+    }
+    newData= false;
+  }
 
 
   // GESTIONE DEL CONTO ALLA ROVESCIA
@@ -359,18 +378,28 @@ void showNewData(char receivedChars[numChars]) {
     newData = false;
   }
 }
-void readMasterPort() {
 
-  while (Serial1.available()) {
 
-    delay(10);
-    if (Serial1.available() > 0) {
+int decodecomma (String str , String tempi[]){
+   int lungh_str = str.length();
+   char buff[lungh_str+1];
+    str.toCharArray(buff, lungh_str+1);
+   //Serial.println(parseData(buff));
+      int i =0;
+      char* p;
+  //Serial.println("Example of splitting a string into tokens: ");
+ // Serial.print("The input string is: '");
+ // Serial.print(buff);
+ // Serial.println("'");
 
-      char c = Serial1.read();  //gets one byte from serial buffer
-      msg += c; //makes the string readString
-    }
+  p = strtok(buff, "{,}"); //2nd argument is a char[] of delimiters
+  while (p != '\0') { //not equal to NULL
+    //Serial.println(p);
+     tempi[i] = p;
+     
+    p = strtok('\0', "{,}");  //expects NULL for string on subsequent calls
+    i++;
   }
-  Serial1.flush();
-  Serial.println(msg);
 
-}
+  return tempi;
+  }
