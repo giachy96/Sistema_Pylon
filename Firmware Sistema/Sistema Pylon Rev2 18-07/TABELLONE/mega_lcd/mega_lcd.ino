@@ -25,7 +25,7 @@ int updatescreen = 0;
 #define DISPLAYS_ACROSS 2
 #define DISPLAYS_DOWN 3
 SPIDMD dmd(DISPLAYS_ACROSS, DISPLAYS_DOWN, 11, 6, 7, 8); // DMD controls the entire display
-
+#include "countdown.h"
 unsigned long currentMillis;
 unsigned long lastdiplayupdate;
 unsigned long intervalstandby = 5000;
@@ -37,9 +37,13 @@ int sirena = 10;
 int sirenaflag = 0;
 int k = 0;
 boolean flagcount;
+String temporosso [5];
+String tempoblu [5];
+String tempoverde [5];
+String values [5];
 
-
-
+unsigned long old523update;
+int bounce = 0;
 
 void setup() {
 
@@ -61,28 +65,80 @@ void loop() {
   recvWithStartEndMarkers( Serial1,  receivedChars1) ;
   //showNewData( receivedChars1); attenazione al new Data
 
- if (newData == true) {
+  if (newData == true) {
     String Rxs;
     Rxs = receivedChars1;
-    if (Rxs.indexOf("423") != -1) {
-    String values [5];
-    decodecomma(Rxs,values);
-    Serial.println("valore1");
-    Serial.println(values[1]);
-    Serial.println("valore2");
-    Serial.println(values[2]);
-    Serial.println("valore3");
-    Serial.println(values[3]);
-    dmd.clearScreen();
-    dmd.drawString(0, 33, values[1]);// 24/33
-    dmd.drawString(20, 33, values[2]);// 24/33
+    if (Rxs.indexOf("423") != -1 || Rxs.indexOf("433") != -1 || Rxs.indexOf("413") != -1) {
+      values[0] = "0";
+      decodecomma(Rxs, values);
+
+      if (values[0] == "423") {
+        temporosso[0] = values[0];
+        temporosso[1] = values[1];
+        temporosso[2] = values[2];
+      } else if (values[0] == "433") {
+        tempoblu[0] = values[0];
+        tempoblu[1] = values[1];
+        tempoblu[2] = values[2];
+      } else if (values[0] == "413") {
+        tempoverde[0] = values[0];
+        tempoverde[1] = values[1];
+        tempoverde[2] = values[2];
+      }
+      dmd.clearScreen();
+      dmd.drawString(0, 33, temporosso[1]);// 24/33
+      dmd.drawString(20, 33, temporosso[2]);// 24/33
+      dmd.drawString(0, 1, tempoblu[1]);// 24/33
+      dmd.drawString(20, 1, tempoblu[2]);// 24/33
+      dmd.drawString(0, 17, tempoverde[1]);// 24/33
+      dmd.drawString(20, 17, tempoverde[2]);// 24/33
     }
-    newData= false;
+
+
+    if (Rxs.indexOf("523") != -1 ||  Rxs.indexOf("533") != -1 || Rxs.indexOf("513") != -1) {
+      decodecomma(Rxs, values);
+      if (values[0] == "523") {
+        temporosso[0] = values[0];
+        temporosso[3] = values[2];
+      } else if (values[0] == "533") {
+        tempoblu[0] = values[0];
+        tempoblu[3] = values[2];
+      } if (values[0] == "513") {
+        tempoverde[0] = values[0];
+        tempoverde[3] = values[2];
+      }
+
+    }
+    newData = false;
   }
 
+  if ((tempoverde[0] == "513" || tempoblu[0] == "533" || temporosso[0] == "523") && strcmp(receivedChars1, "STOP") != 0 && strcmp(receivedChars1, "GO") != 0  ) {
+
+    if (millis() - old523update >= 1000) {
+      if (bounce == 0) {
+        dmd.clearScreen();
+        dmd.drawString(0, 33, temporosso[1]);// 24/33
+        dmd.drawString(20, 33, temporosso[2]);// 24/33
+        dmd.drawString(0, 1, tempoblu[1]);// 24/33
+        dmd.drawString(20, 1, tempoblu[2]);// 24/33
+        dmd.drawString(0, 17, tempoverde[1]);// 24/33
+        dmd.drawString(20, 17, tempoverde[2]);// 24/33
+        bounce = 1;
+      } else {
+
+        dmd.clearScreen();
+        dmd.drawString(10, 33, temporosso[3]);// 24/33
+        dmd.drawString(10, 1, tempoblu[3]);// 24/33
+        dmd.drawString(10, 17, tempoverde[3]);// 24/33
+        bounce = 0;
+      }
+      old523update = millis();
+    }
+
+  }
 
   // GESTIONE DEL CONTO ALLA ROVESCIA
-  flagcount = countdown(flagcount);
+ // flagcount = countdown(flagcount);
 
   // GESTIONE DELLA SIRENA
   if (sirenaflag == 1) {
@@ -101,12 +157,6 @@ void loop() {
       sirenaflag = 0;
     }
   }
-
-
-
-
-
-
   if (strcmp(receivedChars1, oldreceivedChars1) != 0) {
     updatescreen = 0;
 
@@ -127,10 +177,6 @@ void loop() {
       //      dmd.drawString(0, 20, "GO");
       //      dmd.drawString(0, 36, "GO");
       flagcount = true;
-
-
-
-
       updatescreen = 1;
       memcpy(oldreceivedChars1, receivedChars1, sizeof(receivedChars1));
 
@@ -140,8 +186,6 @@ void loop() {
       dmd.drawString(8, 1, "SHOW");
       dmd.drawString(8, 17, "SHOW");
       dmd.drawString(8, 33, "SHOW");
-
-
       updatescreen = 1;
       memcpy(oldreceivedChars1, receivedChars1, sizeof(receivedChars1));
     }
@@ -160,176 +204,6 @@ void loop() {
   //  }
 }
 
-boolean countdown(boolean flag) {
-
-  if (flag == true) {
-
-
-    if (currentMillis - milliscountdown >= 1000) {
-      dmd.selectFont(Arial_Black_16);
-      if (sec > 5 && sec != 32  && sec != 12  ) {
-        char cstr[10];
-
-        int n = sec - 2;
-        itoa(n, cstr, 10);
-        dmd.clearScreen();
-        dmd.drawString(24, 1, cstr);
-        dmd.drawString(24, 17, cstr);
-        dmd.drawString(24, 33, cstr);
-        milliscountdown = millis();
-        Serial.println(sec);
-        Serial.println(flag);
-        sirenaflag = 0;
-        sec = sec - 1;
-      }  else if (sec == 32) {
-
-        char cstr[10];
-
-        int n = sec - 2;
-        itoa(n, cstr, 10);
-        dmd.clearScreen();
-        dmd.drawString(24, 1, cstr);
-        dmd.drawString(24, 17, cstr);
-        dmd.drawString(24, 33, cstr);
-        milliscountdown = millis();
-
-        sirenaflag = 1;
-
-        sec = sec - 1;
-      } else if (sec == 12) {
-
-        char cstr[10];
-
-        int n = sec - 2;
-        itoa(n, cstr, 10);
-        dmd.clearScreen();
-        dmd.drawString(24, 1, cstr);
-        dmd.drawString(24, 17, cstr);
-        dmd.drawString(24, 33, cstr);
-        milliscountdown = millis();
-
-        sirenaflag = 1;
-
-        sec = sec - 1;
-      } else if (sec == 5) {
-
-        char cstr[10];
-
-        int n = sec - 2;
-        itoa(n, cstr, 10);
-        dmd.clearScreen();
-        dmd.drawString(24, 1, cstr);
-        dmd.drawString(24, 17, cstr);
-        dmd.drawString(24, 33, cstr);
-        milliscountdown = millis();
-
-        sirenaflag = 1;
-
-        sec = sec - 1;
-      } else if (sec == 4) {
-
-        char cstr[10];
-
-        int n = sec - 2;
-        itoa(n, cstr, 10);
-        dmd.clearScreen();
-        dmd.drawString(24, 1, cstr);
-        dmd.drawString(24, 17, cstr);
-        dmd.drawString(24, 33, cstr);
-        milliscountdown = millis();
-
-        sirenaflag = 1;
-
-        sec = sec - 1;
-      } else if (sec == 3) {
-
-        char cstr[10];
-
-        int n = sec - 2;
-        itoa(n, cstr, 10);
-        dmd.clearScreen();
-        dmd.drawString(24, 1, cstr);
-        dmd.drawString(24, 17, cstr);
-        dmd.drawString(24, 33, cstr);
-        milliscountdown = millis();
-
-        sirenaflag = 1;
-
-        sec = sec - 1;
-      } else if (sec == 2) {
-        char cstr[10];
-
-        int n = sec - 2;
-        itoa(n, cstr, 10);
-
-        dmd.clearScreen();
-        dmd.drawString(24, 33, "GO");
-        milliscountdown = millis();
-        Serial.println(sec);
-        Serial.println(flag);
-        sirenaflag = 1;
-        sec = sec - 1;
-      }
-      else if (sec == 1) {
-        char cstr[10];
-
-        int n = sec - 2;
-        itoa(n, cstr, 10);
-
-        dmd.clearScreen();
-        dmd.drawString(24, 17, "GO");
-        dmd.drawString(24, 33, "GO");
-        milliscountdown = millis();
-        Serial.println(sec);
-        Serial.println(flag);
-        sirenaflag = 1;
-        sec = sec - 1;
-      }
-      else if (sec == 0) {
-        char cstr[10];
-
-        int n = sec - 2;
-        itoa(n, cstr, 10);
-
-        dmd.clearScreen();
-        dmd.drawString(24, 1, "GO");
-        dmd.drawString(24, 17, "GO");
-        dmd.drawString(24, 33, "GO");
-        milliscountdown = millis();
-        Serial.println(sec);
-        Serial.println(flag);
-        sirenaflag = 1;
-        sec = sec - 1;
-      }
-      else if (sec == -1) {
-        char cstr[10];
-
-        int n = sec - 3;
-        itoa(n, cstr, 10);
-
-        dmd.clearScreen();
-        dmd.drawString(24, 1, "GO");
-        dmd.drawString(24, 17, "GO");
-        dmd.drawString(24, 33, "GO");
-        milliscountdown = millis();
-        sirenaflag = 0;
-        flag = false;
-        sec = 62;
-        Serial.println(sec);
-        Serial.println(flag);
-      }
-
-    }
-  } else {
-
-    milliscountdown = millis();
-    flag = false;
-    sec = 62;
-
-
-  }
-  return flag;
-}
 
 
 
@@ -380,26 +254,26 @@ void showNewData(char receivedChars[numChars]) {
 }
 
 
-int decodecomma (String str , String tempi[]){
-   int lungh_str = str.length();
-   char buff[lungh_str+1];
-    str.toCharArray(buff, lungh_str+1);
-   //Serial.println(parseData(buff));
-      int i =0;
-      char* p;
+int decodecomma (String str , String tempi[]) {
+  int lungh_str = str.length();
+  char buff[lungh_str + 1];
+  str.toCharArray(buff, lungh_str + 1);
+  //Serial.println(parseData(buff));
+  int i = 0;
+  char* p;
   //Serial.println("Example of splitting a string into tokens: ");
- // Serial.print("The input string is: '");
- // Serial.print(buff);
- // Serial.println("'");
+  // Serial.print("The input string is: '");
+  // Serial.print(buff);
+  // Serial.println("'");
 
   p = strtok(buff, "{,}"); //2nd argument is a char[] of delimiters
   while (p != '\0') { //not equal to NULL
     //Serial.println(p);
-     tempi[i] = p;
-     
+    tempi[i] = p;
+
     p = strtok('\0', "{,}");  //expects NULL for string on subsequent calls
     i++;
   }
 
   return tempi;
-  }
+}
