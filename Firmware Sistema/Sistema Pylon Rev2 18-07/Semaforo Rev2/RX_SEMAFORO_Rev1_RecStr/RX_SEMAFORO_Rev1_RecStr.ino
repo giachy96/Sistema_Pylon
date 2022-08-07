@@ -1,13 +1,10 @@
 #include "Arduino.h"
 #include "LoRa_E22.h"
 #include <AltSoftSerial.h>
-//#include <SoftwareSerial.h> //MT - include softwareserial library
+
 AltSoftSerial SwSerial;
  
 LoRa_E22 e22ttl(2, 3); // Arduino RX --> e22 TX - Arduino TX --> e22 RX
-//#define SOFTRX 11 // MT - define rx pin 10
-//#define SOFTTX 10 // MT - define tx pin 11
-//SoftwareSerial SwSerial(SOFTRX,SOFTTX);
 String Race="<300>";
 String Show="<200>";
 String Startup="<100>";
@@ -36,7 +33,7 @@ void loop() {
       Serial.println("C'è qualcosa in seriale");
       State=SwSerial.readString(); //Assign system status to state
       RecStr();
-      String State(RecCh); 
+      State=RecCh; 
       Serial.print(State);
       }
   if (e22ttl.available()>1) {  // If there is something arrived from lora (Transmitter)
@@ -106,4 +103,5 @@ void RecStr() {
             recvInProgress = true;
         }
     }
+    SwSerial.flush();
 }

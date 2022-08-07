@@ -86,45 +86,42 @@ void setup() {
 
 void loop() {
 
- unsigned long currentMillis = millis();
+ currentMillis = millis();
 
   while (bootup < 10) {
-       previousMillis = currentMillis; // save the last time you blinked the LED
-        u8g.firstPage();// picture loop
-    do {
-      draw(State);
-    } while ( u8g.nextPage() );
+    previousMillis = currentMillis;
+    draw(0, u8x8);
     bootup++;
   }
   while (!bootup < 10) {
-    
-    // ----------------------------------- controllo batteria 
+    currentMillis = millis();
     float voltage = readvoltage(pinbatt);
     if (voltage < 2.9) {
       digitalWrite(buzzer , HIGH);
-    // } else {
-    //   digitalWrite(buzzer, LOW);
-    //   Serial.println("Buzzer spento");
+    } 
+    else {
+      digitalWrite(buzzer, LOW);
     }
-    currentMillis=millis();
-    if (currentMillis - previousMillis >= interval) {
+    if (currentMillis - previousMillis >= interval && altupdatelcd == 0) {
       previousMillis = currentMillis; // save the last time you blinked the LED
-            u8g.firstPage();// picture loop
-      do {
-        draw(State);
-      } while ( u8g.nextPage() );
+      altupdatelcd=0;
+      draw(0, u8x8);
+    }
+    if (currentMillis - previousMillis >= 10000  && altupdatelcd == 2) {
+
+      altupdatelcd = 0;
     }
   
     if (e22ttl.available()>1){
-    ResponseContainer rc = e22ttl.receiveMessage();// Receive message
+      ResponseContainer rc = e22ttl.receiveMessage();// Receive message
       if (rc.status.code!=1){ // If there is some problem
-      rc.status.getResponseDescription(); //Get report
-      Timesend=millis();
+        rc.status.getResponseDescription(); //Get report
+        Timesend=millis();
       }
-      else{ //If there isn't any problem we're going to receive press 
-      State=rc.data; //Assign incoming data on TxData variable
-      Serial.println("Nuovo stato");
-      Serial.print(State);
+      else { //If there isn't any problem we're going to receive press 
+        State=rc.data; //Assign incoming data on TxData variable
+        Serial.println("Nuovo stato");
+        Serial.print(State);
       }
     } 
     CurrentPress=millis();
