@@ -128,7 +128,7 @@ void loop() {
     if (digitalRead(pulsante) == LOW && (State==Show || State==Race) && (CurrentPress-Lastpress)>=Delaypress) {
       Lastpress=millis();
       Press=1;
-      tone(buzzer , 4000, 200);
+      digitalWrite(buzzer , HIGH);
     }
     CurrentPress=millis();
     if (Press==1 && ((CurrentPress-Timesend)>=Delaysend)){
@@ -136,5 +136,9 @@ void loop() {
       Serial.println("invio");
       Press=0;
     }  
+    CurrentLow=millis();
+    if ((CurrentLow-Lastpress)>=Delaybuzzer){
+      digitalWrite(buzzer , LOW);
+    }
   }
 }
