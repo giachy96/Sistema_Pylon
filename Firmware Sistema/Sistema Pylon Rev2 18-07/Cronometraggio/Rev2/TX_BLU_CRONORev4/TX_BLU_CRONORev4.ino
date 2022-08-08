@@ -82,7 +82,7 @@ void loop() {
   }
   // fine fase di avvio
 
-  while (!bootup < 10) {
+  while (!bootup < 5) {
     currentMillis = millis();
 
     // ----------------------------------- controllo batteria
@@ -124,6 +124,7 @@ void loop() {
     CurrentPress = millis();
 
     if (State == "200" ) {  // SSHOW
+      
 
       if (digitalRead(pulsante) == LOW && (CurrentPress - Lastpress) >= Delaypress) {
         ResponseStatus rs = e22ttl.sendFixedMessage(0, 0, 8, "230");
@@ -131,6 +132,7 @@ void loop() {
         Lastpress = millis();
       }
       if (newData == true) {
+        tone(buzzer, 4000, 200);
         draw(1, u8x8);
         altupdatelcd = 1;
         newData = false;
@@ -138,6 +140,11 @@ void loop() {
     }
 
     if (State == "300") {  // START
+       if (newData == true) {
+        tone(buzzer, 4000, 200);
+        newData = false;
+      }
+     
       altupdatelcd = 1;
       if (lapcounter == -2) {
         draw(2 , u8x8);
@@ -193,12 +200,16 @@ void loop() {
       }
     }
 
-    CurrentPress = millis();
-    if (Press == 1 && (CurrentPress - Timesend) >= Delaysend) {
-      String msg = "312,";
-      ResponseStatus rs = e22ttl.sendFixedMessage(0, 0, 8, msg);
-      Serial.println("invio");
-      Press = 0;
-    }
+
+
+
+
+//    CurrentPress = millis();
+//    if (Press == 1 && (CurrentPress - Timesend) >= Delaysend) {
+//      String msg = "312,";
+//      ResponseStatus rs = e22ttl.sendFixedMessage(0, 0, 7, msg);
+//      Serial.println("invio");
+//      Press = 0;
+//    }
   }
 }

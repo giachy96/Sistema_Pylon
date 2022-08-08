@@ -94,7 +94,7 @@ void loop() {
   if (newData8 == true) {
     String Rxs8;
     Rxs8 = receivedChars8;
-    if (Rxs8.indexOf("423") != -1 || Rxs8.indexOf("523") != -1) {
+    if (Rxs8.indexOf("423") != -1 || Rxs8.indexOf("523") != -1 || Rxs8.indexOf("220") != -1) {
       String pack = "<";
       pack.concat(receivedChars8);
       pack.concat(">");
@@ -107,7 +107,7 @@ void loop() {
   if (newData1 == true) {
     String Rxs1;
     Rxs1 = receivedChars1;
-    if (Rxs1.indexOf("433") != -1 || Rxs1.indexOf("533") != -1) {
+    if (Rxs1.indexOf("433") != -1 || Rxs1.indexOf("533") != -1|| Rxs1.indexOf("230") != -1) {
       String pack = "<";
       pack.concat(receivedChars1);
       pack.concat(">");
@@ -120,7 +120,7 @@ void loop() {
    if (newData7 == true) {
     String Rxs7;
     Rxs7 = receivedChars7;
-    if (Rxs7.indexOf("413") != -1 || Rxs7.indexOf("513") != -1) {
+    if (Rxs7.indexOf("413") != -1 || Rxs7.indexOf("513") != -1|| Rxs7.indexOf("210") != -1) {
       String pack = "<";
       pack.concat(receivedChars7);
       pack.concat(">");

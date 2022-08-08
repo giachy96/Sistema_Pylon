@@ -37,6 +37,9 @@ int sirena = 10;
 int sirenaflag = 0;
 int k = 0;
 boolean flagcount;
+boolean showcroverde;
+boolean showcrorosso;
+boolean showcroblu;
 String temporosso [5];
 String tempoblu [5];
 String tempoverde [5];
@@ -63,14 +66,39 @@ void setup() {
 void loop() {
   currentMillis = millis();
   recvWithStartEndMarkers( Serial1,  receivedChars1) ;
-  //showNewData( receivedChars1); attenazione al new Data
 
-  if (newData == true) {
+
+  if (newData == true) {    // se ricevo un nuovo dato in seriale
     String Rxs;
     Rxs = receivedChars1;
-    if (Rxs.indexOf("423") != -1 || Rxs.indexOf("433") != -1 || Rxs.indexOf("413") != -1) {
+
+    if (Rxs.indexOf("220") != -1 || Rxs.indexOf("210") != -1 || Rxs.indexOf("230") != -1) { // codice show
       values[0] = "0";
-      decodecomma(Rxs, values);
+      decodecomma(Rxs, values); // decodifico i valori
+
+      if (values[0] == "220") {
+        temporosso[0] = values[0];
+        showcrorosso = true;
+      } else if (values[0] == "230") {
+        tempoblu[0] = values[0];
+        showcroblu = true;
+      } else if (values[0] == "210") {
+        tempoverde[0] = values[0];
+        showcroverde = true;
+      }
+      dmd.clearScreen();
+      dmd.drawString(0, 1, "SHOW");
+      dmd.drawString(0, 17, "SHOW");
+      dmd.drawString(0, 33, "SHOW");
+      checkboxcrono(52, 3, 60, 11 , showcroblu );
+      checkboxcrono(52, 19, 60, 27, showcroverde );
+      checkboxcrono(52, 35, 60, 43, showcrorosso );
+    }
+
+
+    if (Rxs.indexOf("423") != -1 || Rxs.indexOf("433") != -1 || Rxs.indexOf("413") != -1) { // controllo se ci sta il codice della ricezione tempo
+      values[0] = "0";
+      decodecomma(Rxs, values); // decodifico i valori
 
       if (values[0] == "423") {
         temporosso[0] = values[0];
@@ -95,7 +123,7 @@ void loop() {
     }
 
 
-    if (Rxs.indexOf("523") != -1 ||  Rxs.indexOf("533") != -1 || Rxs.indexOf("513") != -1) {
+    if (Rxs.indexOf("523") != -1 ||  Rxs.indexOf("533") != -1 || Rxs.indexOf("513") != -1) { // codice ricezione 10 giri
       decodecomma(Rxs, values);
       if (values[0] == "523") {
         temporosso[0] = values[0];
@@ -111,8 +139,8 @@ void loop() {
     }
     newData = false;
   }
-
-  if ((tempoverde[0] == "513" || tempoblu[0] == "533" || temporosso[0] == "523") && strcmp(receivedChars1, "STOP") != 0 && strcmp(receivedChars1, "GO") != 0  ) {
+ String strx = receivedChars1;
+  if (strx.indexOf("523") != -1  || strx.indexOf("513") != -1 || strx.indexOf("533") != -1) {
 
     if (millis() - old523update >= 1000) {
       if (bounce == 0) {
@@ -138,7 +166,7 @@ void loop() {
   }
 
   // GESTIONE DEL CONTO ALLA ROVESCIA
- // flagcount = countdown(flagcount);
+   flagcount = countdown(flagcount);
 
   // GESTIONE DELLA SIRENA
   if (sirenaflag == 1) {
@@ -183,9 +211,19 @@ void loop() {
     }
     if (strcmp(receivedChars1, "SHOW") == 0 && updatescreen == 0  ) {
       dmd.clearScreen();
-      dmd.drawString(8, 1, "SHOW");
-      dmd.drawString(8, 17, "SHOW");
-      dmd.drawString(8, 33, "SHOW");
+      //      dmd.drawString(8, 1, "SHOW");
+      //      dmd.drawString(8, 17, "SHOW");
+      //      dmd.drawString(8, 33, "SHOW");
+      dmd.drawString(0, 1, "SHOW");
+      dmd.drawString(0, 17, "SHOW");
+      dmd.drawString(0, 33, "SHOW");
+      dmd.drawBox(52, 3, 60, 11);
+      dmd.drawBox(52, 19, 60, 27);
+      dmd.drawBox(52, 35, 60, 43);
+      //   dmd.drawFilledBox(8, 12, 9, 13);
+      showcroverde = false;
+      showcrorosso = false;
+      showcroblu = false;
       updatescreen = 1;
       memcpy(oldreceivedChars1, receivedChars1, sizeof(receivedChars1));
     }
@@ -246,12 +284,7 @@ void  recvWithStartEndMarkers( HardwareSerial &port , char receivedChars[numChar
 
 }
 
-void showNewData(char receivedChars[numChars]) {
-  if (newData == true) {
-    Serial.println(receivedChars);
-    newData = false;
-  }
-}
+
 
 
 int decodecomma (String str , String tempi[]) {
@@ -276,4 +309,13 @@ int decodecomma (String str , String tempi[]) {
   }
 
   return tempi;
+}
+
+void checkboxcrono (int xs , int ys , int xe , int ye, boolean flg ) {
+
+  if (flg == true) {
+    dmd.drawFilledBox(xs, ys, xe, ye);
+  } else {
+    dmd.drawBox(xs, ys, xe, ye);
+  }
 }
