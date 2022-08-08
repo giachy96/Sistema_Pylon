@@ -161,6 +161,7 @@ boolean countdown(boolean flag) {
         sec = 62;
         Serial.println(sec);
         Serial.println(flag);
+        Seriall1.print("<355>");
       }
 
     }
