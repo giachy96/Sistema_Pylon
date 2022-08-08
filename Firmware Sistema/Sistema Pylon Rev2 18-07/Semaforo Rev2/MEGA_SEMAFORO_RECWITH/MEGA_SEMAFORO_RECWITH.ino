@@ -29,6 +29,9 @@
   String Startup="<100>";
   String State=Show; //Startup state
   String OldState=Show;
+  boolean newData1=false;
+  boolean newData2=false;
+  boolean newData3=false;
   
 void setup() {
   Serial1.begin(9600); // Serial ColorRx
@@ -48,13 +51,14 @@ void setup() {
 void loop() {
 Currentmillisx=millis(); // Assign millis value to Currentmillisx for if statements
  if (State==Show || State==Race) { //Delay time for receive serial data, if necessary...
-  if (Serial1.available()>0){
+  RecStr1();
+  if (newData1==true){ //(Serial1.available()>0){
     Serial.println("C'è qualcosa in seriale");
-    RecStr1();
     String Dateserial1(RecCh1); //Assign incoming data from Serial1 to Dateserial1
     Serial.println(Dateserial1);
     digitalWrite(RelayRed,HIGH); //Turn on stoplight
     Timeserial1=millis(); // Assign millis value for turning off relay
+    newData1=false;
     }
   }
  if ((Currentmillisx-Timeserial1) > DelayLight) { // if red light is on for more than Delaylight
@@ -63,12 +67,13 @@ Currentmillisx=millis(); // Assign millis value to Currentmillisx for if stateme
 
  Currentmillisx=millis();
  if (State==Show || State==Race) {
-  if (Serial2.available()>0){
+   RecStr2();
+  if (newData2==true){//(Serial2.available()>0){
     Serial.println("C'è qualcosa in seriale");
-    RecStr2();
     String Dateserial2(RecCh2); //Assign incoming data from Serial1 to Dateserial2
     digitalWrite(RelayGreen,HIGH);
-   Timeserial2=millis();
+    Timeserial2=millis();
+    newData2=false;
     }
   }
   if ((Currentmillisx-Timeserial2) > DelayLight) {
@@ -77,12 +82,13 @@ Currentmillisx=millis(); // Assign millis value to Currentmillisx for if stateme
 
  Currentmillisx=millis();
  if (State==Show || State==Race) {
-  if (Serial3.available()>0){
+   RecStr3();
+  if (newData3==true){//(Serial3.available()>0){
     Serial.println("C'è qualcosa in seriale");
-    RecStr3();
     String Dateserial3(RecCh3); //Assign incoming data from Serial3 to Dateserial3
     digitalWrite(RelayBlue,HIGH);
     Timeserial3=millis();
+    newData3=false;
     }
   }
   if ((Currentmillisx-Timeserial3) > DelayLight) {
@@ -124,30 +130,24 @@ Currentmillisx=millis(); // Assign millis value to Currentmillisx for if stateme
 
   if (OldState != State){ //If state was change on previous code
   Serial.println("Cambio stato");
-  if (Serial1.available()>0){ //check if some press was incoming from receiver 1
-    Serial.println("C'è qualcosa in seriale1");
-    RecStr1();
+  RecStr1();
+  if (newData1==true){//(Serial1.available()>0){ //check if some press was incoming from receiver 1
     String Dateserial1p(RecCh1); //Assign incoming data from Serial1 to Dateserial1//Assign useless press on Dateserial1
-    Serial.println(Dateserial1p);
+    newData1=false;
     }
-    Serial1.print(State); //Send to receiver 1 State
-    Serial.println("Scrivo in seriale1");
-    Serial.println(State);
-
-     if (Serial2.available()>0){
-    RecStr2();
+  Serial1.print(State); //Send to receiver 1 State
+  RecStr2();
+  if (newData2==true){//(Serial2.available()>0){
     String Dateserial2(RecCh2); //Assign incoming data from Serial1 to Dateserial1
-    Serial.println("C'è qualcosa in seriale2");
+    newData2=false;
     }
-    Serial2.print(State);
-    Serial.println("Scrivo in seriale2");
-  if (Serial3.available()>0){
-    RecStr3();
+  Serial2.print(State);
+  RecStr3();
+  if (newData3==true){//(Serial3.available()>0){
     String Dateserial3p(RecCh3); //Assign incoming data from Serial1 to Dateserial1
-    Serial.println("C'è qualcosa in seriale3");
+    newData3==false;
     }
     Serial3.print(State);
-    Serial.println("Scrivo in seriale3");
   OldState=State; //Reset condition for send State to the rx
   }
 }
