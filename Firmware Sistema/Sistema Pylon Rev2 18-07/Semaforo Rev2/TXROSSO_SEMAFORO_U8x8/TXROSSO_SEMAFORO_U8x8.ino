@@ -34,10 +34,10 @@ unsigned long Lastpress=0;
 unsigned long Delaypress=2500;
 unsigned long Delaysend=200;
 int changeState=0;
-String Race="<300>";
-String Show="<200>";
-String End="<600>";
-String Startup="<100>";
+String Race="300";
+String Show="200";
+String End="600";
+String Startup="100";
 String State=Startup; //Startup state
 unsigned long interval = 10000;// constants won't change:
 
@@ -72,7 +72,7 @@ void loop() {
       digitalWrite(buzzer , HIGH);
     }
     currentMillis = millis();
-    if ((((currentMillis - previousMillis)>=interval) || changeState==1) && (State !=Show || State != Race || State != End)) { // Casistica per display, se non siamo in Show, Race o End, metti la schermata 0 e aggiorna ogni 5 sec, o aggiorna quando il flag changestate  è attivo
+    if ((((currentMillis - previousMillis)>=interval) || changeState==1) && State ==Startup) { // Casistica per display, se non siamo in Show, Race o End, metti la schermata 0 e aggiorna ogni 5 sec, o aggiorna quando il flag changestate  è attivo
       previousMillis = currentMillis;
       Serial.println("Case0");//debug
       draw(0, u8x8);
@@ -105,13 +105,16 @@ if ((((currentMillis - previousMillis)>=interval) || changeState==1) && State==S
       else { //If there isn't any problem we're going to receive press 
         State=rc.data; //Assign incoming data on TxData variable
         Serial.println("Nuovo stato");//debug
-        Serial.print(State);//debug
+        Serial.println(State);//debug
         changeState=1;//attivo il flag di cambiostato per i display
+        Serial.println("flag");//debug
+        Serial.println(changeState);//debug
       }
     } 
     CurrentPress=millis();
       if (digitalRead(pulsante) == LOW && (CurrentPress-Lastpress)>=Delaypress && State==Show) { //se il pulsante è premuto, sono in show e la sicurezza sulle pressioni ripetute è passata
       Lastpress=millis(); //memorizzo l'ultima pressione
+      Serial.println("ricevopressione");
       tone(buzzer, 1000, 200);
       ResponseStatus rs = e22ttl.sendFixedMessage(0, 0, 3,"<212>"); // invio il codice di show
       Serial.println("invio"); //debug
