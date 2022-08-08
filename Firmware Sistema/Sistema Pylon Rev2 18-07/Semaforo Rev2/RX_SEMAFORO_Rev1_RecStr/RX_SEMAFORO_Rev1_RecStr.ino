@@ -29,15 +29,13 @@ void setup() {
   Serial.println("prova");
 }
 void loop() { 
-
-RecStr(RecCh);
-  
-   if (SwSerial.available()>0){  // If mega will sent state to sem_rx
+    RecStr();
+     if (newData==true){ //(SwSerial.available()>0){  // If mega will sent state to sem_rx
       Serial.println("C'è qualcosa in seriale");
-      State=SwSerial.readString(); //Assign system status to state
-      RecStr();
+      // State=SwSerial.readString(); //Assign system status to state
       String State(RecCh); 
       Serial.print(State);
+      newData=false;
       }
   if (e22ttl.available()>1) {  // If there is something arrived from lora (Transmitter)
     ResponseContainer rc = e22ttl.receiveMessage();// Receive message
@@ -50,12 +48,13 @@ RecStr(RecCh);
       Serial.println("Ricevo dal lora");
       Serial.println(TxData);
     }
-  if (TxData !="0" && (State==Show || State==Race || State==Startup)){ //Condition for sent to mega press
-      if (SwSerial.available()>0){  // If mega will sent state to sem_rx
+  if (TxData !="0" && (State==Show || State==Race)){ //Condition for sent to mega press
+     //RecStr();
+      if (newData==true){//(SwSerial.available()>0){  // If mega will sent state to sem_rx
       Serial.println("C'è qualcosa in seriale");
-      RecStr();
       String State(RecCh); 
       Serial.println(State);
+      newData=false;
       }
       if (State==Show || State==Race){//if nothing has change from previous if-statements
       SwSerial.print(TxData); //Send Txdata from rx to Mega
@@ -75,7 +74,7 @@ if ((OldState != State)) { //If statements who control that state was change and
 }
 }
  
-void RecStr( char receivedChars[numChars] ) {
+void RecStr() {
     static boolean recvInProgress = false;
     static byte ndx = 0;
     char startMarker = '<';
@@ -106,11 +105,4 @@ void RecStr( char receivedChars[numChars] ) {
         }
     }
     SwSerial.flush();
-}
-
-void showNewData(char receivedChars[numChars]) {
-  if (newData == true) {
-    Serial.println(receivedChars);
-    newData = false;
-  }
 }
