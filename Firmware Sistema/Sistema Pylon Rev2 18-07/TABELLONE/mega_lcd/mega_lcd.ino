@@ -142,7 +142,7 @@ void loop() {
  String strx = receivedChars1;
   if (strx.indexOf("523") != -1  || strx.indexOf("513") != -1 || strx.indexOf("533") != -1) {
 
-    if (millis() - old523update >= 1000) {
+    if (millis() - old523update >= 2000) {
       if (bounce == 0) {
         dmd.clearScreen();
         dmd.drawString(0, 33, temporosso[1]);// 24/33
