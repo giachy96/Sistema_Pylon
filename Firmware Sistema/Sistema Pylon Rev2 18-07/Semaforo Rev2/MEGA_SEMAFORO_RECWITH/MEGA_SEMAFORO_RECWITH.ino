@@ -121,10 +121,10 @@ Currentmillisx=millis(); // Assign millis value to Currentmillisx for if stateme
     Timesend=millis(); // millis assigment for last data receive 
     }
   if (Serial.available()>0){ // DEBUG
-  Serial.println("Ricezione Dato");
+  Serial.println("Ricezione Dato");//debug
     State=Serial.readString(); // DEBUG
     Timesend=millis(); // DEBUG
-    Serial.println(State);
+    Serial.println(State);//debug
   }
     
 
