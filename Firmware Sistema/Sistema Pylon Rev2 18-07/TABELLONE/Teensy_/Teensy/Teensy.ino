@@ -160,21 +160,6 @@ void loop() {
     newData7 = false;
   }
 
-  if (newData6 == true) {
-    String Rxs6;
-    Rxs6 = receivedChars6;
-    if (Rxs7.indexOf("355") != -1 ) {
-      String pack = "<";
-      pack.concat(receivedChars6);
-      pack.concat(">");
-      Serial7.print(pack);
-      Serial1.print(pack);
-      Serial8.print(pack);
-    }
-    newData6 = false;
-  }
-
-
 }
 
 
