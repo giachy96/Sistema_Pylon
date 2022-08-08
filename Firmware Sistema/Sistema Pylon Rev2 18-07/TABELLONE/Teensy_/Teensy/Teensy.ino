@@ -22,7 +22,10 @@ unsigned long oldMillis;
 unsigned long pressbutton = 1000;
 
 String cnc ;
-
+String tempiverde[11];
+String tempirosso[11];
+String tempiblu[11];
+String values [5];
 
 int pStop = 38;
 int pGo = 39;
@@ -51,7 +54,7 @@ void setup() {
 void loop() {
   currentMillis = millis();
   recvSerial1();
- /// showSerial1();attenziona al new data
+  /// showSerial1();attenziona al new data
   recvSerial2();
   showSerial2();
   recvSerial3();
@@ -100,6 +103,15 @@ void loop() {
       pack.concat(">");
       Serial6.print(pack);
 
+      if (Rxs8.indexOf("423") != -1 ) {
+        decodecomma(Rxs8, values);
+        tempirosso[values[1].toInt()] = values[2];
+      }
+       if (Rxs8.indexOf("523") != -1 ) {
+        decodecomma(Rxs8, values);
+        tempirosso[11] = values[2];
+      }
+
     }
     newData8 = false;
   }
@@ -107,27 +119,70 @@ void loop() {
   if (newData1 == true) {
     String Rxs1;
     Rxs1 = receivedChars1;
-    if (Rxs1.indexOf("433") != -1 || Rxs1.indexOf("533") != -1|| Rxs1.indexOf("230") != -1) {
+    if (Rxs1.indexOf("433") != -1 || Rxs1.indexOf("533") != -1 || Rxs1.indexOf("230") != -1) {
       String pack = "<";
       pack.concat(receivedChars1);
       pack.concat(">");
       Serial6.print(pack);
 
+       if (Rxs1.indexOf("433") != -1 ) {
+        decodecomma(Rxs1, values);
+        tempiblu[values[1].toInt()] = values[2];
+      }
+       if (Rxs1.indexOf("533") != -1 ) {
+        decodecomma(Rxs1, values);
+        tempiblu[11] = values[2];
+      }
+
     }
     newData1 = false;
   }
 
-   if (newData7 == true) {
+  if (newData7 == true) {
     String Rxs7;
     Rxs7 = receivedChars7;
-    if (Rxs7.indexOf("413") != -1 || Rxs7.indexOf("513") != -1|| Rxs7.indexOf("210") != -1) {
+    if (Rxs7.indexOf("413") != -1 || Rxs7.indexOf("513") != -1 || Rxs7.indexOf("210") != -1) {
       String pack = "<";
       pack.concat(receivedChars7);
       pack.concat(">");
       Serial6.print(pack);
 
+       if (Rxs7.indexOf("413") != -1 ) {
+        decodecomma(Rxs7, values);
+        tempiverde[values[1].toInt()] = values[2];
+      }
+       if (Rxs7.indexOf("513") != -1 ) {
+        decodecomma(Rxs7, values);
+        tempiverde[11] = values[2];
+      }
+
     }
     newData7 = false;
   }
 
+}
+
+
+void decodecomma (String str , String tempi[]) {
+  int lungh_str = str.length();
+  char buff[lungh_str + 1];
+  str.toCharArray(buff, lungh_str + 1);
+  //Serial.println(parseData(buff));
+  int i = 0;
+  char* p;
+  //Serial.println("Example of splitting a string into tokens: ");
+  // Serial.print("The input string is: '");
+  // Serial.print(buff);
+  // Serial.println("'");
+
+  p = strtok(buff, "{,}"); //2nd argument is a char[] of delimiters
+  while (p != '\0') { //not equal to NULL
+    //Serial.println(p);
+    tempi[i] = p;
+
+    p = strtok('\0', "{,}");  //expects NULL for string on subsequent calls
+    i++;
+  }
+
+  //return tempi;
 }
