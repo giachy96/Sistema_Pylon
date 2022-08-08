@@ -36,6 +36,8 @@ unsigned long Freq=500;
 unsigned long Phase=0;
 unsigned long Sync=0;
 int Transm=0;
+int Press=0;
+int Pressr=0;
 int changeState=0;
 String Race="<300>";
 String Show="<200>";
@@ -126,19 +128,30 @@ if ((((currentMillis - previousMillis)>=interval) || changeState==1) && State==S
       }
     } 
     CurrentPress=millis();
-      if (digitalRead(taglio) == LOW && (CurrentPress-Lastpress)>=Delaypress && State==Show && Transm==1) {
+      if (digitalRead(taglio) == LOW && (CurrentPress-Lastpress)>=Delaypress && State==Show) {
       Lastpress=millis();
       tone(buzzer, 1000, 200);
-      ResponseStatus rs = e22ttl.sendFixedMessage(0, 0, 3,"<211>");
-      Serial.println("invio");
-      Serial.println(currentMillis - previousMillis);
+      Press=1;
     }  
       CurrentPress=millis();
-      if (digitalRead(taglio) == LOW && (CurrentPress-Lastpress)>=Delaypress && State==Race && Transm==1) {
+      if (digitalRead(taglio) == LOW && (CurrentPress-Lastpress)>=Delaypress && State==Race) {
       Lastpress=millis();
       tone(buzzer, 1000, 200);
-      ResponseStatus rs = e22ttl.sendFixedMessage(0, 0, 3,"<311>");
-      Serial.println("invio");
+      Pressr=1;
     }  
+    if (Press==1 && Transm==1 && State==Show){
+    ResponseStatus rs = e22ttl.sendFixedMessage(0, 0, 3,"<211>");
+    Press=0;
+    }
+    else if (Press==1 && State !=Show){
+      Press=0;
+    }
+    if (Pressr==1 && Transm==1 && State==Race){
+    ResponseStatus rs = e22ttl.sendFixedMessage(0, 0, 3,"<311>");
+    Pressr=0;
+    }
+    else if (Pressr==1 && State !=Race){
+      Pressr=0;
+    }
 }
 }
