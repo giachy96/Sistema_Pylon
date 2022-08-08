@@ -51,8 +51,8 @@ void setup() {
   e22ttl.begin();  // Startup all pins and UART
   u8x8.begin();
   u8x8.setPowerSave(0);
-  Serial.println("start");
-  Serial.println(State);
+  Serial.println("start"); //debug
+  Serial.println(State);//debug
 }
 
 void loop() {
@@ -61,7 +61,7 @@ void loop() {
 
   while (bootup < 2) {
     previousMillis = currentMillis;
-    Serial.println("Bootup Case");
+    Serial.println("Bootup Case");//debug
     draw(0, u8x8);
     bootup++;
   }
@@ -72,64 +72,64 @@ void loop() {
       digitalWrite(buzzer , HIGH);
     }
     currentMillis = millis();
-    if ((((currentMillis - previousMillis)>=interval) || changeState==1) && (State !=Show || State != Race || State != End)) {
+    if ((((currentMillis - previousMillis)>=interval) || changeState==1) && (State !=Show || State != Race || State != End)) { // Casistica per display, se non siamo in Show, Race o End, metti la schermata 0 e aggiorna ogni 5 sec, o aggiorna quando il flag changestate  è attivo
       previousMillis = currentMillis;
-      Serial.println("Case0");
+      Serial.println("Case0");//debug
       draw(0, u8x8);
       changeState=0;
     }
-if ((((currentMillis - previousMillis)>=interval) || changeState==1) && State==Show) {
+if ((((currentMillis - previousMillis)>=interval) || changeState==1) && State==Show) { // Casistica per display, se siamo in Show, metti la schermata 1 e aggiorna ogni 5 sec, o aggiorna quando il flag changestate  è attivo
       previousMillis = currentMillis;
-      Serial.println("Case1");
+      Serial.println("Case1");//debug
       draw(1, u8x8);
       changeState=0;
     }
-    if (changeState==1 && State==Race) {
+    if (changeState==1 && State==Race) { // Casistica per display, se siamo in Race, metti la schermata 2 e aggiorna solo quando il flag changestate  è attivo
       previousMillis = currentMillis;
-      Serial.println("Case2");
+      Serial.println("Case2");//debug
       draw(2, u8x8);
       changeState=0;
     }
-    if ((((currentMillis - previousMillis)>=interval) || changeState==1) && State==End) {
+    if ((((currentMillis - previousMillis)>=interval) || changeState==1) && State==End) { // Casistica per display, se siamo in End, metti la schermata 6 e aggiorna ogni 5 sec, o aggiorna quando il flag changestate  è attivo
       previousMillis = currentMillis;
       draw(6, u8x8);
-      Serial.println("Case6");
+      Serial.println("Case6");//debug
       changeState=0;
     }
-    if (e22ttl.available()>1){
-      Serial.println("ricevo qualcosa");
+    if (e22ttl.available()>1){  //se il lora riceve qualcosa
+      Serial.println("ricevo qualcosa");//debug
       ResponseContainer rc = e22ttl.receiveMessage();// Receive message
       if (rc.status.code!=1){ // If there is some problem
         rc.status.getResponseDescription(); //Get report
         }
       else { //If there isn't any problem we're going to receive press 
         State=rc.data; //Assign incoming data on TxData variable
-        Serial.println("Nuovo stato");
-        Serial.print(State);
-        changeState=1;
+        Serial.println("Nuovo stato");//debug
+        Serial.print(State);//debug
+        changeState=1;//attivo il flag di cambiostato per i display
       }
     } 
     CurrentPress=millis();
-      if (digitalRead(pulsante) == LOW && (CurrentPress-Lastpress)>=Delaypress && State==Show) {
-      Lastpress=millis();
+      if (digitalRead(pulsante) == LOW && (CurrentPress-Lastpress)>=Delaypress && State==Show) { //se il pulsante è premuto, sono in show e la sicurezza sulle pressioni ripetute è passata
+      Lastpress=millis(); //memorizzo l'ultima pressione
       tone(buzzer, 1000, 200);
-      ResponseStatus rs = e22ttl.sendFixedMessage(0, 0, 3,"<212>");
-      Serial.println("invio");
-      Serial.println(currentMillis - previousMillis);
+      ResponseStatus rs = e22ttl.sendFixedMessage(0, 0, 3,"<212>"); // invio il codice di show
+      Serial.println("invio"); //debug
+      Serial.println(currentMillis - previousMillis);//debug
     }  
       CurrentPress=millis();
-      if (digitalRead(pulsante) == LOW && (CurrentPress-Lastpress)>=Delaypress && State==Race) {
+      if (digitalRead(pulsante) == LOW && (CurrentPress-Lastpress)>=Delaypress && State==Race) { //se il pulsante del semaforo è premuto, sono in race e la sicurezza sulle pressioni ripetute è passata
       Lastpress=millis();
       tone(buzzer, 1000, 200);
-      ResponseStatus rs = e22ttl.sendFixedMessage(0, 0, 3,"<312>");
-      Serial.println("invio");
+      ResponseStatus rs = e22ttl.sendFixedMessage(0, 0, 3,"<312>"); //invio il codice race 
+      Serial.println("invio");//debug
     }  
     CurrentPress=millis();
-      if (digitalRead(taglio) == LOW && (CurrentPress-Lastpress)>=Delaypress && State==Race) {
+      if (digitalRead(taglio) == LOW && (CurrentPress-Lastpress)>=Delaypress && State==Race) { //se il pulsante del taglio è premuto, sono in race e non sono stati premuti altri tasti prima di delaypress
       Lastpress=millis();
       tone(buzzer, 1000, 1000);
-      ResponseStatus rs = e22ttl.sendFixedMessage(0, 0, 3,"<311>");
-      Serial.println("invio");
+      ResponseStatus rs = e22ttl.sendFixedMessage(0, 0, 3,"<311>"); //invio il codice di taglio
+      Serial.println("invio");//debug
     }  
 }
 }
