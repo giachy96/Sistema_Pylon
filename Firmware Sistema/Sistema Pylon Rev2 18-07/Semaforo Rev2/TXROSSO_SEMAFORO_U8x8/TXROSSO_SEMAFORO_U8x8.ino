@@ -115,23 +115,23 @@ if ((((currentMillis - previousMillis)>=interval) || changeState==1) && State==S
       if (digitalRead(pulsante) == LOW && (CurrentPress-Lastpress)>=Delaypress && State==Show) { //se il pulsante è premuto, sono in show e la sicurezza sulle pressioni ripetute è passata
       Lastpress=millis(); //memorizzo l'ultima pressione
       Serial.println("ricevopressione");
-      tone(buzzer, 1000, 200);
       ResponseStatus rs = e22ttl.sendFixedMessage(0, 0, 3,"<212>"); // invio il codice di show
+      tone(buzzer, 1000, 200);
       Serial.println("invio"); //debug
       Serial.println(currentMillis - previousMillis);//debug
     }  
       CurrentPress=millis();
       if (digitalRead(pulsante) == LOW && (CurrentPress-Lastpress)>=Delaypress && State==Race) { //se il pulsante del semaforo è premuto, sono in race e la sicurezza sulle pressioni ripetute è passata
       Lastpress=millis();
-      tone(buzzer, 1000, 200);
       ResponseStatus rs = e22ttl.sendFixedMessage(0, 0, 3,"<312>"); //invio il codice race 
+      tone(buzzer, 1000, 200);
       Serial.println("invio");//debug
     }  
     CurrentPress=millis();
       if (digitalRead(taglio) == LOW && (CurrentPress-Lastpress)>=Delaypress && State==Race) { //se il pulsante del taglio è premuto, sono in race e non sono stati premuti altri tasti prima di delaypress
       Lastpress=millis();
-      tone(buzzer, 1000, 1000);
       ResponseStatus rs = e22ttl.sendFixedMessage(0, 0, 3,"<311>"); //invio il codice di taglio
+      tone(buzzer, 1000, 1000);
       Serial.println("invio");//debug
     }  
 }

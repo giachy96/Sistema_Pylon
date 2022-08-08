@@ -17,10 +17,10 @@
   String Dateserial2p="0";
   String Dateserial3p="0";
   String Dateserial;
-  int RelayRed=4;
+  int RelayRed=8;
   int RelayGreen=5;
   int RelayBlue=6;
-  const byte numChars=32;
+  const byte numChars=5;
   char RecCh1[numChars];
   char RecCh2[numChars];
   char RecCh3[numChars];
@@ -129,7 +129,7 @@ Currentmillisx=millis(); // Assign millis value to Currentmillisx for if stateme
     
 
   if (OldState != State){ //If state was change on previous code
-  //Serial.println("Cambio stato");
+  Serial.println("Cambio stato");
   RecStr1();
   if (newData1==true){//(Serial1.available()>0){ //check if some press was incoming from receiver 1
     Dateserial1p=RecCh1; //Assign incoming data from Serial1 to Dateserial1//Assign useless press on Dateserial1
@@ -162,7 +162,7 @@ void RecStr1() {
     char rc1;
  
     while (Serial1.available() > 0 && newData1 == false) {
-//        Serial.println("Lettura Serial1");
+        //Serial.println("Lettura Serial1");
         rc1 = Serial1.read();
 
         if (recvInProgress1 == true) {
@@ -178,9 +178,9 @@ void RecStr1() {
                 recvInProgress1 = false;
                 ndx1 = 0;
                 newData1 = true;
-//                Serial.println("metodo");
-//                Serial.println(RecCh1);
-//                Serial.println(newData1);
+                //Serial.println("metodo");
+                //Serial.println(RecCh1);
+                //Serial.println(newData1);
             }
         }
 

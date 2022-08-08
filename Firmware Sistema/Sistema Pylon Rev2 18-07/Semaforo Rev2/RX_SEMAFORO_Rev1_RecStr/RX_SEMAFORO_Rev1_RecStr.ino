@@ -17,10 +17,11 @@ unsigned long CurrentMillis=0;
 unsigned long Delaysend=200;
 unsigned long StopSend=0;
 unsigned long DelayStop=500;
-const byte numChars=32;
+const byte numChars=5;
 char RecCh[numChars];
 boolean newData = false;
 int DoubleStop=0;
+unsigned long millisc=0;
 
 void setup() {
    //pinMode(SOFTTX, OUTPUT); // MT - Softrx - pin mapping output
@@ -44,13 +45,14 @@ void loop() {
       }
   if (e22ttl.available()>1) {  // If there is something arrived from lora (Transmitter)
     ResponseContainer rc = e22ttl.receiveMessage();// Receive message
-    Serial.println("ricevo dal lora qualcosa , ");
     if (rc.status.code!=1){ // If there is some problem
       rc.status.getResponseDescription(); //Get report
       }
     else{ //If there isn't any problem we're going to receive press 
       TxData=rc.data; //Assign incoming data on TxData variable
       Serial.println("Ricevo dal lora");
+      millisc=millis();
+      Serial.println(millisc);      
       Serial.println(TxData);
     }
   if (TxData !="0" && (State==Show || State==Race)){ //Condition for sent to mega press
@@ -64,6 +66,8 @@ void loop() {
       if (State==Show || State==Race){//if nothing has change from previous if-statements
       SwSerial.print(TxData); //Send Txdata from rx to Mega
       Serial.println("Scrivo in seriale");
+      millisc=millis();
+      Serial.println(millisc); 
       Serial.println(TxData);
       }
     TxData="0"; //Reset condition for set data
