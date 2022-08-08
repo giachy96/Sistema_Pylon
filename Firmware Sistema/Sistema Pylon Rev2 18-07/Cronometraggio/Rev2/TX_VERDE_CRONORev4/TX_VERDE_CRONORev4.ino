@@ -124,7 +124,7 @@ void loop() {
     CurrentPress = millis();
 
     if (State == "200" ) {  // SSHOW
-
+      
 
       if (digitalRead(pulsante) == LOW && (CurrentPress - Lastpress) >= Delaypress) {
         ResponseStatus rs = e22ttl.sendFixedMessage(0, 0, 7, "210");
@@ -140,11 +140,11 @@ void loop() {
     }
 
     if (State == "300") {  // START
-      if (newData == true) {
+       if (newData == true) {
         tone(buzzer, 4000, 200);
         newData = false;
       }
-
+     
       altupdatelcd = 1;
       if (lapcounter == -2) {
         draw(2 , u8x8);
@@ -158,12 +158,10 @@ void loop() {
         tempo_flt[11] = tot;
         tempo_parziale[11] = (int)(tot * 100); // per inserire il totale sulla stringa con virgole
         float ultimo_tempo = tempo_flt[11];
-        char bu[10];
-        dtostrf(ultimo_tempo, 4, 3, bu);  //4 is mininum width, 6 is precision
         String msg = "513,";
         msg.concat("11");
         msg.concat(",");
-        msg.concat(bu);
+        msg.concat(String(ultimo_tempo));
         ResponseStatus rs = e22ttl.sendFixedMessage(0, 0, 7, msg);
         State = "";
         draw(4 , u8x8);
@@ -206,12 +204,12 @@ void loop() {
 
 
 
-    //    CurrentPress = millis();
-    //    if (Press == 1 && (CurrentPress - Timesend) >= Delaysend) {
-    //      String msg = "312,";
-    //      ResponseStatus rs = e22ttl.sendFixedMessage(0, 0, 7, msg);
-    //      Serial.println("invio");
-    //      Press = 0;
-    //    }
+//    CurrentPress = millis();
+//    if (Press == 1 && (CurrentPress - Timesend) >= Delaysend) {
+//      String msg = "312,";
+//      ResponseStatus rs = e22ttl.sendFixedMessage(0, 0, 7, msg);
+//      Serial.println("invio");
+//      Press = 0;
+//    }
   }
 }

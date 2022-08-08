@@ -158,12 +158,10 @@ void loop() {
         tempo_flt[11] = tot;
         tempo_parziale[11] = (int)(tot * 100); // per inserire il totale sulla stringa con virgole
         float ultimo_tempo = tempo_flt[11];
-        char bu[10];
-        dtostrf(ultimo_tempo, 4, 3, bu);  //4 is mininum width, 6 is precision
         String msg = "533,";
         msg.concat("11");
         msg.concat(",");
-        msg.concat(bu);
+        msg.concat(String(ultimo_tempo));
         ResponseStatus rs = e22ttl.sendFixedMessage(0, 0, 8, msg);
         State = "";
         draw(4 , u8x8);
