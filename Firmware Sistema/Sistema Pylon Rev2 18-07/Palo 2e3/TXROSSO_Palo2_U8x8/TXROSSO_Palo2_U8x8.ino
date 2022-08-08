@@ -89,7 +89,7 @@ if (State==Show || State==Race){
       digitalWrite(buzzer , HIGH);
     }
     currentMillis = millis();
-    if ((((currentMillis - previousMillis)>=interval) || changeState==1) && State==Startup) {
+    if ((((currentMillis - previousMillis)>=interval) || changeState==1) && (State !=Show || State != Race || State != End)) {
       previousMillis = currentMillis;
       Serial.println("Case0");
       draw(0, u8x8);
@@ -140,14 +140,14 @@ if ((((currentMillis - previousMillis)>=interval) || changeState==1) && State==S
       Pressr=1;
     }  
     if (Press==1 && Transm==1 && State==Show){
-    ResponseStatus rs = e22ttl.sendFixedMessage(0, 0, 3,"<211>");
+    ResponseStatus rs = e22ttl.sendFixedMessage(0, 0, 3,"<211a>");
     Press=0;
     }
     else if (Press==1 && State !=Show){
       Press=0;
     }
     if (Pressr==1 && Transm==1 && State==Race){
-    ResponseStatus rs = e22ttl.sendFixedMessage(0, 0, 3,"<311>");
+    ResponseStatus rs = e22ttl.sendFixedMessage(0, 0, 3,"<311a>");
     Pressr=0;
     }
     else if (Pressr==1 && State !=Race){

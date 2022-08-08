@@ -72,7 +72,7 @@ void loop() {
       digitalWrite(buzzer , HIGH);
     }
     currentMillis = millis();
-    if ((((currentMillis - previousMillis)>=interval) || changeState==1) && State==Startup) {
+    if ((((currentMillis - previousMillis)>=interval) || changeState==1) && (State !=Show || State != Race || State != End)) {
       previousMillis = currentMillis;
       Serial.println("Case0");
       draw(0, u8x8);
