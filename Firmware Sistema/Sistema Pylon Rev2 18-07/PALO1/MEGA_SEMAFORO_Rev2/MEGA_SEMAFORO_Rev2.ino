@@ -34,11 +34,11 @@
   boolean newData3=false;
   
 void setup() {
-  Serial1.begin(9600); // Serial ColorRx
+  Serial1.begin(9600); // Serial Rosso
   delay(300);
-  Serial2.begin(9600);// Serial ColorRx
+  Serial2.begin(9600);// Serial Verde
   delay(300);
-  Serial3.begin(9600);// Serial ColorRx
+  Serial3.begin(9600);// Serial Blu
   delay(300);
   Serial.begin(9600);// Serial Pc interface
   delay(300);
@@ -46,7 +46,7 @@ void setup() {
   pinMode(RelayRed, OUTPUT); //Output pin to Relay Red
   pinMode(RelayBlue, OUTPUT); //Output pin to Relay Blue
   pinMode(RelayGreen, OUTPUT); //Output pin to Relay Green
-  Serial.println("prova");
+ // Serial.println("prova");
 }
 void loop() {
 Currentmillisx=millis(); // Assign millis value to Currentmillisx for if statements
@@ -98,7 +98,9 @@ Currentmillisx=millis(); // Assign millis value to Currentmillisx for if stateme
  Currentmilliss=millis(); // millis assignments for send delay control
   if ((Currentmilliss-Timesend) >= Delaysend && (State==Show || State==Race)) {  //If the last receive is older than Delaysend, and state is race or show
    if (Dateserial1 != "0" || Dateserial2 != "0" || Dateserial3 !="0")  { //If some button was pressed
-    Dateserial=(Dateserial1); // Compose message for send with Lora
+    Dateserial= State;
+    Dateserial.concat(",");
+    Dateserial.concat(Dateserial1); // Compose message for send with Lora
     Dateserial.concat(",");
     Dateserial.concat(Dateserial2);
     Dateserial.concat(",");
