@@ -25,5 +25,6 @@ Colori  Y :
 	   1 --> TAGLIO
            2--> SEMAFORO
 		   3--> TEMPI
+		   9---> avvio cronometro
 		   
 */

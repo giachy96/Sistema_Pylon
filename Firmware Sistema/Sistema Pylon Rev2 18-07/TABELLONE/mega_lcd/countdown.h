@@ -111,6 +111,7 @@ boolean countdown(boolean flag) {
         milliscountdown = millis();
         Serial.println(sec);
         Serial.println(flag);
+        Serial1.println("<329>"); //parte il rosso
         sirenaflag = 1;
         sec = sec - 1;
       }
@@ -126,6 +127,7 @@ boolean countdown(boolean flag) {
         milliscountdown = millis();
         Serial.println(sec);
         Serial.println(flag);
+        Serial1.println("<319>"); // parte il verde
         sirenaflag = 1;
         sec = sec - 1;
       }
@@ -142,6 +144,7 @@ boolean countdown(boolean flag) {
         milliscountdown = millis();
         Serial.println(sec);
         Serial.println(flag);
+        Serial1.println("<339>"); // parte il blu
         sirenaflag = 1;
         sec = sec - 1;
       }

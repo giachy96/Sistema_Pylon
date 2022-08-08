@@ -56,15 +56,15 @@ void loop() {
   recvSerial1();
   /// showSerial1();attenziona al new data
   recvSerial2();
-  showSerial2();
+ // showSerial2();
   recvSerial3();
-  showSerial3();
+ // showSerial3();
   recvSerial4();
-  showSerial4();
+ // showSerial4();
   recvSerial5();
-  showSerial5();
+//  showSerial5();
   recvSerial6();
-  showSerial6();
+ // showSerial6();
   recvSerial7();
   //showSerial7();attenziona al new data
   recvSerial8();
@@ -124,6 +124,7 @@ void loop() {
       pack.concat(receivedChars1);
       pack.concat(">");
       Serial6.print(pack);
+      Serial.println(pack);
 
        if (Rxs1.indexOf("433") != -1 ) {
         decodecomma(Rxs1, values);
@@ -158,6 +159,30 @@ void loop() {
 
     }
     newData7 = false;
+  }
+
+    if (newData6 == true) {
+    String Rxs6;
+    Rxs6 = receivedChars6;
+    if (Rxs6.indexOf("329") != -1 ) { // avvio rosso
+      String pack = "<";
+      pack.concat(receivedChars6);
+      pack.concat(">");
+      Serial8.print(pack);
+    }
+       if (Rxs6.indexOf("319") != -1 ) { // avvio verde
+      String pack = "<";
+      pack.concat(receivedChars6);
+      pack.concat(">");
+      Serial7.print(pack);
+    }
+    if (Rxs6.indexOf("339") != -1 ) { // avvio blu
+      String pack = "<";
+      pack.concat(receivedChars6);
+      pack.concat(">");
+      Serial1.print(pack);
+    }
+    newData6 = false;
   }
 
 }
