@@ -94,7 +94,7 @@ if (State==Show || State==Race){ // Ogni volta che ricevo un nuovo stato memoriz
       digitalWrite(buzzer , HIGH);
     }
     currentMillis = millis();
-    if ((((currentMillis - previousMillis)>=interval) || changeState==1) && (State !=Show || State != Race || State != End)) { // Casistica per display, se non siamo in Show, Race o End, metti la schermata 0 e aggiorna ogni 5 sec, o aggiorna quando il flag changestate  è attivo
+    if ((((currentMillis - previousMillis)>=interval) || changeState==1) && State==Startup) { // Casistica per display, se non siamo in Show, Race o End, metti la schermata 0 e aggiorna ogni 5 sec, o aggiorna quando il flag changestate  è attivo
       previousMillis = currentMillis;
       Serial.println("Case0");
       draw(0, u8x8);
