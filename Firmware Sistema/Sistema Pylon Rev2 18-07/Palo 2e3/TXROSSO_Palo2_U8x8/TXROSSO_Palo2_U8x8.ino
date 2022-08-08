@@ -18,8 +18,7 @@
 #include "LoRa_E22.h"
 #include "lcdcases.h"
 U8X8_SH1106_128X64_NONAME_HW_I2C u8x8(/* reset=*/ U8X8_PIN_NONE);
-int pulsante = 9;
-int taglio = 6;
+int taglio = 9;
 int buzzer = 5;
 int pinbatt = A0;
 int bootup = 1;
@@ -33,6 +32,10 @@ unsigned long CurrentPress=0;
 unsigned long Lastpress=0;
 unsigned long Delaypress=2500;
 unsigned long Delaysend=200;
+unsigned long Freq=500;
+unsigned long Phase=0;
+unsigned long Sync=0;
+int Transm=0;
 int changeState=0;
 String Race="<300>";
 String Show="<200>";
@@ -42,7 +45,7 @@ String State=Startup; //Startup state
 unsigned long interval = 10000;// constants won't change:
 
 void setup() {
-  pinMode(pulsante , INPUT_PULLUP);
+  pinMode(taglio , INPUT_PULLUP);
   pinMode (buzzer , OUTPUT);
   pinMode (pinbatt , INPUT);
   pinMode (taglio , INPUT_PULLUP);
@@ -56,6 +59,18 @@ void setup() {
 }
 
 void loop() {
+
+if (State==Show || State==Race){
+  if (Sync<millis()){
+  Transm=0;
+  }
+  else if (Sync>=millis()){
+    Transm=1;
+    while (Sync>millis) {
+    Sync=Sync+Freq;
+    }
+  }
+}
 
  currentMillis = millis();
 
@@ -107,27 +122,21 @@ if ((((currentMillis - previousMillis)>=interval) || changeState==1) && State==S
         Serial.println("Nuovo stato");
         Serial.print(State);
         changeState=1;
+      Sync=(millis()+Phase+5*Freq);
       }
     } 
     CurrentPress=millis();
-      if (digitalRead(pulsante) == LOW && (CurrentPress-Lastpress)>=Delaypress && State==Show) {
+      if (digitalRead(taglio) == LOW && (CurrentPress-Lastpress)>=Delaypress && State==Show && Transm==1) {
       Lastpress=millis();
       tone(buzzer, 1000, 200);
-      ResponseStatus rs = e22ttl.sendFixedMessage(0, 0, 3,"<212>");
+      ResponseStatus rs = e22ttl.sendFixedMessage(0, 0, 3,"<211>");
       Serial.println("invio");
       Serial.println(currentMillis - previousMillis);
     }  
       CurrentPress=millis();
-      if (digitalRead(pulsante) == LOW && (CurrentPress-Lastpress)>=Delaypress && State==Race) {
+      if (digitalRead(taglio) == LOW && (CurrentPress-Lastpress)>=Delaypress && State==Race && Transm==1) {
       Lastpress=millis();
       tone(buzzer, 1000, 200);
-      ResponseStatus rs = e22ttl.sendFixedMessage(0, 0, 3,"<312>");
-      Serial.println("invio");
-    }  
-    CurrentPress=millis();
-      if (digitalRead(taglio) == LOW && (CurrentPress-Lastpress)>=Delaypress && State==Race) {
-      Lastpress=millis();
-      tone(buzzer, 1000, 1000);
       ResponseStatus rs = e22ttl.sendFixedMessage(0, 0, 3,"<311>");
       Serial.println("invio");
     }  
