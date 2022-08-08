@@ -30,12 +30,17 @@ unsigned long currentMillis = 0;
 unsigned long Timesend=0;
 unsigned long CurrentPress=0;
 unsigned long Lastpress=0;
+unsigned long CurrentLow = 0;
 unsigned long Delaypress=2500;
 unsigned long Delaysend=200;
-unsigned long Delaybuzzer=2500;
+unsigned long Delaybuzzer=300;
 int Press=0;
-String State="200";
-long interval = 20000;// constants won't change:
+String Race="<300>";
+String Show="<200>";
+String Startup="<100>";
+String State=Show; //Startup state
+long interval = 5000;// constants won't change:
+
 float readvoltage (int pin) {
   float tensione;
   tensione = analogRead(pin);
@@ -43,8 +48,16 @@ float readvoltage (int pin) {
   return tensione;
 }
 
-void draw(void) {
-
+void draw(String Statev) {
+  if (Statev==Race){
+    Statev="Race";
+    }
+  else if (Statev==Show){
+    Statev="Show";
+    }
+  else {
+    Statev="Other";
+    }
   tensione_float = readvoltage(pinbatt);
   dtostrf(tensione_float, 6, 2, vout); // Leave room for too large numbers!
   u8g.setFont(u8g_font_9x15);
@@ -56,7 +69,7 @@ void draw(void) {
   u8g.drawStr(0, 18 , " Batteria");
   u8g.drawStr(60, 31 , " V");
   u8g.drawStr(10, 31, vout );
-  u8g.drawStr(10, 44,State.c_str());
+  u8g.drawStr(10, 44, Statev.c_str());
 }
 
 void setup() {
@@ -67,63 +80,64 @@ void setup() {
   delay(500);
   e22ttl.begin();  // Startup all pins and UART
   u8g.begin();
+  Serial.println("start");
+  Serial.println(State);
 }
 
 void loop() {
 
-  currentMillis = millis();
+ currentMillis = millis();
 
   while (bootup < 10) {
-       previousMillis = currentMillis; // save the last time you blinked the LED
-        u8g.firstPage();// picture loop
-    do {
-      draw();
-    } while ( u8g.nextPage() );
+    previousMillis = currentMillis;
+    draw(0, u8x8);
     bootup++;
   }
   while (!bootup < 10) {
-    
-    // ----------------------------------- controllo batteria 
+    currentMillis = millis();
     float voltage = readvoltage(pinbatt);
     if (voltage < 2.9) {
       digitalWrite(buzzer , HIGH);
-    } else {
+    } 
+    else {
       digitalWrite(buzzer, LOW);
     }
-
-
-    if (currentMillis - previousMillis >= interval) {
+    if (currentMillis - previousMillis >= interval && altupdatelcd == 0) {
       previousMillis = currentMillis; // save the last time you blinked the LED
-            u8g.firstPage();// picture loop
-      do {
-        draw();
-      } while ( u8g.nextPage() );
+      altupdatelcd=0;
+      draw(0, u8x8);
+    }
+    if (currentMillis - previousMillis >= 10000  && altupdatelcd == 2) {
+
+      altupdatelcd = 0;
     }
   
     if (e22ttl.available()>1){
-    ResponseContainer rc = e22ttl.receiveMessage();// Receive message
+      ResponseContainer rc = e22ttl.receiveMessage();// Receive message
       if (rc.status.code!=1){ // If there is some problem
-      rc.status.getResponseDescription(); //Get report
-      Timesend=millis();
+        rc.status.getResponseDescription(); //Get report
+        Timesend=millis();
       }
-      else{ //If there isn't any problem we're going to receive press 
-      State=rc.data; //Assign incoming data on TxData variable
+      else { //If there isn't any problem we're going to receive press 
+        State=rc.data; //Assign incoming data on TxData variable
+        Serial.println("Nuovo stato");
+        Serial.print(State);
       }
     } 
     CurrentPress=millis();
-    if (digitalRead(pulsante) == LOW && (State=="200" || State=="300") && (CurrentPress-Lastpress)>=Delaypress) {
+    if (digitalRead(pulsante) == LOW && (State==Show || State==Race) && (CurrentPress-Lastpress)>=Delaypress) {
       Lastpress=millis();
       Press=1;
       digitalWrite(buzzer , HIGH);
     }
     CurrentPress=millis();
-    if (Press==1 && (CurrentPress-Timesend)>=Delaysend){
-      ResponseStatus rs = e22ttl.sendFixedMessage(0, 0, 3, "312");
+    if (Press==1 && ((CurrentPress-Timesend)>=Delaysend)){
+      ResponseStatus rs = e22ttl.sendFixedMessage(0, 0, 3,"312");
       Serial.println("invio");
       Press=0;
     }  
-    CurrentPress=millis();
-    if ((CurrentPress-Lastpress)<=Delaybuzzer){
+    CurrentLow=millis();
+    if ((CurrentLow-Lastpress)>=Delaybuzzer){
       digitalWrite(buzzer , LOW);
     }
   }
