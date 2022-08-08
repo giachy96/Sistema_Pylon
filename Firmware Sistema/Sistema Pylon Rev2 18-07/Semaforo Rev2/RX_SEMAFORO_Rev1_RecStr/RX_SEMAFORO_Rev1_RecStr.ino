@@ -8,15 +8,19 @@ LoRa_E22 e22ttl(2, 3); // Arduino RX --> e22 TX - Arduino TX --> e22 RX
 String Race="<300>";
 String Show="<200>";
 String Startup="<100>";
+String Stop="<600>";
 String State=Startup; //Startup state
 String OldState=State;
 String TxData="0";
 unsigned long Timesend=0;
-unsigned long Currentmillis=0;
+unsigned long CurrentMillis=0;
 unsigned long Delaysend=200;
+unsigned long StopSend=0;
+unsigned long DelayStop=500;
 const byte numChars=32;
 char RecCh[numChars];
 boolean newData = false;
+int DoubleStop=0;
 
 void setup() {
    //pinMode(SOFTTX, OUTPUT); // MT - Softrx - pin mapping output
@@ -70,7 +74,19 @@ if ((OldState != State)) { //If statements who control that state was change and
   Serial.println(State);
   Serial.println("plotto vecchio Stato");
   Serial.println(OldState);
+  if (State==Stop){
+  StopSend=millis();
+  DoubleStop=1;
+  }
   OldState=State;
+}
+CurrentMillis=millis();
+if (DoubleStop==1 && (CurrentMillis-StopSend)>DelayStop && State==Stop){
+  ResponseStatus rc = e22ttl.sendFixedMessage(0,1,3,State);
+  DoubleStop=0;
+}
+else if (State !=Stop){
+  DoubleStop=0;
 }
 }
  

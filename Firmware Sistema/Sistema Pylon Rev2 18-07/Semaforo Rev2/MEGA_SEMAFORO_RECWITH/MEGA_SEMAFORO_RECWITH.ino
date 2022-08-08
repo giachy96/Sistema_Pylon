@@ -103,7 +103,7 @@ Currentmillisx=millis(); // Assign millis value to Currentmillisx for if stateme
     Dateserial.concat(Dateserial2);
     Dateserial.concat(",");
     Dateserial.concat(Dateserial3);
-    ResponseStatus rs = e22ttl.sendFixedMessage(0, 1, 7, Dateserial); // Send fixedmessage Dateseria that contain all update of Dateserial1/2/3
+    ResponseStatus rs = e22ttl.sendFixedMessage(0, 1, 2, Dateserial); // Send fixedmessage Dateseria that contain all update of Dateserial1/2/3
     Serial.println(Dateserial); // DEBUG
     Dateserial1="0"; //Reset condition for received press button
     Dateserial2="0";
@@ -183,6 +183,7 @@ void RecStr1() {
             recvInProgress1 = true;
         }
     }
+    Serial1.flush();
 }
 
 void RecStr2() {
