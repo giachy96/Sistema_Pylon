@@ -56,7 +56,7 @@ void loop() {
       Serial.println(TxData);
     }
   if (TxData !="0" && (State==Show || State==Race)){ //Condition for sent to mega press
-     //RecStr();
+      RecStr();//valutare se disabilitare
       if (newData==true){//(SwSerial.available()>0){  // If mega will sent state to sem_rx
       Serial.println("C'è qualcosa in seriale - riassegno un nuovo stato ");
       State=RecCh; 
