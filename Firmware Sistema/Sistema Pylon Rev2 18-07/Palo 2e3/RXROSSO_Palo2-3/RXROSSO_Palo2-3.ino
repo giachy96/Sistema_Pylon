@@ -17,6 +17,7 @@ unsigned long CurrentMillis=0;
 unsigned long Delaysend=200;
 unsigned long StopSend=0;
 unsigned long DelayStop=350;
+unsigned long Plotmillis=0;
 const byte numChars=5;
 char RecCh[numChars];
 boolean newData = false;
@@ -56,6 +57,11 @@ void loop() {
       }
       if (State==Show || State==Race){//if nothing has change from previous if-statements
       SwSerial.print(TxData); //Send Txdata from rx to Mega
+      Plotmillis=millis();
+      Serial.print(Plotmillis);
+      Serial.println(" ");
+      Serial.println(TxData);
+      
       }
     TxData="0"; //Reset condition for set data
   }
@@ -75,7 +81,8 @@ if ((State != OldState) && ((CurrentMillis-Timesend)>Delaysend)) { //If statemen
 }
 CurrentMillis=millis();
 if (DoubleStop==1 && (CurrentMillis-StopSend)>DelayStop && State==Stop){
-  ResponseStatus rc = e22ttl.sendBroadcastFixedMessage(9,State);;
+  ResponseStatus rc = e22ttl.sendBroadcastFixedMessage(9,State);
+  
   DoubleStop=0;
 }
 else if (State !=Stop){
@@ -83,6 +90,39 @@ else if (State !=Stop){
 }
 }
  
+// void RecStr() {
+//     static boolean recvInProgress = false;
+//     static byte ndx = 0;
+//     char startMarker = '<';
+//     char endMarker = '>';
+//     char rc;
+ 
+//     while (SwSerial.available() > 0 && newData == false) {
+//         rc = SwSerial.read();
+
+//         if (recvInProgress == true) {
+//             if (rc != endMarker) {
+//                 RecCh[ndx] = rc;
+//                 ndx++;
+//                 if (ndx >= numChars) {
+//                     ndx = numChars - 1;
+//                 }
+//             }
+//             else {
+//                 RecCh[ndx] = '\0'; // terminate the string
+//                 recvInProgress = false;
+//                 ndx = 0;
+//                 newData = true;
+//             }
+//         }
+
+//         else if (rc == startMarker) {
+//             recvInProgress = true;
+//         }
+//     }
+//     SwSerial.flush();
+// }
+
 void RecStr() {
     static boolean recvInProgress = false;
     static byte ndx = 0;
@@ -90,8 +130,8 @@ void RecStr() {
     char endMarker = '>';
     char rc;
  
-    while (SwSerial.available() > 0 && newData == false) {
-        rc = SwSerial.read();
+    while (Serial.available() > 0 && newData == false) {
+        rc = Serial.read();
 
         if (recvInProgress == true) {
             if (rc != endMarker) {
@@ -113,5 +153,5 @@ void RecStr() {
             recvInProgress = true;
         }
     }
-    SwSerial.flush();
+    Serial.flush();
 }

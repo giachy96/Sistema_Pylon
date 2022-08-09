@@ -41,10 +41,10 @@ int Transm=0;
 int Press=0;
 int Pressr=0;
 int changeState=0;
-String Race="<300>";
-String Show="<200>";
-String End="<600>";
-String Startup="<100>";
+String Race="300";
+String Show="200";
+String End="600";
+String Startup="100";
 String State=Startup; //Startup state
 unsigned long interval = 10000;// constants won't change:
 

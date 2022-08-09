@@ -16,7 +16,7 @@
 #include "U8x8lib.h"
 #include "Arduino.h"
 #include "LoRa_E22.h"
-#include "lcdcasesp3r.h"
+#include "lcdcasesp2b.h"
 U8X8_SH1106_128X64_NONAME_HW_I2C u8x8(/* reset=*/ U8X8_PIN_NONE);
 int taglio = 9;
 int buzzer = 5;
@@ -34,7 +34,7 @@ unsigned long Delaypress=2500;
 unsigned long DelaySend=200;
 unsigned long TimeSend=0;
 unsigned long Freq=500;
-unsigned long Phase=250;
+unsigned long Phase=0;
 unsigned long WindowTransm=150;
 unsigned long Sync=0;
 int Transm=0;
@@ -149,14 +149,14 @@ if (State==Show || State==Race){ // Ogni volta che ricevo un nuovo stato memoriz
   }
     currentMillis=millis();
     if (Press==1 && Transm==1 && State==Show && (currentMillis-TimeSend)>DelaySend){ //se sono in Show, se ho il flag della pressione di show e se ho consenso alla trasmissione con Transm
-    ResponseStatus rs = e22ttl.sendFixedMessage(0, 0, 9,"<211b>"); //mando il messaggio
+    ResponseStatus rs = e22ttl.sendFixedMessage(0, 0, 10,"<231a>"); //mando il messaggio
     Press=0; //azzero il flag pressione di show
     }
     else if (Press==1 && State !=Show){ //se ho il flag di pressione ma nel frattempo è cambiato lo stato togli il flag della pressione
       Press=0;
     }
     if (Pressr==1 && Transm==1 && State==Race && (currentMillis-TimeSend)>DelaySend){//se sono in Race, se ho il flag della pressione di Race e se ho consenso alla trasmissione con Transm
-    ResponseStatus rs = e22ttl.sendFixedMessage(0, 0, 9,"<311b>");//mando il messaggio
+    ResponseStatus rs = e22ttl.sendFixedMessage(0, 0, 10,"<331a>");//mando il messaggio
     Pressr=0;//azzero il flag pressione di Race
     }
     else if (Pressr==1 && State !=Race){//se ho il flag di pressione ma nel frattempo è cambiato lo stato togli il flag della pressione
