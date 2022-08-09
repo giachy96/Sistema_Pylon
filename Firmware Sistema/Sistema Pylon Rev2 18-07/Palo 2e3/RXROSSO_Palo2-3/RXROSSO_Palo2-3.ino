@@ -62,7 +62,7 @@ void loop() {
  }
  CurrentMillis=millis();
 if ((State != OldState) && ((CurrentMillis-Timesend)>Delaysend)) { //If statements who control that state was change and
-  ResponseStatus rc = e22ttl.sendBroadcastFixedMessage(3,State);
+  ResponseStatus rc = e22ttl.sendBroadcastFixedMessage(9,State);
   Serial.println("Mando Stato nuovo");
   Serial.println(State);
   Serial.println("plotto vecchio Stato");
@@ -75,7 +75,7 @@ if ((State != OldState) && ((CurrentMillis-Timesend)>Delaysend)) { //If statemen
 }
 CurrentMillis=millis();
 if (DoubleStop==1 && (CurrentMillis-StopSend)>DelayStop && State==Stop){
-  ResponseStatus rc = e22ttl.sendBroadcastFixedMessage(3,State);;
+  ResponseStatus rc = e22ttl.sendBroadcastFixedMessage(9,State);;
   DoubleStop=0;
 }
 else if (State !=Stop){

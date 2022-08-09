@@ -149,14 +149,14 @@ if (State==Show || State==Race){ // Ogni volta che ricevo un nuovo stato memoriz
   }
     currentMillis=millis();
     if (Press==1 && Transm==1 && State==Show && (currentMillis-TimeSend)>DelaySend){ //se sono in Show, se ho il flag della pressione di show e se ho consenso alla trasmissione con Transm
-    ResponseStatus rs = e22ttl.sendFixedMessage(0, 0, 9,"<211a>"); //mando il messaggio
+    ResponseStatus rs = e22ttl.sendFixedMessage(0, 0, 9,"<211b>"); //mando il messaggio
     Press=0; //azzero il flag pressione di show
     }
     else if (Press==1 && State !=Show){ //se ho il flag di pressione ma nel frattempo è cambiato lo stato togli il flag della pressione
       Press=0;
     }
     if (Pressr==1 && Transm==1 && State==Race && (currentMillis-TimeSend)>DelaySend){//se sono in Race, se ho il flag della pressione di Race e se ho consenso alla trasmissione con Transm
-    ResponseStatus rs = e22ttl.sendFixedMessage(0, 0, 9,"<311a>");//mando il messaggio
+    ResponseStatus rs = e22ttl.sendFixedMessage(0, 0, 9,"<311b>");//mando il messaggio
     Pressr=0;//azzero il flag pressione di Race
     }
     else if (Pressr==1 && State !=Race){//se ho il flag di pressione ma nel frattempo è cambiato lo stato togli il flag della pressione
