@@ -16,7 +16,7 @@
 #include "U8x8lib.h"
 #include "Arduino.h"
 #include "LoRa_E22.h"
-#include "lcdcases.h"
+#include "lcdcasesp2r.h"
 U8X8_SH1106_128X64_NONAME_HW_I2C u8x8(/* reset=*/ U8X8_PIN_NONE);
 int taglio = 9;
 int buzzer = 5;
