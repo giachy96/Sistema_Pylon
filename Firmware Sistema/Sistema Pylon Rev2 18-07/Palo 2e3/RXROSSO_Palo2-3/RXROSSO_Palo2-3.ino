@@ -24,8 +24,6 @@ int DoubleStop=0;
 unsigned long millisc=0;
 
 void setup() {
-   //pinMode(SOFTTX, OUTPUT); // MT - Softrx - pin mapping output
-   //pinMode(SOFTRX, INPUT); // MT - Softrx - pin mapping input
   Serial.begin(9600);
   delay(500); 
   SwSerial.begin(9600);
@@ -34,15 +32,11 @@ void setup() {
   Serial.println("prova");
 }
 void loop() { 
-    RecStr();
-     if (newData==true){ //(SwSerial.available()>0){  // If mega will sent state to sem_rx
-      Serial.println("C'è qualcosa in seriale - assegno nuovo stato");
-      // State=SwSerial.readString(); //Assign system status to state
-      State=RecCh; 
-      Serial.print(State);
-      Serial.print(OldState);
-      newData=false;
-      }
+  RecStr();
+  if (newData==true){ // If teensy will sent state to sem_rx
+    State=RecCh; 
+    newData=false;
+    }
   if (e22ttl.available()>1) {  // If there is something arrived from lora (Transmitter)
     ResponseContainer rc = e22ttl.receiveMessage();// Receive message
     if (rc.status.code!=1){ // If there is some problem
@@ -50,12 +44,9 @@ void loop() {
       }
     else{ //If there isn't any problem we're going to receive press 
       TxData=rc.data; //Assign incoming data on TxData variable
-      Serial.println("Ricevo dal lora");
-      millisc=millis();
-      Serial.println(millisc);      
-      Serial.println(TxData);
-    }
-  if (TxData !="0" && (State==Show || State==Race)){ //Condition for sent to mega press
+      Timesend=millis();
+      }
+  if (TxData !="0" && (State==Show || State==Race)){ //Condition for sent to mega cut
       RecStr();//valutare se disabilitare
       if (newData==true){//(SwSerial.available()>0){  // If mega will sent state to sem_rx
       Serial.println("C'è qualcosa in seriale - riassegno un nuovo stato ");
@@ -65,17 +56,13 @@ void loop() {
       }
       if (State==Show || State==Race){//if nothing has change from previous if-statements
       SwSerial.print(TxData); //Send Txdata from rx to Mega
-      Serial.println("Scrivo in seriale");
-      millisc=millis();
-      Serial.println(millisc); 
-      Serial.println(TxData);
       }
     TxData="0"; //Reset condition for set data
   }
  }
- //Serial.println("verifico se è cambiato stato");
-if ((State != OldState)) { //If statements who control that state was change and
-  ResponseStatus rc = e22ttl.sendFixedMessage(0,1,3,State);
+ CurrentMillis=millis();
+if ((State != OldState) && ((CurrentMillis-Timesend)>Delaysend)) { //If statements who control that state was change and
+  ResponseStatus rc = e22ttl.sendBroadcastFixedMessage(3,State);
   Serial.println("Mando Stato nuovo");
   Serial.println(State);
   Serial.println("plotto vecchio Stato");
@@ -88,7 +75,7 @@ if ((State != OldState)) { //If statements who control that state was change and
 }
 CurrentMillis=millis();
 if (DoubleStop==1 && (CurrentMillis-StopSend)>DelayStop && State==Stop){
-  ResponseStatus rc = e22ttl.sendFixedMessage(0,1,3,State);
+  ResponseStatus rc = e22ttl.sendBroadcastFixedMessage(3,State);;
   DoubleStop=0;
 }
 else if (State !=Stop){
