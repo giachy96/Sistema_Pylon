@@ -16,7 +16,7 @@ unsigned long Timesend=0;
 unsigned long CurrentMillis=0;
 unsigned long Delaysend=200;
 unsigned long StopSend=0;
-unsigned long DelayStop=500;
+unsigned long DelayStop=350;
 const byte numChars=5;
 char RecCh[numChars];
 boolean newData = false;
