@@ -75,10 +75,10 @@ void loop() {
     ntagliblu = 0;
     ntagliverde = 0;
 
-    if (valrx[2] == "212") { // controllo se mi è arrivato lo show del verde
+    if (valrx[1] == "212") { // controllo se mi è arrivato lo show del verde
       digitalWrite( luceverde, HIGH);
     }
-    if (valrx[1] == "222") { // controllo se mi è arrivato lo show del rosso
+    if (valrx[2] == "222") { // controllo se mi è arrivato lo show del rosso
       digitalWrite( lucerosso, HIGH);
     }
     if (valrx[3] == "232") { // controllo se mi è arrivato lo show del blu

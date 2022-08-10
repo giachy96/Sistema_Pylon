@@ -24,9 +24,9 @@
   char RecCh1[numChars];
   char RecCh2[numChars];
   char RecCh3[numChars];
-  String Race="<300>";
-  String Show="<200>";
-  String Startup="<100>";
+  String Race="300";
+  String Show="200";
+  String Startup="100";
   String State=Startup; //Startup state
   String OldState=Startup;
   boolean newData1=false;
@@ -100,12 +100,12 @@ Currentmillisx=millis(); // Assign millis value to Currentmillisx for if stateme
    if (Dateserial1 != "0" || Dateserial2 != "0" || Dateserial3 !="0")  { //If some button was pressed
     Dateserial= State;
     Dateserial.concat(",");
-    Dateserial.concat(Dateserial1); // Compose message for send with Lora
+    Dateserial.concat(Dateserial2); // Compose message for send with Lora
     Dateserial.concat(",");
-    Dateserial.concat(Dateserial2);
+    Dateserial.concat(Dateserial1);
     Dateserial.concat(",");
     Dateserial.concat(Dateserial3);
-    ResponseStatus rs = e22ttl.sendFixedMessage(0, 1, 2, Dateserial); // Send fixedmessage Dateseria that contain all update of Dateserial1/2/3
+    ResponseStatus rs = e22ttl.sendFixedMessage(0, 0, 2, Dateserial); // Send fixedmessage Dateseria that contain all update of Dateserial1/2/3
     Serial.println(Dateserial); // DEBUG
     Dateserial1="0"; //Reset condition for received press button
     Dateserial2="0";
@@ -119,6 +119,7 @@ Currentmillisx=millis(); // Assign millis value to Currentmillisx for if stateme
     }
     else{ 
      State=rc.data; // if there isn't any error assign the incoming data to State
+      Serial.println(rc.data);//debug
    }
     Timesend=millis(); // millis assigment for last data receive 
     }
@@ -131,27 +132,33 @@ Currentmillisx=millis(); // Assign millis value to Currentmillisx for if stateme
     
 
   if (OldState != State){ //If state was change on previous code
+    String str ="<";
+    str.concat(State);
+    str.concat(">");
   Serial.println("Cambio stato");
   RecStr1();
   if (newData1==true){//(Serial1.available()>0){ //check if some press was incoming from receiver 1
     Dateserial1p=RecCh1; //Assign incoming data from Serial1 to Dateserial1//Assign useless press on Dateserial1
     //Serial.println("Assegno provvisorio");
-    newData1=false;
+    Serial.println(RecCh1);
+    newData1=false; 
     }
-  Serial1.print(State);//Send to receiver 1 State
+  Serial1.print(str);//Send to receiver 1 State
   //Serial.println(State);
   RecStr2();
   if (newData2==true){//(Serial2.available()>0){
     Dateserial2=RecCh2; //Assign incoming data from Serial1 to Dateserial1
+     Serial.println(RecCh2);
     newData2=false;
     }
-  Serial2.print(State);
+  Serial2.print(str);
   RecStr3();
   if (newData3==true){//(Serial3.available()>0){
     Dateserial3p=RecCh3; //Assign incoming data from Serial1 to Dateserial1
+     Serial.println(RecCh3);
     newData3==false;
     }
-    Serial3.print(State);
+    Serial3.print(str);
   OldState=State; //Reset condition for send State to the rx
   }
 }
