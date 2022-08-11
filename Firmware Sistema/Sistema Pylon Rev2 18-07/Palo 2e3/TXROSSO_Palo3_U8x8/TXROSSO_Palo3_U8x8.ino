@@ -26,27 +26,35 @@ int dcase = 0;
 int altupdatelcd = 0;
 char t[5] = { '3', ',', '3', '3',  '\0' };
 LoRa_E22 e22ttl(2, 3); // Arduino RX --> e22 TX - Arduino TX --> e22 RX
-unsigned long previousMillis = 0;        // will store last time voltage was updated
+unsigned long previousMillis = 0;
 unsigned long currentMillis = 0;
 unsigned long CurrentPress=0;
 unsigned long Lastpress=0;
-unsigned long Delaypress=2500;
-unsigned long DelaySend=200;
 unsigned long TimeSend=0;
-unsigned long Freq=500;
-unsigned long Phase=250;
-unsigned long WindowTransm=150;
 unsigned long Sync=0;
 int Transm=0;
 int Press=0;
 int Pressr=0;
 int changeState=0;
+
+//Inizio Configurazioni Telecomando
 String Race="300";
 String Show="200";
 String End="600";
 String Startup="100";
-String State=Startup; //Startup state
-unsigned long interval = 10000;// constants won't change:
+String State=Startup;
+String ShowCut="211b";
+String RaceCut="311b";
+int Key=0;
+int Add=0;
+int Chan=9;
+unsigned long Freq=500;
+unsigned long Phase=250;
+unsigned long WindowTransm=150;
+unsigned long Delaypress=2500;
+unsigned long DelaySend=200;
+unsigned long interval = 10000;
+//Fine Configurazioni Telecomando
 
 void setup() {
   pinMode(taglio , INPUT_PULLUP);
@@ -149,14 +157,14 @@ if (State==Show || State==Race){ // Ogni volta che ricevo un nuovo stato memoriz
   }
     currentMillis=millis();
     if (Press==1 && Transm==1 && State==Show && (currentMillis-TimeSend)>DelaySend){ //se sono in Show, se ho il flag della pressione di show e se ho consenso alla trasmissione con Transm
-    ResponseStatus rs = e22ttl.sendFixedMessage(0, 0, 9,"<211b>"); //mando il messaggio
+    ResponseStatus rs = e22ttl.sendFixedMessage(Key, Add, Chan, ShowCut); //mando il messaggio
     Press=0; //azzero il flag pressione di show
     }
     else if (Press==1 && State !=Show){ //se ho il flag di pressione ma nel frattempo è cambiato lo stato togli il flag della pressione
       Press=0;
     }
     if (Pressr==1 && Transm==1 && State==Race && (currentMillis-TimeSend)>DelaySend){//se sono in Race, se ho il flag della pressione di Race e se ho consenso alla trasmissione con Transm
-    ResponseStatus rs = e22ttl.sendFixedMessage(0, 0, 9,"<311b>");//mando il messaggio
+    ResponseStatus rs = e22ttl.sendFixedMessage(Key, Add, Chan, RaceCut);//mando il messaggio
     Pressr=0;//azzero il flag pressione di Race
     }
     else if (Pressr==1 && State !=Race){//se ho il flag di pressione ma nel frattempo è cambiato lo stato togli il flag della pressione

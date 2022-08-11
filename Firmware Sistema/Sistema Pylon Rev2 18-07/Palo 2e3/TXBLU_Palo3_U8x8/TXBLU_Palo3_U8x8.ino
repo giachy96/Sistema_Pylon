@@ -16,7 +16,7 @@
 #include "U8x8lib.h"
 #include "Arduino.h"
 #include "LoRa_E22.h"
-#include "lcdcasesp2r.h"
+#include "lcdcasesp3b.h"
 U8X8_SH1106_128X64_NONAME_HW_I2C u8x8(/* reset=*/ U8X8_PIN_NONE);
 int taglio = 9;
 int buzzer = 5;
@@ -43,13 +43,13 @@ String Show="200";
 String End="600";
 String Startup="100";
 String State=Startup;
-String ShowCut="211a";
-String RaceCut="311a";
+String ShowCut="231b";
+String RaceCut="331b";
 int Key=0;
 int Add=0;
-int Chan=9;
+int Chan=11;
 unsigned long Freq=500;
-unsigned long Phase=0;
+unsigned long Phase=250;
 unsigned long WindowTransm=150;
 unsigned long Delaypress=2500;
 unsigned long DelaySend=200;

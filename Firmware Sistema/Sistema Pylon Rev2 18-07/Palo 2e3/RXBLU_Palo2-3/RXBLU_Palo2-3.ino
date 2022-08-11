@@ -23,7 +23,7 @@ String Stop="600";
 String State=Startup;
 unsigned long Delaysend=200;
 unsigned long DelayStop=350;
-int Chan=9;
+int Chan=11;
 //Fine Configurazioni Ricevente
 
 void setup() {
