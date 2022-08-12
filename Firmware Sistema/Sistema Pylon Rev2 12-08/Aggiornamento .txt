@@ -1,0 +1,1 @@
+Si sono caricati i codici della centrale con la lettura dei nomi da seriale ( ma non uniti ai vecchi codici) 
