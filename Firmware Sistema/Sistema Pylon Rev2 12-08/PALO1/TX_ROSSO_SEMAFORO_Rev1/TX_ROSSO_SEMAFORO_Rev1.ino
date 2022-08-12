@@ -31,15 +31,24 @@ unsigned long previousMillis = 0;        // will store last time voltage was upd
 unsigned long currentMillis = 0;
 unsigned long CurrentPress = 0;
 unsigned long Lastpress = 0;
-unsigned long Delaypress = 2500;
-unsigned long Delaysend = 200;
 int changeState = 0;
-String Race = "300";
-String Show = "200";
-String End = "600";
-String Startup = "100";
+
+// Inizio configurazione Telecomando
+String Race = "3000";
+String Show = "2000";
+String End = "6000";
+String Startup = "1000";
 String State = Startup; //Startup state
 unsigned long interval = 10000;// constants won't change:
+unsigned long Delaypress = 2500;
+unsigned long Delaysend = 200;
+String PressShow="2110";
+String PressRace="3112";
+String PressCut="3111";
+int Key=0;
+int Add=0;
+int Chan=3;
+//Fine configurazione Telecomando
 
 void setup() {
   pinMode(pulsante , INPUT_PULLUP);
@@ -119,7 +128,7 @@ void loop() {
     if (digitalRead(pulsante) == LOW && (CurrentPress - Lastpress) >= Delaypress && State == Show) { //se il pulsante è premuto, sono in show e la sicurezza sulle pressioni ripetute è passata
       Lastpress = millis(); //memorizzo l'ultima pressione
       Serial.println("ricevopressione");
-      ResponseStatus rs = e22ttl.sendFixedMessage(0, 0, 3, "<212>"); // invio il codice di show
+      ResponseStatus rs = e22ttl.sendFixedMessage(Key, Add, Chan, PressShow); // invio il codice di show
       tone(buzzer, 1000, 200);
       Serial.println("invio"); //debug
       Serial.println(currentMillis - previousMillis);//debug
@@ -127,14 +136,14 @@ void loop() {
     CurrentPress = millis();
     if (digitalRead(pulsante) == LOW && (CurrentPress - Lastpress) >= Delaypress && State == Race) { //se il pulsante del semaforo è premuto, sono in race e la sicurezza sulle pressioni ripetute è passata
       Lastpress = millis();
-      ResponseStatus rs = e22ttl.sendFixedMessage(0, 0, 3, "<312>"); //invio il codice race
+      ResponseStatus rs = e22ttl.sendFixedMessage(Key, Add, Chan, PressRace); //invio il codice race
       tone(buzzer, 1000, 200);
       Serial.println("invio");//debug
     }
     CurrentPress = millis();
     if (digitalRead(taglio) == LOW && (CurrentPress - Lastpress) >= Delaypress && State == Race) { //se il pulsante del taglio è premuto, sono in race e non sono stati premuti altri tasti prima di delaypress
       Lastpress = millis();
-      ResponseStatus rs = e22ttl.sendFixedMessage(0, 0, 3, "<311>"); //invio il codice di taglio
+      ResponseStatus rs = e22ttl.sendFixedMessage(Key, Add, Chan, PressCut); //invio il codice di taglio
       tone(buzzer, 1000, 1000);
       Serial.println("invio");//debug
     }

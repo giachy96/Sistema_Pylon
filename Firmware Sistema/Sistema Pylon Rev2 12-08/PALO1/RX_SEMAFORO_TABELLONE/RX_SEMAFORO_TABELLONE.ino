@@ -2,13 +2,25 @@
 #include "LoRa_E22.h"
 #include <AltSoftSerial.h>
 AltSoftSerial AltSerial;
-
 LoRa_E22 e22ttl(2, 3); // Arduino RX --> e22 TX - Arduino TX --> e22 RX
-String Race = "<300>";
-String Show = "<200>";
-String Startup = "<100>";
+
+//Inizio configurazione
+String Race = "3000";
+String Show = "2000";
+String Startup = "1000";
 String State = Show; //Startup state
 String OldState;
+String PressShowR="2110";
+String PressRaceR="3112";
+String PressCutR="3111";
+String PressShowV="2120";
+String PressRaceV="3122";
+String PressCutV="3121";
+String PressShowB="2130";
+String PressRaceB="3132";
+String PressCutB="3131";
+//Fine Configurazione
+
 String TxData = "0";
 String TxDatastr;
 const byte numChars = 32;
@@ -55,12 +67,12 @@ void loop() {
     // Serial.println("Ricevo dal lora");
     Serial.println(TxData);
 
-    if (TxData != "0" && (State == "200"  || State == "300" )) { //Condition for sent to mega press
+    if (TxData != "0" && (State == Show  || State == Race )) { //Condition for sent to mega press
       if (AltSerial.available() > 0) { // If mega will sent state to sem_rx
         recvWithStartEndMarkers( RecCh );
         State = RecCh;
       }
-      if (State == "200"  || State == "300" ) { //if nothing has change from previous if-statements
+      if (State == Show  || State == Race ) { //if nothing has change from previous if-statements
         String pack  = "<";
         pack.concat(TxData);
         pack.concat(">");
@@ -74,7 +86,7 @@ void loop() {
   }
 
 
-  if (TxDatastr.indexOf("200") != -1 ) {
+  if (TxDatastr.indexOf(Show) != -1 ) {
     decodecomma(TxDatastr , valrx );
     ntaglirosso = 0;
     ntagliblu = 0;
@@ -93,7 +105,7 @@ void loop() {
   }
 
 
-  if (TxDatastr.indexOf("300") != -1 ) {
+  if (TxDatastr.indexOf(Race) != -1 ) {
     decodecomma(TxDatastr , valrx );
     if (valrx[2] == "321") { // controllo se mi è arrivato il taglio del verde
       ntagliverde = ntagliverde + 1;

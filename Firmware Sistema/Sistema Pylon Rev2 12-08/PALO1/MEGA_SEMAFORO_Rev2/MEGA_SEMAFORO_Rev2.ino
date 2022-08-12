@@ -9,7 +9,7 @@ unsigned long Currentmilliss = 0;
 unsigned long Currentmillisx = 0;
 unsigned long DelayLight = 2000;
 unsigned long Delayserialx = 0;
-unsigned long Delaysend = 200;
+
 String Dateserial1 = "0";
 String Dateserial2 = "0";
 String Dateserial3 = "0";
@@ -21,11 +21,20 @@ const byte numChars = 5;
 char RecCh1[numChars];
 char RecCh2[numChars];
 char RecCh3[numChars];
-String Race = "300";
-String Show = "200";
-String Startup = "100";
-String State = Startup; //Startup state
+
+//Inizio Configurazione Mega
+String Race = "3000";
+String Show = "2000";
+String Startup = "1000";
+String State = Startup;
 String OldState = Startup;
+unsigned long Delaysend = 200;
+int Key=0;
+int Add=0;
+int Chan=2;
+
+//Fine Configurazione Mega
+
 boolean newData1 = false;
 boolean newData2 = false;
 boolean newData3 = false;
@@ -92,7 +101,7 @@ void loop() {
       Dateserial.concat(Dateserial1);
       Dateserial.concat(",");
       Dateserial.concat(Dateserial3);
-      ResponseStatus rs = e22ttl.sendFixedMessage(0, 0, 2, Dateserial); // Send fixedmessage Dateseria that contain all update of Dateserial1/2/3
+      ResponseStatus rs = e22ttl.sendFixedMessage(Key, Add, Chan, Dateserial); // Send fixedmessage Dateseria that contain all update of Dateserial1/2/3
       Serial.println(Dateserial); // DEBUG
       Dateserial1 = "0"; //Reset condition for received press button
       Dateserial2 = "0";
