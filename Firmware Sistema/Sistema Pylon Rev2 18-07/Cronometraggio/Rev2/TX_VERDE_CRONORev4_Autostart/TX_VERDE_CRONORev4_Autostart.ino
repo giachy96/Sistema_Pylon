@@ -128,11 +128,11 @@ void loop() {
 
       if (digitalRead(pulsante) == LOW && (CurrentPress - Lastpress) >= Delaypress) {
         ResponseStatus rs = e22ttl.sendFixedMessage(0, 0, 7, "210");
-        tone(buzzer, 4000, 200);
+        tone(buzzer, 1000, 200);
         Lastpress = millis();
       }
       if (newData == true) {
-        tone(buzzer, 4000, 200);
+        tone(buzzer, 1000, 200);
         draw(1, u8x8);
         altupdatelcd = 1;
         newData = false;
@@ -141,7 +141,7 @@ void loop() {
 
     if (State == "300") {  // START Gara
        if (newData == true) {
-        tone(buzzer, 4000, 200);
+        tone(buzzer, 1000, 200);
         newData = false;
       }
      
@@ -155,7 +155,7 @@ void loop() {
     }
     if (State == "319") {  // Start cronometro
        if (newData == true) {
-        tone(buzzer, 4000, 200);
+        tone(buzzer, 1000, 200);
         if (lapcounter == -1 ) {
         tempo_base = millis();
         lapcounter = lapcounter + 1;
@@ -168,7 +168,7 @@ void loop() {
         msg.concat(",");
         msg.concat(bu);
         ResponseStatus rs = e22ttl.sendFixedMessage(0, 0, 7, msg);
-        tone(buzzer, 4000, 200);
+        tone(buzzer, 1000, 200);
         Lastpress = millis();
         draw(3 , u8x8);
         altupdatelcd = 1;
@@ -208,7 +208,7 @@ void loop() {
         msg.concat(",");
         msg.concat(bu);
         ResponseStatus rs = e22ttl.sendFixedMessage(0, 0, 7, msg);
-        tone(buzzer, 4000, 200);
+        tone(buzzer, 1000, 200);
         Lastpress = millis();
         draw(3 , u8x8);
         altupdatelcd = 1;
@@ -217,7 +217,7 @@ void loop() {
     }
     if (State == "500" ) {  // STOP
       if (newData == true) {
-        tone(buzzer, 4000, 200);
+        tone(buzzer, 1000, 200);
         draw(5, u8x8);
         altupdatelcd = 1;
         lapcounter = -2;

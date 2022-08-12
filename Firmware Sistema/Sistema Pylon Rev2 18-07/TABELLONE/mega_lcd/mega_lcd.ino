@@ -225,6 +225,8 @@ void loop() {
       showcrorosso = false;
       showcroblu = false;
       updatescreen = 1;
+       flagcount = false;
+      memcpy(oldreceivedChars1, receivedChars1, sizeof(receivedChars1));
       memcpy(oldreceivedChars1, receivedChars1, sizeof(receivedChars1));
     }
 

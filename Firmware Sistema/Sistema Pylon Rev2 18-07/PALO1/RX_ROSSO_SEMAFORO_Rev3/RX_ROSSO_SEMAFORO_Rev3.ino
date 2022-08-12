@@ -12,16 +12,22 @@ String Stop = "600";
 String State = Startup; //Startup state
 String OldState = Startup;
 String TxData = "0";
+String TxDatastr;
 unsigned long Timesend = 0;
 unsigned long CurrentMillis = 0;
 unsigned long Delaysend = 200;
 unsigned long StopSend = 0;
 unsigned long DelayStop = 500;
+unsigned long DelayLight = 1500;
+unsigned long timeonlight;
+int onlight;
+int on;
 const byte numChars = 5;
 char RecCh[numChars];
 boolean newData = false;
 int DoubleStop = 0;
 unsigned long millisc = 0;
+int RelayRed = 12;
 
 void setup() {
   //pinMode(SOFTTX, OUTPUT); // MT - Softrx - pin mapping output
@@ -31,7 +37,8 @@ void setup() {
   SwSerial.begin(9600);
   delay(500);
   e22ttl.begin();
-  Serial.println("prova");
+  pinMode(RelayRed, OUTPUT); //Output pin to Relay Red
+  //Serial.println("prova");
 }
 void loop() {
   RecStr();
@@ -48,10 +55,9 @@ void loop() {
     TxData = rc.data; //Assign incoming data on TxData variable
     Serial.println("Ricevo dal lora");
     millisc = millis();
-    Serial.println(millisc);
     Serial.println(TxData);
 
-      if (TxData != "0" && (State == Show || State == Race)) { //Condition for sent to mega press
+    if (TxData != "0" && (State == Show || State == Race)) { //Condition for sent to mega press
       RecStr();//valutare se disabilitare
       if (newData == true) { //(SwSerial.available()>0){  // If mega will sent state to sem_rx
         Serial.println("C'è qualcosa in seriale - riassegno un nuovo stato ");
@@ -60,13 +66,17 @@ void loop() {
         newData = false;
       }
       if (State == Show || State == Race) { //if nothing has change from previous if-statements
-      SwSerial.print(TxData); //Send Txdata from rx to Mega
-      Serial.println("Scrivo in seriale");
-      millisc = millis();
-      Serial.println(millisc);
-      Serial.println(TxData);
-      Serial.println(State);
+        SwSerial.print(TxData); //Send Txdata from rx to Mega
+        Serial.println("Scrivo in seriale");
+        millisc = millis();
+        Serial.println(TxData);
+        Serial.println(State);
       }
+      if (State == Show || State == Race) { //if nothing has change from previous if-statements
+        if (TxData.indexOf("212") != -1 ||  TxData.indexOf("312") != -1 )
+          onlight = 1;
+      }
+
       TxData = "0"; //Reset condition for set data
     }
   }
@@ -91,7 +101,27 @@ void loop() {
   else if (State != Stop) {
     DoubleStop = 0;
   }
+
+//DIOBESTIA TUTTE STE SEGHE PER UNA LUCE
+  if (onlight == 1) {
+    if (on == 0 ) {
+      digitalWrite(RelayRed, HIGH);
+      timeonlight = millis();
+      on = 1;
+    } else {
+      if ((millis() - timeonlight) >= DelayLight &&  on == 1) {
+        digitalWrite(RelayRed, LOW);
+        onlight = 0;
+        on = 0;
+      }
+    }
+  }
+//FINE SEGHE PER UNA LUCE
+
 }
+
+
+
 
 void RecStr() {
   static boolean recvInProgress = false;

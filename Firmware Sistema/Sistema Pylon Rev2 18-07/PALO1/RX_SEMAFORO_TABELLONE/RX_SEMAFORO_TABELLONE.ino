@@ -8,7 +8,9 @@ String Race = "<300>";
 String Show = "<200>";
 String Startup = "<100>";
 String State = Show; //Startup state
+String OldState;
 String TxData = "0";
+String TxDatastr;
 const byte numChars = 32;
 char RecCh[numChars];
 boolean newData = false;
@@ -43,6 +45,7 @@ void loop() {
     digitalWrite( luceblu, LOW);
     digitalWrite( lucerosso, LOW);
     digitalWrite( luceverde, LOW);
+    TxDatastr ="";
     ResponseStatus rs = e22ttl.sendFixedMessage(0, 1, 2, RecCh);
     newData = false;
   }
@@ -63,23 +66,26 @@ void loop() {
         pack.concat(">");
         AltSerial.print(pack); //Send Txdata from rx to Mega
         // Serial.println("Mando via il dato");
-        Serial.print(pack);
+        Serial.println(pack);
       }
+      TxDatastr = TxData;
       TxData = "0"; //Reset condition for set data
     }
   }
 
-  if (TxData.indexOf("200") != -1 ) {
-    decodecomma(TxData , valrx );
+
+  if (TxDatastr.indexOf("200") != -1 ) {
+    decodecomma(TxDatastr , valrx );
     ntaglirosso = 0;
     ntagliblu = 0;
     ntagliverde = 0;
-
-    if (valrx[1] == "212") { // controllo se mi è arrivato lo show del verde
-      digitalWrite( luceverde, HIGH);
-    }
-    if (valrx[2] == "222") { // controllo se mi è arrivato lo show del rosso
+   
+    if (valrx[1] == "212") { // controllo se mi è arrivato lo show del rosso
       digitalWrite( lucerosso, HIGH);
+     
+    }
+    if (valrx[2] == "222") { // controllo se mi è arrivato lo show del verde
+      digitalWrite( luceverde, HIGH);
     }
     if (valrx[3] == "232") { // controllo se mi è arrivato lo show del blu
       digitalWrite( luceblu, HIGH);
@@ -87,8 +93,9 @@ void loop() {
   }
 
 
-  if (TxData.indexOf("300") != -1 ) {
-    if (valrx[2] == "312") { // controllo se mi è arrivato il taglio del verde
+  if (TxDatastr.indexOf("300") != -1 ) {
+    decodecomma(TxDatastr , valrx );
+    if (valrx[2] == "321") { // controllo se mi è arrivato il taglio del verde
       ntagliverde = ntagliverde + 1;
       if (ntagliverde == 1) {
         digitalWrite( luceverde, HIGH);
@@ -97,16 +104,20 @@ void loop() {
         lampeggiante(luceverde, 1);
       }
     }
-    if (valrx[1] == "322") { // controllo se mi è arrivato il taglio del rosso
+    if (valrx[1] == "311") { // controllo se mi è arrivato il taglio del rosso
+     
       ntaglirosso = ntaglirosso + 1;
       if (ntaglirosso == 1) {
         digitalWrite( lucerosso, HIGH);
+         
       }
-      if (ntaglirosso >= 1) {
+      if (ntaglirosso > 1) {
         lampeggiante(lucerosso, 2);
+        Serial.println("ci entro?");
       }
+     valrx[1] = "";
     }
-    if (valrx[3] == "332") { // controllo se mi è arrivato il taglio del blu
+    if (valrx[3] == "331") { // controllo se mi è arrivato il taglio del blu
       ntagliblu = ntagliblu + 1;
       if (ntagliblu == 1) {
         digitalWrite( luceblu, HIGH);
@@ -115,13 +126,17 @@ void loop() {
         lampeggiante(luceblu, 3);
       }
     }
-
-
-
-
+  TxDatastr = "";
   }
 
+  if (OldState != State) { //If state was change on previous code
 
+    digitalWrite( luceblu, LOW);
+    digitalWrite( lucerosso, LOW);
+    digitalWrite( luceverde, LOW);
+    TxDatastr ="";
+    OldState = State;
+  }
 }
 
 
@@ -135,7 +150,7 @@ void lampeggiante (int pin , int colore ) {
     lampmillisverde = millis();
   } else if (colore = 2) {
     if (millis() - lampmillisrosso >= 1000) {
-      digitalWrite(pin, HIGH);
+      digitalWrite(pin, LOW);
     } else {
       digitalWrite(pin, LOW);
     }
