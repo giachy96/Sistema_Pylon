@@ -79,10 +79,10 @@ void loop() {
       if (values[0] == "2510") {
         temporosso[0] = values[0];
         showcrorosso = true;
-      } else if (values[0] == "230") {
+      } else if (values[0] == "2530") {
         tempoblu[0] = values[0];
         showcroblu = true;
-      } else if (values[0] == "210") {
+      } else if (values[0] == "2520") {
         tempoverde[0] = values[0];
         showcroverde = true;
       }

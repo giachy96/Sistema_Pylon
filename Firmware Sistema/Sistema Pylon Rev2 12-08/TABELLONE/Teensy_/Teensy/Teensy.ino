@@ -74,24 +74,24 @@ void loop() {
     if (digitalRead(pStop) == HIGH) {
       Serial6.print("<STOP>");
       Serial8.print("<6000>");
-      Serial1.print("<500>");
-      Serial7.print("<500>");
+      Serial1.print("<6000>");
+      Serial7.print("<6000>");
       Serial3.print("<500>");
       oldMillis = millis();
     }
     if (digitalRead(pGo) == LOW ) {
       Serial6.print("<GO>");
       Serial8.print("<3000>");
-      Serial1.print("<300>");
-      Serial7.print("<300>");
+      Serial1.print("<3000>");
+      Serial7.print("<3000>");
       Serial3.print("<300>");
       oldMillis = millis();
     }
     if (digitalRead(pShow) == LOW ) {
       Serial6.print("<SHOW>");
       Serial8.print("<2000>");
-      Serial1.print("<200>");
-      Serial7.print("<200>");
+      Serial1.print("<2000>");
+      Serial7.print("<2000>");
       Serial3.print("<200>");
       oldMillis = millis();
     }
@@ -122,18 +122,18 @@ void loop() {
   if (newData1 == true) {
     String Rxs1;
     Rxs1 = receivedChars1;
-    if (Rxs1.indexOf("433") != -1 || Rxs1.indexOf("533") != -1 || Rxs1.indexOf("230") != -1) {
+    if (Rxs1.indexOf("4534") != -1 || Rxs1.indexOf("5534") != -1 || Rxs1.indexOf("2530") != -1) {
       String pack = "<";
       pack.concat(receivedChars1);
       pack.concat(">");
       Serial6.print(pack);
       Serial.println(pack);
 
-       if (Rxs1.indexOf("433") != -1 ) {
+       if (Rxs1.indexOf("4534") != -1 ) {
         decodecomma(Rxs1, values);
         tempiblu[values[1].toInt()] = values[2];
       }
-       if (Rxs1.indexOf("533") != -1 ) {
+       if (Rxs1.indexOf("5534") != -1 ) {
         decodecomma(Rxs1, values);
         tempiblu[11] = values[2];
       }
@@ -145,17 +145,17 @@ void loop() {
   if (newData7 == true) {
     String Rxs7;
     Rxs7 = receivedChars7;
-    if (Rxs7.indexOf("413") != -1 || Rxs7.indexOf("513") != -1 || Rxs7.indexOf("210") != -1) {
+    if (Rxs7.indexOf("4524") != -1 || Rxs7.indexOf("5524") != -1 || Rxs7.indexOf("2520") != -1) {
       String pack = "<";
       pack.concat(receivedChars7);
       pack.concat(">");
       Serial6.print(pack);
 
-       if (Rxs7.indexOf("413") != -1 ) {
+       if (Rxs7.indexOf("4524") != -1 ) {
         decodecomma(Rxs7, values);
         tempiverde[values[1].toInt()] = values[2];
       }
-       if (Rxs7.indexOf("513") != -1 ) {
+       if (Rxs7.indexOf("5524") != -1 ) {
         decodecomma(Rxs7, values);
         tempiverde[11] = values[2];
       }
@@ -173,13 +173,13 @@ void loop() {
       pack.concat(">");
       Serial8.print(pack);
     }
-       if (Rxs6.indexOf("319") != -1 ) { // avvio verde
+       if (Rxs6.indexOf("3523") != -1 ) { // avvio verde
       String pack = "<";
       pack.concat(receivedChars6);
       pack.concat(">");
       Serial7.print(pack);
     }
-    if (Rxs6.indexOf("339") != -1 ) { // avvio blu
+    if (Rxs6.indexOf("3533") != -1 ) { // avvio blu
       String pack = "<";
       pack.concat(receivedChars6);
       pack.concat(">");
