@@ -14,7 +14,7 @@ STATO :
 6XXX--> STOP
 
 
-COLORE  Y :
+CHI  Y :
 	 0 Stato Generico
 	 1 PALO1
 	 2 PALO2

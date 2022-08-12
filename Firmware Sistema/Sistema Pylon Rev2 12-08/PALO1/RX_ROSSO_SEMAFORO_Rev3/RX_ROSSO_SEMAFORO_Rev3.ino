@@ -1,24 +1,32 @@
 #include "Arduino.h"
 #include "LoRa_E22.h"
 #include <AltSoftSerial.h>
-
 AltSoftSerial SwSerial;
-
 LoRa_E22 e22ttl(2, 3); // Arduino RX --> e22 TX - Arduino TX --> e22 RX
-String Race = "300";
-String Show = "200";
-String Startup = "100";
-String Stop = "600";
+
+//Inizio Configurazione Ricevente
+String Race = "3000";
+String Show = "2000";
+String Startup = "1000";
+String Stop = "6000";
 String State = Startup; //Startup state
 String OldState = Startup;
+unsigned long Delaysend = 200;
+unsigned long DelayStop = 500;
+unsigned long DelayLight = 1500;
+String PressShow="2110";
+String PressRace="3112";
+int Key=0;
+int Add=1;
+int Chan=3;
+//Fine Configurazione Ricevente
+
+int RelayRed = 12;
 String TxData = "0";
 String TxDatastr;
 unsigned long Timesend = 0;
 unsigned long CurrentMillis = 0;
-unsigned long Delaysend = 200;
 unsigned long StopSend = 0;
-unsigned long DelayStop = 500;
-unsigned long DelayLight = 1500;
 unsigned long timeonlight;
 int onlight;
 int on;
@@ -27,7 +35,6 @@ char RecCh[numChars];
 boolean newData = false;
 int DoubleStop = 0;
 unsigned long millisc = 0;
-int RelayRed = 12;
 
 void setup() {
   //pinMode(SOFTTX, OUTPUT); // MT - Softrx - pin mapping output
@@ -73,7 +80,7 @@ void loop() {
         Serial.println(State);
       }
       if (State == Show || State == Race) { //if nothing has change from previous if-statements
-        if (TxData.indexOf("212") != -1 ||  TxData.indexOf("312") != -1 )
+        if (TxData.indexOf(PressShow) != -1 ||  TxData.indexOf(PressRace) != -1 )
           onlight = 1;
       }
 
@@ -82,7 +89,7 @@ void loop() {
   }
   //Serial.println("verifico se è cambiato stato");
   if ((State != OldState)) { //If statements who control that state was change and
-    ResponseStatus rc = e22ttl.sendFixedMessage(0, 1, 3, State);
+    ResponseStatus rc = e22ttl.sendFixedMessage(Key, Add, Chan, State);
     Serial.println("Mando Stato nuovo");
     Serial.println(State);
     Serial.println("plotto vecchio Stato");
@@ -95,7 +102,7 @@ void loop() {
   }
   CurrentMillis = millis();
   if (DoubleStop == 1 && (CurrentMillis - StopSend) > DelayStop && State == Stop) {
-    ResponseStatus rc = e22ttl.sendFixedMessage(0, 1, 3, State);
+    ResponseStatus rc = e22ttl.sendFixedMessage(Key, Add, Chan, State);
     DoubleStop = 0;
   }
   else if (State != Stop) {
