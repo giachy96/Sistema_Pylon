@@ -72,11 +72,11 @@ void loop() {
     String Rxs;
     Rxs = receivedChars1;
 
-    if (Rxs.indexOf("220") != -1 || Rxs.indexOf("210") != -1 || Rxs.indexOf("230") != -1) { // codice show
+    if (Rxs.indexOf("2510") != -1 || Rxs.indexOf("210") != -1 || Rxs.indexOf("230") != -1) { // codice show
       values[0] = "0";
       decodecomma(Rxs, values); // decodifico i valori
 
-      if (values[0] == "220") {
+      if (values[0] == "2510") {
         temporosso[0] = values[0];
         showcrorosso = true;
       } else if (values[0] == "230") {
@@ -96,11 +96,11 @@ void loop() {
     }
 
 
-    if (Rxs.indexOf("423") != -1 || Rxs.indexOf("433") != -1 || Rxs.indexOf("413") != -1) { // controllo se ci sta il codice della ricezione tempo
+    if (Rxs.indexOf("4514") != -1 || Rxs.indexOf("433") != -1 || Rxs.indexOf("413") != -1) { // controllo se ci sta il codice della ricezione tempo
       values[0] = "0";
       decodecomma(Rxs, values); // decodifico i valori
 
-      if (values[0] == "423") {
+      if (values[0] == "4514") {
         temporosso[0] = values[0];
         temporosso[1] = values[1];
         temporosso[2] = values[2];
@@ -123,9 +123,9 @@ void loop() {
     }
 
 
-    if (Rxs.indexOf("523") != -1 ||  Rxs.indexOf("533") != -1 || Rxs.indexOf("513") != -1) { // codice ricezione 10 giri
+    if (Rxs.indexOf("5514") != -1 ||  Rxs.indexOf("533") != -1 || Rxs.indexOf("513") != -1) { // codice ricezione 10 giri
       decodecomma(Rxs, values);
-      if (values[0] == "523") {
+      if (values[0] == "5514") {
         temporosso[0] = values[0];
         temporosso[3] = values[2];
       } else if (values[0] == "533") {
@@ -140,7 +140,7 @@ void loop() {
     newData = false;
   }
  String strx = receivedChars1;
-  if (strx.indexOf("523") != -1  || strx.indexOf("513") != -1 || strx.indexOf("533") != -1) {
+  if (strx.indexOf("5514") != -1  || strx.indexOf("513") != -1 || strx.indexOf("533") != -1) {
 
     if (millis() - old523update >= 1000) {
       if (bounce == 0) {

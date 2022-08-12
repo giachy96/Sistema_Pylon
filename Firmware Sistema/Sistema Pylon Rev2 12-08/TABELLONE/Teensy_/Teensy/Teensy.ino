@@ -73,7 +73,7 @@ void loop() {
   if (currentMillis - oldMillis >= pressbutton) {
     if (digitalRead(pStop) == HIGH) {
       Serial6.print("<STOP>");
-      Serial8.print("<500>");
+      Serial8.print("<6000>");
       Serial1.print("<500>");
       Serial7.print("<500>");
       Serial3.print("<500>");
@@ -81,7 +81,7 @@ void loop() {
     }
     if (digitalRead(pGo) == LOW ) {
       Serial6.print("<GO>");
-      Serial8.print("<300>");
+      Serial8.print("<3000>");
       Serial1.print("<300>");
       Serial7.print("<300>");
       Serial3.print("<300>");
@@ -89,7 +89,7 @@ void loop() {
     }
     if (digitalRead(pShow) == LOW ) {
       Serial6.print("<SHOW>");
-      Serial8.print("<200>");
+      Serial8.print("<2000>");
       Serial1.print("<200>");
       Serial7.print("<200>");
       Serial3.print("<200>");
@@ -100,17 +100,17 @@ void loop() {
   if (newData8 == true) {
     String Rxs8;
     Rxs8 = receivedChars8;
-    if (Rxs8.indexOf("423") != -1 || Rxs8.indexOf("523") != -1 || Rxs8.indexOf("220") != -1) {
+    if (Rxs8.indexOf("4514") != -1 || Rxs8.indexOf("5514") != -1 || Rxs8.indexOf("2510") != -1) {
       String pack = "<";
       pack.concat(receivedChars8);
       pack.concat(">");
       Serial6.print(pack);
 
-      if (Rxs8.indexOf("423") != -1 ) {
+      if (Rxs8.indexOf("4514") != -1 ) {
         decodecomma(Rxs8, values);
         tempirosso[values[1].toInt()] = values[2];
       }
-       if (Rxs8.indexOf("523") != -1 ) {
+       if (Rxs8.indexOf("5514") != -1 ) {
         decodecomma(Rxs8, values);
         tempirosso[11] = values[2];
       }
@@ -167,7 +167,7 @@ void loop() {
     if (newData6 == true) {
     String Rxs6;
     Rxs6 = receivedChars6;
-    if (Rxs6.indexOf("329") != -1 ) { // avvio rosso
+    if (Rxs6.indexOf("3513") != -1 ) { // avvio rosso
       String pack = "<";
       pack.concat(receivedChars6);
       pack.concat(">");

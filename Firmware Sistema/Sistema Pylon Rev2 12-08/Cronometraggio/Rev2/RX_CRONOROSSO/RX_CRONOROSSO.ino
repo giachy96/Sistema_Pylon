@@ -7,9 +7,9 @@ LoRa_E22 e22ttl(2, 3); // Arduino RX --> e22 TX - Arduino TX --> e22 RX
 //#define SOFTRX 11 // MT - define rx pin 10
 //#define SOFTTX 10 // MT - define tx pin 11
 //SoftwareSerial AltSerial(SOFTRX,SOFTTX);
-String Race = "<300>";
-String Show = "<200>";
-String Startup = "<100>";
+String Race = "<3000>";
+String Show = "<2000>";
+String Startup = "<1000>";
 String State = Show; //Startup state
 String TxData = "0";
 const byte numChars = 32;
@@ -42,12 +42,12 @@ void loop() {
     Serial.println("Ricevo dal lora");
     Serial.println(TxData);
 
-    if (TxData != "0" && (State == "200"|| State == "300"|| State == "329" )) { //Condition for sent to mega press
+    if (TxData != "0" && (State == "2000"|| State == "3000"|| State == "3513" )) { //Condition for sent to mega press
       if (AltSerial.available() > 0) { // If mega will sent state to sem_rx
         recvWithStartEndMarkers( RecCh );
         State = RecCh;
       }
-      if (State == "200" || State == "300" || State == "329") { //if nothing has change from previous if-statements
+      if (State == "2000" || State == "3000" || State == "3513") { //if nothing has change from previous if-statements
         
         String pack  = "<";
         pack.concat(TxData);

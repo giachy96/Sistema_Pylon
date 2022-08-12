@@ -123,7 +123,7 @@ void loop() {
     }
     CurrentPress = millis();
 
-    if (State == "200" ) {  // SSHOW
+    if (State == "2000" ) {  // SSHOW
       
 
       if (digitalRead(pulsante) == LOW && (CurrentPress - Lastpress) >= Delaypress) {
@@ -139,7 +139,7 @@ void loop() {
       }
     }
 
-    if (State == "300") {  // START Gara
+    if (State == "3000") {  // START Gara
        if (newData == true) {
         tone(buzzer, 1000, 200);
         newData = false;
@@ -153,7 +153,7 @@ void loop() {
       
  
     }
-    if (State == "319") {  // Start cronometro
+    if (State == "3523") {  // Start cronometro
        if (newData == true) {
         tone(buzzer, 1000, 200);
         if (lapcounter == -1 ) {
@@ -163,7 +163,7 @@ void loop() {
         float ultimo_tempo = tempo_flt[lapcounter];
         char bu[10];
         dtostrf(ultimo_tempo, 4, 3, bu);  //4 is mininum width, 6 is precision
-        String msg = "413,";
+        String msg = "4524,";
         msg.concat(lapcounter);
         msg.concat(",");
         msg.concat(bu);
@@ -184,10 +184,12 @@ void loop() {
         tempo_flt[11] = tot;
         tempo_parziale[11] = (int)(tot * 100); // per inserire il totale sulla stringa con virgole
         float ultimo_tempo = tempo_flt[11];
-        String msg = "513,";
+        char bu[10];
+        dtostrf(ultimo_tempo, 4, 3, bu);  //4 is mininum width, 6 is precision
+        String msg = "5524,";
         msg.concat("11");
         msg.concat(",");
-        msg.concat(String(ultimo_tempo));
+        msg.concat(bu);
         ResponseStatus rs = e22ttl.sendFixedMessage(0, 0, 7, msg);
         State = "";
         draw(4 , u8x8);
@@ -203,7 +205,7 @@ void loop() {
         float ultimo_tempo = tempo_flt[lapcounter];
         char bu[10];
         dtostrf(ultimo_tempo, 4, 3, bu);  //4 is mininum width, 6 is precision
-        String msg = "413,";
+        String msg = "4524,";
         msg.concat(lapcounter);
         msg.concat(",");
         msg.concat(bu);
@@ -215,7 +217,7 @@ void loop() {
 
       }
     }
-    if (State == "500" ) {  // STOP
+    if (State == "6000" ) {  // STOP
       if (newData == true) {
         tone(buzzer, 1000, 200);
         draw(5, u8x8);
