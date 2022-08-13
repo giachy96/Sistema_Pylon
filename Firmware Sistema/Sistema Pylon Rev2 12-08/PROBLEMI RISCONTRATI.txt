@@ -2,4 +2,5 @@
   e anche quando arrivano scaglionati , da controllare.
 2) teelcomandi del palo 1 old state
 3) inserire anche sui telecomadi dei taglio lo start gara e il "partiti" quando parte il proprio pilota per evitare ppressioni anticiapte
-4) qundo il tabellone fa go dopo dovrebbe venire  0 0.000 ma invece no...
+4) sul palo2/3 che succede se gli deve arrivare lo stop mentre fanno il ping pong?
+5) qundo il tabellone fa go dopo dovrebbe venire  0 0.000 ma invece no...
