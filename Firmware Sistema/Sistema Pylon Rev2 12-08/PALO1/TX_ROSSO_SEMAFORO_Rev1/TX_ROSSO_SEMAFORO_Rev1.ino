@@ -46,6 +46,7 @@ unsigned long Delaysend = 200;
 String PressShow="2110";
 String PressRace="3112";
 String PressCut="3111";
+String end10lap = "5514";
 int Key=0;
 int Add=0;
 int Chan=3;
@@ -103,7 +104,7 @@ void loop() {
       changeState = 0;
       tone(buzzer, 1000, 200);
     }
-    if ((((currentMillis - previousMillis) >= interval) || changeState == 1) && State == End) { // Casistica per display, se siamo in End, metti la schermata 6 e aggiorna ogni 5 sec, o aggiorna quando il flag changestate  è attivo
+    if ( changeState == 1 && State == end10lap) { // Casistica per display, se siamo in End, metti la schermata 6 e aggiorna ogni 5 sec, o aggiorna quando il flag changestate  è attivo
       previousMillis = currentMillis;
       draw(6, u8x8);
       Serial.println("Case6");//debug

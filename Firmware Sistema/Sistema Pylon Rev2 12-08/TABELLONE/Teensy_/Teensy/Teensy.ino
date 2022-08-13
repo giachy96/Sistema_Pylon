@@ -113,6 +113,7 @@ void loop() {
        if (Rxs8.indexOf("5514") != -1 ) {
         decodecomma(Rxs8, values);
         tempirosso[11] = values[2];
+        Serial3.print("<5514>");
       }
 
     }
@@ -136,6 +137,7 @@ void loop() {
        if (Rxs1.indexOf("5534") != -1 ) {
         decodecomma(Rxs1, values);
         tempiblu[11] = values[2];
+         Serial3.print("<5534>");
       }
 
     }
@@ -158,6 +160,7 @@ void loop() {
        if (Rxs7.indexOf("5524") != -1 ) {
         decodecomma(Rxs7, values);
         tempiverde[11] = values[2];
+         Serial3.print("<5524>");
       }
 
     }

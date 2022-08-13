@@ -13,12 +13,15 @@ String OldState;
 String PressShowR = "2110";
 String PressRaceR = "3112";
 String PressCutR = "3111";
+String end10lapR = "5514";
 String PressShowV = "2120";
 String PressRaceV = "3122";
 String PressCutV = "3121";
+String end10lapV = "5514";
 String PressShowB = "2130";
 String PressRaceB = "3132";
 String PressCutB = "3131";
+String end10lapB = "5514";
 //Fine Configurazione
 
 String TxData = "0";
@@ -73,12 +76,12 @@ void loop() {
     // Serial.println("Ricevo dal lora");
     Serial.println(TxData);
 
-    if (TxData != "0" && (State == Show  || State == Race )) { //Condition for sent to mega press
+    if (TxData != "0" && (State == Show  || State == Race || State == end10lapR || State == end10lapV || State == end10lapB )) { //Condition for sent to mega press
       if (AltSerial.available() > 0) { // If mega will sent state to sem_rx
         recvWithStartEndMarkers( RecCh );
         State = RecCh;
       }
-      if (State == Show  || State == Race ) { //if nothing has change from previous if-statements
+      if (State == Show  || State == Race || State == end10lapR || State == end10lapV || State == end10lapB ) { //if nothing has change from previous if-statements
         String pack  = "<";
         pack.concat(TxData);
         pack.concat(">");
@@ -119,7 +122,7 @@ void loop() {
         digitalWrite( luceverde, HIGH);
       }
       if (ntagliverde >= 1) {
-       lampeggianteverde = 1;
+        lampeggianteverde = 1;
       }
     }
     if (valrx[1] == PressCutR) { // controllo se mi è arrivato il taglio del rosso
@@ -141,7 +144,7 @@ void loop() {
         digitalWrite( luceblu, HIGH);
       }
       if (ntagliblu >= 1) {
-       lampeggianteblu = 1;
+        lampeggianteblu = 1;
       }
     }
     TxDatastr = "";
@@ -162,9 +165,9 @@ void loop() {
     OldState = State;
   }
 
-//codici per il lampeggio
+  //codici per il lampeggio
   if (lampeggianterosso == 1) {
-    if (onrosso == 0 && millis() - lampmillisrosso >=500) {
+    if (onrosso == 0 && millis() - lampmillisrosso >= 500) {
       lampmillisrosso = millis();
       onrosso = 1;
       digitalWrite( lucerosso, HIGH);
@@ -178,8 +181,8 @@ void loop() {
     }
   }
 
-   if (lampeggianteverde == 1) {
-    if (onverde == 0 && millis() - lampmillisverde >=500) {
+  if (lampeggianteverde == 1) {
+    if (onverde == 0 && millis() - lampmillisverde >= 500) {
       lampmillisverde = millis();
       onverde = 1;
       digitalWrite( luceverde, HIGH);
@@ -192,8 +195,8 @@ void loop() {
 
     }
   }
-   if (lampeggianteblu == 1) {
-    if (onblu == 0 && millis() - lampmillisblu >=500) {
+  if (lampeggianteblu == 1) {
+    if (onblu == 0 && millis() - lampmillisblu >= 500) {
       lampmillisblu = millis();
       onblu = 1;
       digitalWrite( luceblu, HIGH);

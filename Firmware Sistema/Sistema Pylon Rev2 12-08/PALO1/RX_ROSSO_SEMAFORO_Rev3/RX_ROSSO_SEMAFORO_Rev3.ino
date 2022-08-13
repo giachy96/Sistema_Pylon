@@ -16,6 +16,7 @@ unsigned long DelayStop = 500;
 unsigned long DelayLight = 1500;
 String PressShow = "2110";
 String PressRace = "3112";
+String end10lap = "5514";
 int Key = 0;
 int Add = 1;
 int Chan = 3;
@@ -64,7 +65,7 @@ void loop() {
     millisc = millis();
     Serial.println(TxData);
 
-    if (TxData != "0" && (State == Show || State == Race)) { //Condition for sent to mega press
+    if (TxData != "0" && (State == Show || State == Race || State == end10lap)) { //Condition for sent to mega press
       RecStr();//valutare se disabilitare
       if (newData == true) { //(SwSerial.available()>0){  // If mega will sent state to sem_rx
         Serial.println("C'è qualcosa in seriale - riassegno un nuovo stato ");
@@ -72,7 +73,7 @@ void loop() {
         Serial.println(State);
         newData = false;
       }
-      if (State == Show || State == Race) { //if nothing has change from previous if-statements
+      if (State == Show || State == Race || State == end10lap ) { //if nothing has change from previous if-statements
         String str = "<";
         str.concat(TxData);
         str.concat(">");
@@ -82,7 +83,7 @@ void loop() {
         Serial.println(TxData);
         Serial.println(State);
       }
-      if (State == Show || State == Race) { //if nothing has change from previous if-statements
+      if (State == Show || State == Race ) { //if nothing has change from previous if-statements
         if (TxData.indexOf(PressShow) != -1 ||  TxData.indexOf(PressRace) != -1 )
           onlight = 1;
       }

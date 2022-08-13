@@ -26,12 +26,15 @@ char RecCh3[numChars];
 String Race = "3000";
 String Show = "2000";
 String Startup = "1000";
+String end10lapB = "5514";
+String end10lapV = "5514";
+String end10lapR = "5514";
 String State = Startup;
 String OldState = Startup;
 unsigned long Delaysend = 200;
-int Key=0;
-int Add=0;
-int Chan=2;
+int Key = 0;
+int Add = 0;
+int Chan = 2;
 
 //Fine Configurazione Mega
 
@@ -53,7 +56,7 @@ void setup() {
 }
 void loop() {
   Currentmillisx = millis(); // Assign millis value to Currentmillisx for if statements
-  if (State == Show || State == Race) { //Delay time for receive serial data, if necessary...
+  if (State == Show || State == Race || State == end10lapR || State == end10lapV || State == end10lapB ) { //Delay time for receive serial data, if necessary...
     RecStr1();
     if (newData1 == true) { //(Serial1.available()>0){
       //Serial.println("C'è qualcosa in seriale");
@@ -63,10 +66,10 @@ void loop() {
       newData1 = false;
     }
   }
- 
+
 
   Currentmillisx = millis();
-  if (State == Show || State == Race) {
+  if (State == Show || State == Race || State == end10lapR || State == end10lapV || State == end10lapB) {
     RecStr2();
     if (newData2 == true) { //(Serial2.available()>0){
       //Serial.println("C'è qualcosa in seriale");
@@ -75,10 +78,10 @@ void loop() {
       newData2 = false;
     }
   }
- 
+
 
   Currentmillisx = millis();
-  if (State == Show || State == Race) {
+  if (State == Show || State == Race || State == end10lapR || State == end10lapV || State == end10lapB) {
     RecStr3();
     if (newData3 == true) { //(Serial3.available()>0){
       //Serial.println("C'è qualcosa in seriale");
@@ -92,7 +95,7 @@ void loop() {
 
 
   Currentmilliss = millis(); // millis assignments for send delay control
-  if ((Currentmilliss - Timesend) >= Delaysend && (State == Show || State == Race)) { //If the last receive is older than Delaysend, and state is race or show
+  if ((Currentmilliss - Timesend) >= Delaysend && (State == Show || State == Race || State == end10lapR || State == end10lapV || State == end10lapB)) { //If the last receive is older than Delaysend, and state is race or show
     if (Dateserial1 != "0" || Dateserial2 != "0" || Dateserial3 != "0")  { //If some button was pressed
       Dateserial = State;
       Dateserial.concat(",");
@@ -139,22 +142,28 @@ void loop() {
       Serial.println(RecCh1);
       newData1 = false;
     }
-    Serial1.print(str);//Send to receiver 1 State
-    //Serial.println(State);
+    if (str.indexOf( end10lapB) == -1 || str.indexOf( end10lapV) == -1 ) {
+      Serial1.print(str);//Send to receiver 1 State
+      //Serial.println(State);
+    }
     RecStr2();
     if (newData2 == true) { //(Serial2.available()>0){
       Dateserial2 = RecCh2; //Assign incoming data from Serial1 to Dateserial1
       Serial.println(RecCh2);
       newData2 = false;
     }
-    Serial2.print(str);
+    if (str.indexOf( end10lapB) == -1 || str.indexOf( end10lapR) == -1 ) {
+      Serial2.print(str);
+    }
     RecStr3();
     if (newData3 == true) { //(Serial3.available()>0){
       Dateserial3p = RecCh3; //Assign incoming data from Serial1 to Dateserial1
       Serial.println(RecCh3);
       newData3 == false;
     }
-    Serial3.print(str);
+    if (str.indexOf( end10lapR) == -1 || str.indexOf( end10lapV) == -1 ) {
+      Serial3.print(str);
+    }
     OldState = State; //Reset condition for send State to the rx
   }
 }
