@@ -127,7 +127,7 @@ void loop() {
       
 
       if (digitalRead(pulsante) == LOW && (CurrentPress - Lastpress) >= Delaypress) {
-        ResponseStatus rs = e22ttl.sendFixedMessage(0, 0, 7, "210");
+        ResponseStatus rs = e22ttl.sendFixedMessage(0, 0, 7, "2520");
         tone(buzzer, 1000, 200);
         Lastpress = millis();
       }

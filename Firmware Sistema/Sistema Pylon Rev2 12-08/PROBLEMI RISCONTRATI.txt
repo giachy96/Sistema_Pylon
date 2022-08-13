@@ -1,0 +1,4 @@
+1) nel tabellone quando arrivano i 10 giri ci sta qualche problema quando arrivano contemporaneamente
+  e anche quando arrivano scaglionati , da controllare.
+2) teelcomandi del palo 1 old state
+3)

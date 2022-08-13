@@ -72,7 +72,7 @@ void loop() {
     String Rxs;
     Rxs = receivedChars1;
 
-    if (Rxs.indexOf("2510") != -1 || Rxs.indexOf("210") != -1 || Rxs.indexOf("230") != -1) { // codice show
+    if (Rxs.indexOf("2510") != -1 || Rxs.indexOf("2520") != -1 || Rxs.indexOf("2530") != -1) { // codice show
       values[0] = "0";
       decodecomma(Rxs, values); // decodifico i valori
 
@@ -96,7 +96,7 @@ void loop() {
     }
 
 
-    if (Rxs.indexOf("4514") != -1 || Rxs.indexOf("433") != -1 || Rxs.indexOf("413") != -1) { // controllo se ci sta il codice della ricezione tempo
+    if (Rxs.indexOf("4514") != -1 || Rxs.indexOf("4524") != -1 || Rxs.indexOf("4534") != -1) { // controllo se ci sta il codice della ricezione tempo
       values[0] = "0";
       decodecomma(Rxs, values); // decodifico i valori
 
@@ -104,34 +104,34 @@ void loop() {
         temporosso[0] = values[0];
         temporosso[1] = values[1];
         temporosso[2] = values[2];
-      } else if (values[0] == "433") {
+      } else if (values[0] == "4534") {
         tempoblu[0] = values[0];
         tempoblu[1] = values[1];
         tempoblu[2] = values[2];
-      } else if (values[0] == "413") {
+      } else if (values[0] == "4524") {
         tempoverde[0] = values[0];
         tempoverde[1] = values[1];
         tempoverde[2] = values[2];
       }
       dmd.clearScreen();
       dmd.drawString(0, 33, temporosso[1]);// 24/33
-      dmd.drawString(20, 33, temporosso[2]);// 24/33
+      dmd.drawString(18, 33, temporosso[2]);// 24/33
       dmd.drawString(0, 1, tempoblu[1]);// 24/33
-      dmd.drawString(20, 1, tempoblu[2]);// 24/33
+      dmd.drawString(18, 1, tempoblu[2]);// 24/33
       dmd.drawString(0, 17, tempoverde[1]);// 24/33
-      dmd.drawString(20, 17, tempoverde[2]);// 24/33
+      dmd.drawString(18, 17, tempoverde[2]);// 24/33
     }
 
 
-    if (Rxs.indexOf("5514") != -1 ||  Rxs.indexOf("533") != -1 || Rxs.indexOf("513") != -1) { // codice ricezione 10 giri
+    if (Rxs.indexOf("5514") != -1 ||  Rxs.indexOf("5524") != -1 || Rxs.indexOf("5534") != -1) { // codice ricezione 10 giri
       decodecomma(Rxs, values);
       if (values[0] == "5514") {
         temporosso[0] = values[0];
         temporosso[3] = values[2];
-      } else if (values[0] == "533") {
+      } else if (values[0] == "5534") {
         tempoblu[0] = values[0];
         tempoblu[3] = values[2];
-      } if (values[0] == "513") {
+      } if (values[0] == "5524") {
         tempoverde[0] = values[0];
         tempoverde[3] = values[2];
       }
@@ -140,17 +140,17 @@ void loop() {
     newData = false;
   }
  String strx = receivedChars1;
-  if (strx.indexOf("5514") != -1  || strx.indexOf("513") != -1 || strx.indexOf("533") != -1) {
+  if (strx.indexOf("5514") != -1  || strx.indexOf("5524") != -1 || strx.indexOf("5534") != -1) {
 
     if (millis() - old523update >= 1000) {
       if (bounce == 0) {
         dmd.clearScreen();
         dmd.drawString(0, 33, temporosso[1]);// 24/33
-        dmd.drawString(20, 33, temporosso[2]);// 24/33
+        dmd.drawString(18, 33, temporosso[2]);// 24/33
         dmd.drawString(0, 1, tempoblu[1]);// 24/33
-        dmd.drawString(20, 1, tempoblu[2]);// 24/33
+        dmd.drawString(18, 1, tempoblu[2]);// 24/33
         dmd.drawString(0, 17, tempoverde[1]);// 24/33
-        dmd.drawString(20, 17, tempoverde[2]);// 24/33
+        dmd.drawString(18, 17, tempoverde[2]);// 24/33
         bounce = 1;
       } else {
 
