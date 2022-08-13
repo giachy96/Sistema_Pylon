@@ -111,6 +111,8 @@ void loop() {
       changeState = 0;
       tone(buzzer, 1000, 200);
     }
+    
+    
       if ( changeState == 1 && State == Stop) { // Casistica per display, se siamo in End, metti la schermata 6 e aggiorna ogni 5 sec, o aggiorna quando il flag changestate  è attivo
       previousMillis = currentMillis;
       draw(5, u8x8);

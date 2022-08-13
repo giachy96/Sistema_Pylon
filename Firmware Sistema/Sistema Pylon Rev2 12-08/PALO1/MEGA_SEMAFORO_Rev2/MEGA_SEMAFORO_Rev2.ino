@@ -26,8 +26,8 @@ char RecCh3[numChars];
 String Race = "3000";
 String Show = "2000";
 String Startup = "1000";
-String end10lapB = "5514";
-String end10lapV = "5514";
+String end10lapB = "5534";
+String end10lapV = "5524";
 String end10lapR = "5514";
 String State = Startup;
 String OldState = Startup;
@@ -143,6 +143,7 @@ void loop() {
       newData1 = false;
     }
     if (str.indexOf( end10lapB) == -1 || str.indexOf( end10lapV) == -1 ) {
+     
       Serial1.print(str);//Send to receiver 1 State
       //Serial.println(State);
     }
