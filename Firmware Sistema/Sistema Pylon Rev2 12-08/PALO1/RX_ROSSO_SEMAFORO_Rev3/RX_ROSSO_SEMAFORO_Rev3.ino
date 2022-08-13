@@ -14,11 +14,11 @@ String OldState = Startup;
 unsigned long Delaysend = 200;
 unsigned long DelayStop = 500;
 unsigned long DelayLight = 1500;
-String PressShow="2110";
-String PressRace="3112";
-int Key=0;
-int Add=1;
-int Chan=3;
+String PressShow = "2110";
+String PressRace = "3112";
+int Key = 0;
+int Add = 1;
+int Chan = 3;
 //Fine Configurazione Ricevente
 
 int RelayRed = 12;
@@ -30,7 +30,7 @@ unsigned long StopSend = 0;
 unsigned long timeonlight;
 int onlight;
 int on;
-const byte numChars = 5;
+const byte numChars = 32;
 char RecCh[numChars];
 boolean newData = false;
 int DoubleStop = 0;
@@ -73,7 +73,10 @@ void loop() {
         newData = false;
       }
       if (State == Show || State == Race) { //if nothing has change from previous if-statements
-        SwSerial.print(TxData); //Send Txdata from rx to Mega
+        String str = "<";
+        str.concat(TxData);
+        str.concat(">");
+        SwSerial.print(str); //Send Txdata from rx to Mega
         Serial.println("Scrivo in seriale");
         millisc = millis();
         Serial.println(TxData);
@@ -109,7 +112,7 @@ void loop() {
     DoubleStop = 0;
   }
 
-//DIOBESTIA TUTTE STE SEGHE PER UNA LUCE
+  //DIOBESTIA TUTTE STE SEGHE PER UNA LUCE
   if (onlight == 1) {
     if (on == 0 ) {
       digitalWrite(RelayRed, HIGH);
@@ -123,7 +126,7 @@ void loop() {
       }
     }
   }
-//FINE SEGHE PER UNA LUCE
+  //FINE SEGHE PER UNA LUCE
 
 }
 

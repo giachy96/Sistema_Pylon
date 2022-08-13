@@ -76,7 +76,7 @@ void loop() {
       Serial8.print("<6000>");
       Serial1.print("<6000>");
       Serial7.print("<6000>");
-      Serial3.print("<500>");
+      Serial3.print("<6000>");
       oldMillis = millis();
     }
     if (digitalRead(pGo) == LOW ) {
@@ -84,7 +84,7 @@ void loop() {
       Serial8.print("<3000>");
       Serial1.print("<3000>");
       Serial7.print("<3000>");
-      Serial3.print("<300>");
+      Serial3.print("<3000>");
       oldMillis = millis();
     }
     if (digitalRead(pShow) == LOW ) {
@@ -92,7 +92,7 @@ void loop() {
       Serial8.print("<2000>");
       Serial1.print("<2000>");
       Serial7.print("<2000>");
-      Serial3.print("<200>");
+      Serial3.print("<2000>");
       oldMillis = millis();
     }
   }

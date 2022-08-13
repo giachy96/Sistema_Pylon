@@ -17,7 +17,7 @@ String Dateserial1p = "0";
 String Dateserial2p = "0";
 String Dateserial3p = "0";
 String Dateserial;
-const byte numChars = 5;
+const byte numChars = 32;
 char RecCh1[numChars];
 char RecCh2[numChars];
 char RecCh3[numChars];
@@ -58,7 +58,7 @@ void loop() {
     if (newData1 == true) { //(Serial1.available()>0){
       //Serial.println("C'è qualcosa in seriale");
       Dateserial1 = RecCh1; //Assign incoming data from Serial1 to Dateserial1
-      //Serial.println(Dateserial1);
+      Serial.println(Dateserial1);
       Timeserial1 = millis(); // Assign millis value for turning off relay
       newData1 = false;
     }

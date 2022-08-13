@@ -10,15 +10,15 @@ String Show = "2000";
 String Startup = "1000";
 String State = Show; //Startup state
 String OldState;
-String PressShowR="2110";
-String PressRaceR="3112";
-String PressCutR="3111";
-String PressShowV="2120";
-String PressRaceV="3122";
-String PressCutV="3121";
-String PressShowB="2130";
-String PressRaceB="3132";
-String PressCutB="3131";
+String PressShowR = "2110";
+String PressRaceR = "3112";
+String PressCutR = "3111";
+String PressShowV = "2120";
+String PressRaceV = "3122";
+String PressCutV = "3121";
+String PressShowB = "2130";
+String PressRaceB = "3132";
+String PressCutB = "3131";
 //Fine Configurazione
 
 String TxData = "0";
@@ -32,6 +32,12 @@ int luceblu = 6;
 int  ntaglirosso;
 int  ntagliblu;
 int  ntagliverde;
+int lampeggianterosso = 0;
+int onrosso = 0;
+int lampeggianteverde = 0;
+int onverde = 0;
+int lampeggianteblu = 0;
+int onblu = 0;
 unsigned long lampmillisrosso ;
 unsigned long lampmillisverde ;
 unsigned long lampmillisblu ;
@@ -57,7 +63,7 @@ void loop() {
     digitalWrite( luceblu, LOW);
     digitalWrite( lucerosso, LOW);
     digitalWrite( luceverde, LOW);
-    TxDatastr ="";
+    TxDatastr = "";
     ResponseStatus rs = e22ttl.sendFixedMessage(0, 1, 2, RecCh);
     newData = false;
   }
@@ -88,18 +94,18 @@ void loop() {
 
   if (TxDatastr.indexOf(Show) != -1 ) {
     decodecomma(TxDatastr , valrx );
-    ntaglirosso = 0;
-    ntagliblu = 0;
-    ntagliverde = 0;
-   
-    if (valrx[1] == "212") { // controllo se mi è arrivato lo show del rosso
+    Serial.println(ntaglirosso);
+    Serial.println(lampeggianterosso);
+
+
+    if (valrx[1] == PressShowR) { // controllo se mi è arrivato lo show del rosso
       digitalWrite( lucerosso, HIGH);
-     
+
     }
-    if (valrx[2] == "222") { // controllo se mi è arrivato lo show del verde
+    if (valrx[2] == PressShowV) { // controllo se mi è arrivato lo show del verde
       digitalWrite( luceverde, HIGH);
     }
-    if (valrx[3] == "232") { // controllo se mi è arrivato lo show del blu
+    if (valrx[3] == PressShowB) { // controllo se mi è arrivato lo show del blu
       digitalWrite( luceblu, HIGH);
     }
   }
@@ -107,38 +113,38 @@ void loop() {
 
   if (TxDatastr.indexOf(Race) != -1 ) {
     decodecomma(TxDatastr , valrx );
-    if (valrx[2] == "321") { // controllo se mi è arrivato il taglio del verde
+    if (valrx[2] == PressCutV) { // controllo se mi è arrivato il taglio del verde
       ntagliverde = ntagliverde + 1;
       if (ntagliverde == 1) {
         digitalWrite( luceverde, HIGH);
       }
       if (ntagliverde >= 1) {
-        lampeggiante(luceverde, 1);
+       lampeggianteverde = 1;
       }
     }
-    if (valrx[1] == "311") { // controllo se mi è arrivato il taglio del rosso
-     
+    if (valrx[1] == PressCutR) { // controllo se mi è arrivato il taglio del rosso
+
       ntaglirosso = ntaglirosso + 1;
       if (ntaglirosso == 1) {
         digitalWrite( lucerosso, HIGH);
-         
+
       }
       if (ntaglirosso > 1) {
-        lampeggiante(lucerosso, 2);
+        lampeggianterosso = 1;
         Serial.println("ci entro?");
       }
-     valrx[1] = "";
+      valrx[1] = "";
     }
-    if (valrx[3] == "331") { // controllo se mi è arrivato il taglio del blu
+    if (valrx[3] == PressCutB) { // controllo se mi è arrivato il taglio del blu
       ntagliblu = ntagliblu + 1;
       if (ntagliblu == 1) {
         digitalWrite( luceblu, HIGH);
       }
       if (ntagliblu >= 1) {
-        lampeggiante(luceblu, 3);
+       lampeggianteblu = 1;
       }
     }
-  TxDatastr = "";
+    TxDatastr = "";
   }
 
   if (OldState != State) { //If state was change on previous code
@@ -146,37 +152,64 @@ void loop() {
     digitalWrite( luceblu, LOW);
     digitalWrite( lucerosso, LOW);
     digitalWrite( luceverde, LOW);
-    TxDatastr ="";
+    ntaglirosso = 0;
+    ntagliblu = 0;
+    ntagliverde = 0;
+    lampeggianterosso = 0;
+    lampeggianteverde = 0;
+    lampeggianteblu = 0;
+    TxDatastr = "";
     OldState = State;
   }
-}
 
+//codici per il lampeggio
+  if (lampeggianterosso == 1) {
+    if (onrosso == 0 && millis() - lampmillisrosso >=500) {
+      lampmillisrosso = millis();
+      onrosso = 1;
+      digitalWrite( lucerosso, HIGH);
 
-void lampeggiante (int pin , int colore ) {
-  if (colore = 1) {
-    if (millis() - lampmillisverde >= 1000) {
-      digitalWrite(pin, HIGH);
-    } else {
-      digitalWrite(pin, LOW);
     }
-    lampmillisverde = millis();
-  } else if (colore = 2) {
-    if (millis() - lampmillisrosso >= 1000) {
-      digitalWrite(pin, LOW);
-    } else {
-      digitalWrite(pin, LOW);
+    if (onrosso == 1 && millis() - lampmillisrosso >= 500 ) {
+      digitalWrite( lucerosso, LOW);
+      onrosso = 0;
+      lampmillisrosso = millis();
+
     }
-    lampmillisrosso = millis();
-  } else if (colore = 3) {
-    if (millis() - lampmillisblu >= 1000) {
-      digitalWrite(pin, HIGH);
-    } else {
-      digitalWrite(pin, LOW);
-    }
-    lampmillisblu = millis();
   }
 
+   if (lampeggianteverde == 1) {
+    if (onverde == 0 && millis() - lampmillisverde >=500) {
+      lampmillisverde = millis();
+      onverde = 1;
+      digitalWrite( luceverde, HIGH);
+
+    }
+    if (onverde == 1 && millis() - lampmillisverde >= 500 ) {
+      digitalWrite( luceverde, LOW);
+      onverde = 0;
+      lampmillisverde = millis();
+
+    }
+  }
+   if (lampeggianteblu == 1) {
+    if (onblu == 0 && millis() - lampmillisblu >=500) {
+      lampmillisblu = millis();
+      onblu = 1;
+      digitalWrite( luceblu, HIGH);
+
+    }
+    if (onblu == 1 && millis() - lampmillisblu >= 500 ) {
+      digitalWrite( luceblu, LOW);
+      onblu = 0;
+      lampmillisblu = millis();
+
+    }
+  }
+  // fine codici per il lampeggio
 }
+
+
 
 
 int decodecomma (String str , String tempi[]) {

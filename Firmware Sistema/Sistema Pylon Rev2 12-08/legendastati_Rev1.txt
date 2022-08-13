@@ -14,7 +14,7 @@ STATO :
 6XXX--> STOP
 
 
-CHI  Y :
+COLORE  Y :
 	 0 Stato Generico
 	 1 PALO1
 	 2 PALO2
@@ -31,7 +31,7 @@ COLORE  Z :
          3 Blu
 
 
-  COSA K : 0 Stato Generico
+  COSA K : 0 Stato Generico/show
 	   1 --> TAGLIO
            2--> SEMAFORO
 		   3--> AVVIO TEMPI
