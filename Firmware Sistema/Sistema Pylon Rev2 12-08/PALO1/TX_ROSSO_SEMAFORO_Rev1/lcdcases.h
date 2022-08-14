@@ -55,15 +55,11 @@ void draw(int cases , U8X8_SH1106_128X64_NONAME_HW_I2C u8x8) {
 
       u8x8.clear();
       u8x8.setFont(u8x8_font_8x13B_1x2_r);
-      u8x8.drawString(1, 1 , "LAP N:");
-      char buff[9];
-      sprintf (buff, "%d", lapcounter);
-      u8x8.drawString(7, 1 , buff);
-      u8x8.drawString(0, 3, " Tempo ");
-      char buff2[7];
-      dtostrf(*(poitem + lapcounter), 6, 3, buff2);
-      u8x8.drawString( 6, 3 , buff2);
-      u8x8.drawString(3, 5 , " secondi ");
+      u8x8.drawString(1, 1 , "IN GARA");
+      u8x8.drawString(0, 3, " N.Tagli: ");
+      String temptagli = String(ntagli);
+      u8x8.drawString( 8, 3 , temptagli.c_str());
+
       break;
 
     case 4:
@@ -71,12 +67,12 @@ void draw(int cases , U8X8_SH1106_128X64_NONAME_HW_I2C u8x8) {
       u8x8.clear();
       u8x8.setFont(u8x8_font_8x13B_1x2_r);
       u8x8.drawString(1, 0 , "LAP N:10");
-      dtostrf(*(poitem + 10), 6, 3, buff2);
-      u8x8.drawString( 3, 2 , buff2);
+     // dtostrf(*(poitem + 10), 6, 3, buff2);
+    //  u8x8.drawString( 3, 2 , buff2);
       u8x8.drawString(9, 2 , "s");
       u8x8.drawString(1, 4 , "Totale ");
-      dtostrf(*(poitem + 11), 6, 3, buff);
-      u8x8.drawString(3, 6 , buff);
+    //  dtostrf(*(poitem + 11), 6, 3, buff);
+    //  u8x8.drawString(3, 6 , buff);
       u8x8.drawString(9, 6 , "s");
       break;
 
@@ -100,18 +96,7 @@ void draw(int cases , U8X8_SH1106_128X64_NONAME_HW_I2C u8x8) {
       u8x8.drawString(60, 40 , " V");
       u8x8.drawString(10, 40, vout );
       break;
-          case 7:
-      // attesa nuova
-      u8x8.clear();
-      tensione_float = readvoltage(pinbatt);
-      dtostrf(tensione_float, 6, 2, vout); // Leave room for too large numbers!
 
-      u8x8.setFont(u8x8_font_8x13B_1x2_r);
-      u8x8.drawString(0, 5 , " Tagli");
-      u8x8.drawString(0, 25 , " N: ");
-      u8x8.drawString(60, 40 , " V");
-      u8x8.drawString(10, 40, ntagli );
-      break;
     default:
       // statements
       break;

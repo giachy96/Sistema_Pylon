@@ -6,6 +6,7 @@ LoRa_E22 e22ttl(2, 3); // Arduino RX --> e22 TX - Arduino TX --> e22 RX
 
 //Inizio configurazione
 String Race = "3000";
+String StartRace = "3001";
 String Show = "2000";
 String Startup = "1000";
 String State = Show; //Startup state
@@ -41,7 +42,7 @@ int lampeggianteverde = 0;
 int onverde = 0;
 int lampeggianteblu = 0;
 int onblu = 0;
-int FlagState=0;
+int FlagState = 0;
 unsigned long lampmillisrosso ;
 unsigned long lampmillisverde ;
 unsigned long lampmillisblu ;
@@ -70,6 +71,7 @@ void loop() {
     TxDatastr = "";
     ResponseStatus rs = e22ttl.sendFixedMessage(0, 1, 2, RecCh);
     newData = false;
+     FlagState = 1;
   }
   if (e22ttl.available() > 1) { // If there is something arrived from lora (Transmitter)
     ResponseContainer rc = e22ttl.receiveMessage();// Receive message
@@ -77,13 +79,13 @@ void loop() {
     // Serial.println("Ricevo dal lora");
     Serial.println(TxData);
 
-    if (TxData != "0" && (State == Show  || State == Race  )) { //Condition for sent to mega press
+    if (TxData != "0" && (State == Show  || State == StartRace  )) { //Condition for sent to mega press
       if (AltSerial.available() > 0) { // If mega will sent state to sem_rx
         recvWithStartEndMarkers( RecCh );
         State = RecCh;
-        FlagState=1;
+        FlagState = 1;
       }
-      if (State == Show  || State == Race ) { //if nothing has change from previous if-statements
+      if (State == Show  || State == StartRace ) { //if nothing has change from previous if-statements
         String pack  = "<";
         pack.concat(TxData);
         pack.concat(">");
@@ -99,8 +101,7 @@ void loop() {
 
   if (TxDatastr.indexOf(Show) != -1 ) {
     decodecomma(TxDatastr , valrx );
-    Serial.println(ntaglirosso);
-    Serial.println(lampeggianterosso);
+
 
 
     if (valrx[1] == PressShowR) { // controllo se mi è arrivato lo show del rosso
@@ -116,7 +117,7 @@ void loop() {
   }
 
 
-  if (TxDatastr.indexOf(Race) != -1 ) {
+  if (TxDatastr.indexOf(StartRace) != -1 ) {
     decodecomma(TxDatastr , valrx );
     if (valrx[2] == PressCutV) { // controllo se mi è arrivato il taglio del verde
       ntagliverde = ntagliverde + 1;
@@ -152,7 +153,7 @@ void loop() {
     TxDatastr = "";
   }
 
-  if (FlagState==1) { //If state was change on previous code
+  if (FlagState == 1) { //If state was change on previous code
 
     digitalWrite( luceblu, LOW);
     digitalWrite( lucerosso, LOW);
@@ -164,7 +165,7 @@ void loop() {
     lampeggianteverde = 0;
     lampeggianteblu = 0;
     TxDatastr = "";
-    FlagState=0;
+    FlagState = 0;
   }
 
   //codici per il lampeggio

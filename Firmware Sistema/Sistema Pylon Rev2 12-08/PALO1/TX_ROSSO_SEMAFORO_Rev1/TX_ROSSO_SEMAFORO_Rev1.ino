@@ -110,7 +110,7 @@ void loop() {
     if (changeState == 1 && State == StartRace) { // Casistica per display, se siamo in Race, metti la schermata 2 e aggiorna solo quando il flag changestate  è attivo
       previousMillis = currentMillis;
       Serial.println("Case2.1");//debug
-      draw(7, u8x8);
+      draw(3, u8x8);
       changeState = 0;
       tone(buzzer, 1000, 200);
     }
