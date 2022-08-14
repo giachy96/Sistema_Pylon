@@ -128,13 +128,13 @@ void loop() {
       }
     } 
       CurrentPress=millis();
-      if (digitalRead(taglio) == LOW && (CurrentPress-Lastpress)>=Delaypress && State==Show) { // Se sono in show, è passato il tempo di sicurezza e il bottone è premuto
+      if ((CurrentPress-Lastpress)>=Delaypress && State==Show) { // Se sono in show, è passato il tempo di sicurezza e il bottone è premuto
       Lastpress=millis(); // memorizzo il tempo della pressione
       tone(buzzer, 1000, 200); //invio il tono
       Press=1; //metto il flag su Press
     }  
       CurrentPress=millis();
-      if (digitalRead(taglio) == LOW && (CurrentPress-Lastpress)>=Delaypress && State==Race) { // Se sono in race, è passato il tempo di sicurezza e il bottone è premuto
+      if ((CurrentPress-Lastpress)>=Delaypress && State==Race) { // Se sono in race, è passato il tempo di sicurezza e il bottone è premuto
       Lastpress=millis();// memorizzo il tempo della pressione
       tone(buzzer, 1000, 200);//invio il tono
       Pressr=1;//metto il flag su Pressr

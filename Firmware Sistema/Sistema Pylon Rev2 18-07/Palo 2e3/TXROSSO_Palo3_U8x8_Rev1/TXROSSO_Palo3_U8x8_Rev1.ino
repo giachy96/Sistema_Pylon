@@ -16,7 +16,7 @@
 #include "U8x8lib.h"
 #include "Arduino.h"
 #include "LoRa_E22.h"
-#include "lcdcasesp2r.h"
+#include "lcdcasesp3r.h"
 U8X8_SH1106_128X64_NONAME_HW_I2C u8x8(/* reset=*/ U8X8_PIN_NONE);
 int taglio = 9;
 int buzzer = 5;
@@ -43,8 +43,11 @@ String Show="2000";
 String End="6000";
 String Startup="1000";
 String State=Startup;
-String ShowCut="2210";
-String RaceCut="3211";
+String ShowCut="2310";
+String RaceCut="3311";
+String StartRace = "3001";
+String end10lap = "5514";
+int ntagli = 0;
 int Key=0;
 int Add=0;
 int Chan=9;
@@ -93,40 +96,46 @@ void loop() {
       draw(0, u8x8);
       changeState=0;
     }
-    currentMillis = millis();
-    if ((((currentMillis - previousMillis)>=interval) || changeState==1) && State==Show) { // Casistica per display, se siamo in Show metti la schermata 1 e aggiorna ogni 5 sec, o aggiorna quando il flag changestate è attivo
+    if (changeState==1 && State==Show) { // Casistica per display, se siamo in Show metti la schermata 1 e aggiorna ogni 5 sec, o aggiorna quando il flag changestate è attivo
       previousMillis = currentMillis;
       Serial.println("Case1");
       draw(1, u8x8);
       changeState=0;
+      ntagli = 0;
     }
-    currentMillis = millis();
     if (changeState==1 && State==Race) { // Casistica per display, se siamo in Race metti la schermata 2 e aggiorna solo quando il flag changestate è attivo
       previousMillis = currentMillis;
       Serial.println("Case2");
       draw(2, u8x8);
       changeState=0;
     }
-    currentMillis = millis();
-    if ((((currentMillis - previousMillis)>=interval) || changeState==1) && State==End) { // Casistica per display, se siamo in End metti la schermata 6 e aggiorna ogni 5 sec, o aggiorna quando il flag changestate è attivo
+    if (changeState == 1 && State == StartRace) { // Casistica per display, se siamo in Race, metti la schermata 2 e aggiorna solo quando il flag changestate  è attivo
+      previousMillis = currentMillis;
+      Serial.println("Case2.1");//debug
+      draw(3, u8x8);
+      changeState = 0;
+    }
+    if (changeState==1 && State==End10lap) { // Casistica per display, se siamo in End metti la schermata 6 e aggiorna ogni 5 sec, o aggiorna quando il flag changestate è attivo
       previousMillis = currentMillis;
       draw(6, u8x8);
       Serial.println("Case6");
       changeState=0;
     }
+    if ( changeState == 1 && State == Stop) { // Casistica per display, se siamo in End, metti la schermata 6 e aggiorna ogni 5 sec, o aggiorna quando il flag changestate  è attivo
+      previousMillis = currentMillis;
+      draw(5, u8x8);
+      Serial.println("Case5");//debug
+      changeState = 0;
+    }
     if (e22ttl.available()>1){ 
       Serial.println("ricevo qualcosa");
       ResponseContainer rc = e22ttl.receiveMessage();// Receive message
-      if (rc.status.code!=1){ // If there is some problem
-        rc.status.getResponseDescription(); //Get report
-        }
-      else { //If there isn't any problem we're going to receive press 
         State=rc.data; //Assign incoming data on State variable
         changeState=1; //attivo il flag changeState=1, lo uso sopra per il primo aggiornamento display
         TimeSend=millis(); 
       Sync=(millis()+Phase+2*Freq); //prendo il tempo per la sincronia di invio, millis(tempo corrente) inserisco la fase (0 per il primo, Freq/2 per per il secondo) e mi metto in sicurezza aggiungendo due volte la frequenza
+      tone(buzzer, 1000, 200);
       }
-    } 
       CurrentPress=millis();
       if (digitalRead(taglio) == LOW && (CurrentPress-Lastpress)>=Delaypress && State==Show) { // Se sono in show, è passato il tempo di sicurezza e il bottone è premuto
       Lastpress=millis(); // memorizzo il tempo della pressione
@@ -134,13 +143,14 @@ void loop() {
       Press=1; //metto il flag su Press
     }  
       CurrentPress=millis();
-      if (digitalRead(taglio) == LOW && (CurrentPress-Lastpress)>=Delaypress && State==Race) { // Se sono in race, è passato il tempo di sicurezza e il bottone è premuto
+      if (digitalRead(taglio) == LOW && (CurrentPress-Lastpress)>=Delaypress && State==StartRace) { // Se sono in race, è passato il tempo di sicurezza e il bottone è premuto
       Lastpress=millis();// memorizzo il tempo della pressione
       tone(buzzer, 1000, 200);//invio il tono
       Pressr=1;//metto il flag su Pressr
+      ntagli = ntagli + 1;
     }  
     currentMillis=millis();
-if (State==Show || State==Race){ // Ogni volta che ricevo un nuovo stato memorizzo un millis che mi serve come sincronismo (Sync) , elaboro la conferma
+if (State==Show || State==StartRace){ // Ogni volta che ricevo un nuovo stato memorizzo un millis che mi serve come sincronismo (Sync) , elaboro la conferma
   if (currentMillis<Sync){ // se ancora non è arrivato il momento di trasmettere assegno il flag Transm a zero
   Transm=0;
   }
