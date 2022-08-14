@@ -27,10 +27,10 @@ void draw(int cases , U8X8_SH1106_128X64_NONAME_HW_I2C u8x8) {
       //tensione_batt = char(tensione_float );// using a float and the decimal places
       u8x8.setFont(u8x8_font_8x13B_1x2_r);
       //      u8x8.drawFrame(0, 0, 125, 64);
-      u8x8.drawString(0, 8 , " Voltaggio");
-      u8x8.drawString(0, 10 , " Batteria");
-      u8x8.drawString(10, 29, " V");
-      u8x8.drawString(4, 29, vout );
+      u8x8.drawString(0, 0 , " Voltaggio");
+      u8x8.drawString(0, 2 , " Batteria");
+      u8x8.drawString(7, 5, " V");
+      u8x8.drawString(1, 5, vout );
       //Serial.println(vout);
 
       break;

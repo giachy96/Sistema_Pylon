@@ -48,9 +48,9 @@ String RaceCut="3211";
 String StartRace = "3001";
 String end10lap = "5514";
 int ntagli = 0;
-int Key=0;
-int Add=0;
-int Chan=9;
+byte Key=0;
+byte Add=0;
+byte Chan=9;
 unsigned long Freq=500;
 unsigned long Phase=0;
 unsigned long WindowTransm=150;
@@ -148,6 +148,7 @@ void loop() {
       tone(buzzer, 1000, 200);//invio il tono
       Pressr=1;//metto il flag su Pressr
       ntagli = ntagli + 1;
+      changeState=1;
     }  
     currentMillis=millis();
 if (State==Show || State==StartRace){ // Ogni volta che ricevo un nuovo stato memorizzo un millis che mi serve come sincronismo (Sync) , elaboro la conferma
