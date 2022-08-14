@@ -174,11 +174,11 @@ if (State==Show || State==StartRace){ // Ogni volta che ricevo un nuovo stato me
     else if (Press==1 && State !=Show){ //se ho il flag di pressione ma nel frattempo è cambiato lo stato togli il flag della pressione
       Press=0;
     }
-    if (Pressr==1 && Transm==1 && State==Race && (currentMillis-TimeSend)>DelaySend){//se sono in Race, se ho il flag della pressione di Race e se ho consenso alla trasmissione con Transm
+    if (Pressr==1 && Transm==1 && State==StartRace && (currentMillis-TimeSend)>DelaySend){//se sono in Race, se ho il flag della pressione di Race e se ho consenso alla trasmissione con Transm
     ResponseStatus rs = e22ttl.sendFixedMessage(Key, Add, Chan, RaceCut);//mando il messaggio
     Pressr=0;//azzero il flag pressione di Race
     }
-    else if (Pressr==1 && State !=Race){//se ho il flag di pressione ma nel frattempo è cambiato lo stato togli il flag della pressione
+    else if (Pressr==1 && State !=StartRace){//se ho il flag di pressione ma nel frattempo è cambiato lo stato togli il flag della pressione
       Pressr=0;
     }
 }
