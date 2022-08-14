@@ -4,3 +4,4 @@
 3) inserire anche sui telecomadi dei taglio lo start gara e il "partiti" quando parte il proprio pilota per evitare ppressioni anticiapte
 4) sul palo2/3 che succede se gli deve arrivare lo stop mentre fanno il ping pong?
 5) qundo il tabellone fa go dopo dovrebbe venire  0 0.000 ma invece no...
+6) lo stato di squalifica! Quando si sono fatti 2 tagli. 
