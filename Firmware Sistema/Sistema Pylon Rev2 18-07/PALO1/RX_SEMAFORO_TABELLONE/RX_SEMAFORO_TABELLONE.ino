@@ -124,7 +124,7 @@ void loop() {
       if (ntagliverde == 1) {
         digitalWrite( luceverde, HIGH);
       }
-      if (ntagliverde >= 1) {
+      if (ntagliverde > 1) {
         lampeggianteverde = 1;
       }
     }
