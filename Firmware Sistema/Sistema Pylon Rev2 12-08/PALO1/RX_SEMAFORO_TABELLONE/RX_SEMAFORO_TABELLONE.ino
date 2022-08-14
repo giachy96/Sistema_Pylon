@@ -41,6 +41,7 @@ int lampeggianteverde = 0;
 int onverde = 0;
 int lampeggianteblu = 0;
 int onblu = 0;
+int FlagState=0;
 unsigned long lampmillisrosso ;
 unsigned long lampmillisverde ;
 unsigned long lampmillisblu ;
@@ -80,6 +81,7 @@ void loop() {
       if (AltSerial.available() > 0) { // If mega will sent state to sem_rx
         recvWithStartEndMarkers( RecCh );
         State = RecCh;
+        FlagState=1;
       }
       if (State == Show  || State == Race ) { //if nothing has change from previous if-statements
         String pack  = "<";
@@ -150,7 +152,7 @@ void loop() {
     TxDatastr = "";
   }
 
-  if (OldState != State) { //If state was change on previous code
+  if (FlagState==1) { //If state was change on previous code
 
     digitalWrite( luceblu, LOW);
     digitalWrite( lucerosso, LOW);
@@ -162,7 +164,7 @@ void loop() {
     lampeggianteverde = 0;
     lampeggianteblu = 0;
     TxDatastr = "";
-    OldState = State;
+    FlagState=0;
   }
 
   //codici per il lampeggio
