@@ -111,7 +111,8 @@ boolean countdown(boolean flag) {
         milliscountdown = millis();
         Serial.println(sec);
         Serial.println(flag);
-        Serial1.println("<3513>"); //parte il rosso
+        Serial1.println("<3513>"); //parte il rosso cronometro
+        Serial1.println("<3001>"); //partono tutti i telecomandi dei tagli
         sirenaflag = 1;
         sec = sec - 1;
       }

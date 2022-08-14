@@ -188,6 +188,12 @@ void loop() {
       pack.concat(">");
       Serial1.print(pack);
     }
+     if (Rxs6.indexOf("3001") != -1 ) { // avvio tutti i tagli
+      String pack = "<";
+      pack.concat(receivedChars6);
+      pack.concat(">");
+      Serial3.print(pack); // palo1
+    }
     newData6 = false;
   }
 
