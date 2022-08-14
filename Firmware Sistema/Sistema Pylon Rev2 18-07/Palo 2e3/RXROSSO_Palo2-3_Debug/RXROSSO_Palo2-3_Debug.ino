@@ -18,10 +18,10 @@ String OTxData="1";
 int Ver=0;
 
 //Inizio Configurazioni Ricevente
-String Race="300";
-String Show="200";
-String Startup="100";
-String Stop="600";
+String Race="3000";
+String Show="2000";
+String Startup="1000";
+String Stop="6000";
 String State=Startup;
 unsigned long Delaysend=200;
 unsigned long DelayStop=350;
@@ -74,7 +74,7 @@ void loop() {
       Ver=1;
       Serial.println("Interrotto, presenza di due dati uguali");
       }
-      else if(TxData!="211a" || TxData!="211b" || TxData!="311a" || TxData!="311b"){
+      else if(TxData!="2211" || TxData!="2311" || TxData!="3211" || TxData!="3311"){
       Ver=1;
       Serial.println("Interrotto, presenza di dati corrotti");
       }

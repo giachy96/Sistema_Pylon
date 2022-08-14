@@ -6,7 +6,7 @@ LoRa_E22 e22ttl(2, 3); // Arduino RX --> e22 TX - Arduino TX --> e22 RX
 String TxData="0";
 unsigned long Timesend=0;
 unsigned long CurrentMillis=0;
-unsigned long StopSend=0;
+unsigned long FirstStateSend=0;
 unsigned long Plotmillis=0;
 unsigned long millisc=0;
 const byte numChars=5;
@@ -17,10 +17,10 @@ int FlagState=0;
 int FlagPalo=0;
 
 //Inizio Configurazioni Ricevente
-String Race="300";
-String Show="200";
-String Startup="100";
-String Stop="600";
+String Race="3000";
+String Show="2000";
+String Startup="1000";
+String Stop="6000";
 String State=Startup;
 unsigned long Delaysend=200;
 unsigned long DelayState=350;
@@ -76,6 +76,7 @@ void loop() {
       if (TxData=="311b"){
         FlagPalo=3;
       }
+      if (TxData=="321a")
       }
       }
     TxData="0"; //Reset condition for set data
@@ -86,12 +87,12 @@ if ((FlagState==1) && ((CurrentMillis-Timesend)>Delaysend)) { //If statements wh
   ResponseStatus rc = e22ttl.sendBroadcastFixedMessage(Chan,State);
   Serial.println("Mando Stato aggiornato");
   Serial.println(State);
-  StopSend=millis();
+  FirstStateSend=millis();
   DoubleState=1;
   FlagState=0;
 }
 CurrentMillis=millis();
-if (DoubleState==1 && (CurrentMillis-StopSend)>DelayState){
+if (DoubleState==1 && (CurrentMillis-FirstStateSend)>DelayState){
   ResponseStatus rc = e22ttl.sendBroadcastFixedMessage(Chan,State);
   DoubleState=0;
 }

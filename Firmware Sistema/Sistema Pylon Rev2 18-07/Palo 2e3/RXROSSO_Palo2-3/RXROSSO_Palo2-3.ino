@@ -16,10 +16,10 @@ int DoubleStop=0;
 int FlagState=0;
 
 //Inizio Configurazioni Ricevente
-String Race="300";
-String Show="200";
-String Startup="100";
-String Stop="600";
+String Race="3000";
+String Show="2000";
+String Startup="1000";
+String Stop="6000";
 String State=Startup;
 unsigned long Delaysend=200;
 unsigned long DelayStop=350;

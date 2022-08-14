@@ -38,13 +38,13 @@ int Pressr=0;
 int changeState=0;
 
 //Inizio Configurazioni Telecomando
-String Race="300";
-String Show="200";
-String End="600";
-String Startup="100";
+String Race="3000";
+String Show="2000";
+String End="6000";
+String Startup="1000";
 String State=Startup;
-String ShowCut="211a";
-String RaceCut="311a";
+String ShowCut="2210";
+String RaceCut="3211";
 int Key=0;
 int Add=0;
 int Chan=9;
