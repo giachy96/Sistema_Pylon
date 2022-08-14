@@ -18,11 +18,11 @@ String end10lapR = "5514";
 String PressShowV = "2120";
 String PressRaceV = "3122";
 String PressCutV = "3121";
-String end10lapV = "5514";
+String end10lapV = "5524";
 String PressShowB = "2130";
 String PressRaceB = "3132";
 String PressCutB = "3131";
-String end10lapB = "5514";
+String end10lapB = "5534";
 //Fine Configurazione
 
 String TxData = "0";
@@ -46,11 +46,11 @@ int FlagState = 0;
 unsigned long lampmillisrosso ;
 unsigned long lampmillisverde ;
 unsigned long lampmillisblu ;
-String valrx [4];
+String valrx [5];
 void setup() {
   pinMode(luceverde, OUTPUT);
   pinMode(lucerosso, OUTPUT);
-  pinMode(luceverde, OUTPUT);
+  pinMode(luceblu, OUTPUT);
 
   Serial.begin(9600);
   delay(500);
@@ -101,6 +101,7 @@ void loop() {
 
   if (TxDatastr.indexOf(Show) != -1 ) {
     decodecomma(TxDatastr , valrx );
+      Serial.println(valrx[3]);
 
 
 
@@ -113,6 +114,7 @@ void loop() {
     }
     if (valrx[3] == PressShowB) { // controllo se mi è arrivato lo show del blu
       digitalWrite( luceblu, HIGH);
+      
     }
   }
 
@@ -124,7 +126,7 @@ void loop() {
       if (ntagliverde == 1) {
         digitalWrite( luceverde, HIGH);
       }
-      if (ntagliverde >= 1) {
+      if (ntagliverde > 1) {
         lampeggianteverde = 1;
       }
     }
@@ -146,7 +148,7 @@ void loop() {
       if (ntagliblu == 1) {
         digitalWrite( luceblu, HIGH);
       }
-      if (ntagliblu >= 1) {
+      if (ntagliblu > 1) {
         lampeggianteblu = 1;
       }
     }
