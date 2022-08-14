@@ -25,8 +25,8 @@ int lampeggianteP2 = 0;
 int lampeggianteP3 = 0;
 int onP2 = 0;
 int onP3 = 0;
-int lampmillisP2;
-int lampmillisP3;
+unsigned long lampmillisP2;
+unsigned long lampmillisP3;
 
 //Inizio Configurazioni Ricevente
 String Race = "3000";
