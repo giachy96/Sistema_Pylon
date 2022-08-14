@@ -7,6 +7,7 @@ String TxData = "0";
 String TxDatastr = "0";
 unsigned long Timesend = 0;
 unsigned long CurrentMillis = 0;
+unsigned long CurrentMillisP2 = 0;
 unsigned long FirstStateSend = 0;
 unsigned long Plotmillis = 0;
 unsigned long millisc = 0;
@@ -88,16 +89,13 @@ void loop() {
     }
   }
   CurrentMillis = millis();
+
   if ((FlagState == 1) && ((CurrentMillis - Timesend) > Delaysend)) { //If statements who control that state was change and
     ResponseStatus rc = e22ttl.sendBroadcastFixedMessage(Chan, State);
     Serial.println("Mando Stato aggiornato");
     Serial.println(State);
     FirstStateSend = millis();
     DoubleState = 1;
-    FlagState = 0;
-  }
-  if (FlagState == 1) { //If state was change on previous code
-
     digitalWrite( PinLight2, LOW);
     digitalWrite( PinLight3, LOW);
     ntagliP2 = 0;
@@ -106,8 +104,9 @@ void loop() {
     lampeggianteP3 = 0;
     TxDatastr = "";
     FlagState = 0;
-    Serial.println("Dentro il falg");
+    Serial.println("PINS LOW");
   }
+
 
   CurrentMillis = millis();
   if (DoubleState == 1 && (CurrentMillis - FirstStateSend) > DelayState) {
@@ -130,6 +129,7 @@ void loop() {
       }
       if (ntagliP2 > 1) {
         lampeggianteP2 = 1;
+        Serial.println("lampeggiante P2");
       }
       TxDatastr = "";
     }
@@ -140,25 +140,32 @@ void loop() {
       }
       if (ntagliP3 > 1) {
         lampeggianteP3 = 1;
+        Serial.println("lampeggiante P3");
+
       }
       TxDatastr = "";
     }
   }
 
   // codice lampeggio
+  CurrentMillisP2 = millis();
   if (lampeggianteP2 == 1) {
-    if (onP2 == 0 && millis() - lampmillisP2 >= 500) {
+    if (onP2 == 0 && (CurrentMillisP2  - lampmillisP2) > 500) {
       lampmillisP2 = millis();
       onP2 = 1;
       digitalWrite( PinLight2, HIGH);
+      Serial.println(" P2 HIGH ");
 
     }
-    if (onP2 == 1 && millis() - lampmillisP2 >= 500 ) {
+    if (onP2 == 1 && (CurrentMillisP2  - lampmillisP2) > 500 ) {
       digitalWrite( PinLight2, LOW);
       onP2 = 0;
       lampmillisP2 = millis();
+      Serial.println(" P2 LOW ");
     }
   }
+
+  
   if (lampeggianteP3 == 1) {
     if (onP3 == 0 && millis() - lampmillisP3 >= 500) {
       lampmillisP3 = millis();
@@ -170,6 +177,7 @@ void loop() {
       digitalWrite( PinLight3, LOW);
       onP3 = 0;
       lampmillisP3 = millis();
+      Serial.println(" P3 LOW ");
     }
   }
   // fine codice lampeggio
