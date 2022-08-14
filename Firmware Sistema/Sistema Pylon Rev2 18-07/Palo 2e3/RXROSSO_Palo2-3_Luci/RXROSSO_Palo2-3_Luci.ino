@@ -12,7 +12,7 @@ unsigned long millisc=0;
 const byte numChars=5;
 char RecCh[numChars];
 boolean newData = false;
-int DoubleStop=0;
+int DoubleState=0;
 int FlagState=0;
 int FlagPalo=0;
 
@@ -23,7 +23,7 @@ String Startup="100";
 String Stop="600";
 String State=Startup;
 unsigned long Delaysend=200;
-unsigned long DelayStop=350;
+unsigned long DelayState=350;
 int Chan=9;
 int PinLRed2=4;
 int PinLRed3=4;
@@ -86,25 +86,17 @@ if ((FlagState==1) && ((CurrentMillis-Timesend)>Delaysend)) { //If statements wh
   ResponseStatus rc = e22ttl.sendBroadcastFixedMessage(Chan,State);
   Serial.println("Mando Stato aggiornato");
   Serial.println(State);
-  if (State==Stop){
   StopSend=millis();
-  DoubleStop=1;
-  }
+  DoubleState=1;
   FlagState=0;
 }
 CurrentMillis=millis();
-if (DoubleStop==1 && (CurrentMillis-StopSend)>DelayStop && State==Stop){
+if (DoubleState==1 && (CurrentMillis-StopSend)>DelayState){
   ResponseStatus rc = e22ttl.sendBroadcastFixedMessage(Chan,State);
-  
-  DoubleStop=0;
+  DoubleState=0;
 }
-if (State !=Stop){
-  DoubleStop=0;
 }
-if (FlagPalo==2){
 
-}
-}
 
 void RecStr() {
     static boolean recvInProgress = false;
