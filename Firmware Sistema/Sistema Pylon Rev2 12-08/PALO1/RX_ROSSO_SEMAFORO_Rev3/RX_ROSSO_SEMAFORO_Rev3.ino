@@ -36,6 +36,7 @@ char RecCh[numChars];
 boolean newData = false;
 int DoubleStop = 0;
 unsigned long millisc = 0;
+int FlagState=0;
 
 void setup() {
   //pinMode(SOFTTX, OUTPUT); // MT - Softrx - pin mapping output
@@ -57,6 +58,7 @@ void loop() {
     Serial.print(State);
     Serial.print(OldState);
     newData = false;
+    FlagState=1;
   }
   if (e22ttl.available() > 1) { // If there is something arrived from lora (Transmitter)
     ResponseContainer rc = e22ttl.receiveMessage();// Receive message
@@ -72,6 +74,7 @@ void loop() {
         State = RecCh;
         Serial.println(State);
         newData = false;
+        FlagState=1;
       }
       if (State == Show || State == Race  ) { //if nothing has change from previous if-statements
         String str = "<";
@@ -92,7 +95,7 @@ void loop() {
     }
   }
   //Serial.println("verifico se è cambiato stato");
-  if ((State != OldState)) { //If statements who control that state was change and
+  if ((FlagState==1)) { //If statements who control that state was change and
     ResponseStatus rc = e22ttl.sendFixedMessage(Key, Add, Chan, State);
     Serial.println("Mando Stato nuovo");
     Serial.println(State);
@@ -102,7 +105,7 @@ void loop() {
       StopSend = millis();
       DoubleStop = 1;
     }
-    OldState = State;
+    FlagState=0;
   }
   CurrentMillis = millis();
   if (DoubleStop == 1 && (CurrentMillis - StopSend) > DelayStop && State == Stop) {

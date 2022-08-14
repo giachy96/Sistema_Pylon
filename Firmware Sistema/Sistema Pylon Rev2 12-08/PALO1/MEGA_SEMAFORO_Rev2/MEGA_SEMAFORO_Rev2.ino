@@ -21,6 +21,7 @@ const byte numChars = 32;
 char RecCh1[numChars];
 char RecCh2[numChars];
 char RecCh3[numChars];
+int FlagState=0;
 
 //Inizio Configurazione Mega
 String Race = "3000";
@@ -35,7 +36,6 @@ unsigned long Delaysend = 200;
 int Key = 0;
 int Add = 0;
 int Chan = 2;
-
 //Fine Configurazione Mega
 
 boolean newData1 = false;
@@ -119,6 +119,7 @@ void loop() {
     else {
       State = rc.data; // if there isn't any error assign the incoming data to State
       Serial.println(rc.data);//debug
+      FlagState=1;
     }
     Timesend = millis(); // millis assigment for last data receive
   }
@@ -130,7 +131,7 @@ void loop() {
   }
 
 
-  if (OldState != State) { //If state was change on previous code
+  if (FlagState==1) { //If state was change on previous code
     String str = "<";
     str.concat(State);
     str.concat(">");
@@ -165,7 +166,7 @@ void loop() {
     if (str.indexOf( end10lapR) == -1 || str.indexOf( end10lapV) == -1 ) {
       Serial3.print(str);
     }
-    OldState = State; //Reset condition for send State to the rx
+    FlagState=0; //Reset condition for send State to the rx
   }
 }
 
