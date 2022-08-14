@@ -76,12 +76,12 @@ void loop() {
     // Serial.println("Ricevo dal lora");
     Serial.println(TxData);
 
-    if (TxData != "0" && (State == Show  || State == Race || State == end10lapR || State == end10lapV || State == end10lapB )) { //Condition for sent to mega press
+    if (TxData != "0" && (State == Show  || State == Race  )) { //Condition for sent to mega press
       if (AltSerial.available() > 0) { // If mega will sent state to sem_rx
         recvWithStartEndMarkers( RecCh );
         State = RecCh;
       }
-      if (State == Show  || State == Race || State == end10lapR || State == end10lapV || State == end10lapB ) { //if nothing has change from previous if-statements
+      if (State == Show  || State == Race ) { //if nothing has change from previous if-statements
         String pack  = "<";
         pack.concat(TxData);
         pack.concat(">");
