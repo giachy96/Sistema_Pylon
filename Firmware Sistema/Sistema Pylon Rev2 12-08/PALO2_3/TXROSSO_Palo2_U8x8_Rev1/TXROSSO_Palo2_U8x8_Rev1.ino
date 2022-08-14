@@ -32,6 +32,7 @@ unsigned long CurrentPress=0;
 unsigned long Lastpress=0;
 unsigned long TimeSend=0;
 unsigned long Sync=0;
+unsigned long LastBuzzer=0;
 int Transm=0;
 int Press=0;
 int Pressr=0;
@@ -134,7 +135,10 @@ void loop() {
         changeState=1; //attivo il flag changeState=1, lo uso sopra per il primo aggiornamento display
         TimeSend=millis(); 
       Sync=(millis()+Phase+2*Freq); //prendo il tempo per la sincronia di invio, millis(tempo corrente) inserisco la fase (0 per il primo, Freq/2 per per il secondo) e mi metto in sicurezza aggiungendo due volte la frequenza
-      tone(buzzer, 1000, 200);
+      if (millis()-LastBuzzer>500){
+        tone(buzzer, 1000, 200);
+        LastBuzzer=millis();
+      }
       }
       CurrentPress=millis();
       if (digitalRead(taglio) == LOW && (CurrentPress-Lastpress)>=Delaypress && State==Show) { // Se sono in show, è passato il tempo di sicurezza e il bottone è premuto
