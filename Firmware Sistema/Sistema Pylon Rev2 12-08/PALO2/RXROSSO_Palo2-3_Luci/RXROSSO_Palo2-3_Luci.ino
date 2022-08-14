@@ -7,7 +7,6 @@ String TxData = "0";
 String TxDatastr = "0";
 unsigned long Timesend = 0;
 unsigned long CurrentMillis = 0;
-unsigned long CurrentMillisP2 = 0;
 unsigned long FirstStateSend = 0;
 unsigned long Plotmillis = 0;
 unsigned long millisc = 0;
@@ -25,8 +24,8 @@ int lampeggianteP2 = 0;
 int lampeggianteP3 = 0;
 int onP2 = 0;
 int onP3 = 0;
-int lampmillisP2;
-int lampmillisP3;
+unsigned long lampmillisP2;
+unsigned long lampmillisP3;
 
 //Inizio Configurazioni Ricevente
 String Race = "3000";
@@ -148,16 +147,16 @@ void loop() {
   }
 
   // codice lampeggio
-  CurrentMillisP2 = millis();
+
   if (lampeggianteP2 == 1) {
-    if (onP2 == 0 && (CurrentMillisP2  - lampmillisP2) > 500) {
+    if (onP2 == 0 && millis()  - lampmillisP2 >= 500) {
       lampmillisP2 = millis();
       onP2 = 1;
       digitalWrite( PinLight2, HIGH);
       Serial.println(" P2 HIGH ");
 
     }
-    if (onP2 == 1 && (CurrentMillisP2  - lampmillisP2) > 500 ) {
+    if (onP2 == 1 && millis()  - lampmillisP2 >= 500 ) {
       digitalWrite( PinLight2, LOW);
       onP2 = 0;
       lampmillisP2 = millis();
