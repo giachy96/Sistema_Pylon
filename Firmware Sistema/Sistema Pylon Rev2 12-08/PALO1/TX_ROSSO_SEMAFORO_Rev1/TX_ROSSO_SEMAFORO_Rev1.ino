@@ -136,7 +136,7 @@ void loop() {
       Serial.println("Nuovo stato");//debug
       Serial.println(State);//debug
       changeState = 1; //attivo il flag di cambiostato per i display
-      //tone(buzzer, 1000, 200);
+      tone(buzzer, 1000, 200);
       Serial.println("flag");//debug
       Serial.println(changeState);//debug
 

@@ -56,9 +56,11 @@ void draw(int cases , U8X8_SH1106_128X64_NONAME_HW_I2C u8x8) {
       u8x8.clear();
       u8x8.setFont(u8x8_font_8x13B_1x2_r);
       u8x8.drawString(1, 1 , "IN GARA");
-      u8x8.drawString(0, 6, " N.Tagli: ");
-      String temptagli = String(ntagli);
-      u8x8.drawString( 10, 6 , temptagli.c_str());
+      u8x8.drawString(0, 4, " N.Tagli: ");
+      //String temptagli = string(ntagli,DEC);
+      u8x8.setCursor(10,4);
+      u8x8.print( ntagli);
+     // u8x8.drawString( 10, 6 , temptagli);
 
       break;
 
