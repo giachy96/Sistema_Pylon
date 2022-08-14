@@ -157,16 +157,15 @@ if (State == StartRace){
   }
 }
 
-
-void RecStr() {
+void RecStr() { // Programma Funzionante
     static boolean recvInProgress = false;
     static byte ndx = 0;
     char startMarker = '<';
     char endMarker = '>';
     char rc;
  
-    while (Serial.available() > 0 && newData == false) {
-        rc = Serial.read();
+    while (SwSerial.available() > 0 && newData == false) {
+        rc = SwSerial.read();
 
         if (recvInProgress == true) {
             if (rc != endMarker) {
@@ -188,8 +187,40 @@ void RecStr() {
             recvInProgress = true;
         }
     }
-    Serial.flush();
+    SwSerial.flush();
 }
+// void RecStr() {
+//     static boolean recvInProgress = false;
+//     static byte ndx = 0;
+//     char startMarker = '<';
+//     char endMarker = '>';
+//     char rc;
+ 
+//     while (Serial.available() > 0 && newData == false) {
+//         rc = Serial.read();
+
+//         if (recvInProgress == true) {
+//             if (rc != endMarker) {
+//                 RecCh[ndx] = rc;
+//                 ndx++;
+//                 if (ndx >= numChars) {
+//                     ndx = numChars - 1;
+//                 }
+//             }
+//             else {
+//                 RecCh[ndx] = '\0'; // terminate the string
+//                 recvInProgress = false;
+//                 ndx = 0;
+//                 newData = true;
+//             }
+//         }
+
+//         else if (rc == startMarker) {
+//             recvInProgress = true;
+//         }
+//     }
+//     Serial.flush();
+// }
  // void loop() { 
 //   RecStr();
 //   if (newData==true){ // If teensy will sent state to sem_rx
@@ -247,36 +278,5 @@ void RecStr() {
 //   DoubleStop=0;
 // }
 // }
-// void RecStr() { // Programma Funzionante
-//     static boolean recvInProgress = false;
-//     static byte ndx = 0;
-//     char startMarker = '<';
-//     char endMarker = '>';
-//     char rc;
- 
-//     while (SwSerial.available() > 0 && newData == false) {
-//         rc = SwSerial.read();
 
-//         if (recvInProgress == true) {
-//             if (rc != endMarker) {
-//                 RecCh[ndx] = rc;
-//                 ndx++;
-//                 if (ndx >= numChars) {
-//                     ndx = numChars - 1;
-//                 }
-//             }
-//             else {
-//                 RecCh[ndx] = '\0'; // terminate the string
-//                 recvInProgress = false;
-//                 ndx = 0;
-//                 newData = true;
-//             }
-//         }
-
-//         else if (rc == startMarker) {
-//             recvInProgress = true;
-//         }
-//     }
-//     SwSerial.flush();
-// }
 

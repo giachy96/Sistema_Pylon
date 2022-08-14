@@ -40,7 +40,7 @@ int changeState=0;
 //Inizio Configurazioni Telecomando
 String Race="3000";
 String Show="2000";
-String End="6000";
+String Stop="6000";
 String Startup="1000";
 String State=Startup;
 String ShowCut="2210";
@@ -115,7 +115,7 @@ void loop() {
       draw(3, u8x8);
       changeState = 0;
     }
-    if (changeState==1 && State==End10lap) { // Casistica per display, se siamo in End metti la schermata 6 e aggiorna ogni 5 sec, o aggiorna quando il flag changestate è attivo
+    if (changeState==1 && State==end10lap) { // Casistica per display, se siamo in End metti la schermata 6 e aggiorna ogni 5 sec, o aggiorna quando il flag changestate è attivo
       previousMillis = currentMillis;
       draw(6, u8x8);
       Serial.println("Case6");
