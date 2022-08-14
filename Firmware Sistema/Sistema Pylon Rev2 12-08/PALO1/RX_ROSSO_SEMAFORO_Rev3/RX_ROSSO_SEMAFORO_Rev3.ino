@@ -6,6 +6,7 @@ LoRa_E22 e22ttl(2, 3); // Arduino RX --> e22 TX - Arduino TX --> e22 RX
 
 //Inizio Configurazione Ricevente
 String Race = "3000";
+String StartRace = "3001";
 String Show = "2000";
 String Startup = "1000";
 String Stop = "6000";
@@ -67,7 +68,7 @@ void loop() {
     millisc = millis();
     Serial.println(TxData);
 
-    if (TxData != "0" && (State == Show || State == Race )) { //Condition for sent to mega press
+    if (TxData != "0" && (State == Show || State == StartRace )) { //Condition for sent to mega press
       RecStr();//valutare se disabilitare
       if (newData == true) { //(SwSerial.available()>0){  // If mega will sent state to sem_rx
         Serial.println("C'è qualcosa in seriale - riassegno un nuovo stato ");
@@ -76,7 +77,7 @@ void loop() {
         newData = false;
         FlagState=1;
       }
-      if (State == Show || State == Race  ) { //if nothing has change from previous if-statements
+      if (State == Show || State == StartRace  ) { //if nothing has change from previous if-statements
         String str = "<";
         str.concat(TxData);
         str.concat(">");
@@ -86,7 +87,7 @@ void loop() {
         Serial.println(TxData);
         Serial.println(State);
       }
-      if (State == Show || State == Race ) { //if nothing has change from previous if-statements
+      if (State == Show || State == StartRace ) { //if nothing has change from previous if-statements
         if (TxData.indexOf(PressShow) != -1 ||  TxData.indexOf(PressRace) != -1 )
           onlight = 1;
       }

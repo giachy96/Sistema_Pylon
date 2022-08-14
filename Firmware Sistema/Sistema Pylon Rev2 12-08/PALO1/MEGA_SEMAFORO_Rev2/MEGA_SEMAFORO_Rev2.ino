@@ -25,6 +25,7 @@ int FlagState=0;
 
 //Inizio Configurazione Mega
 String Race = "3000";
+String StartRace = "3001";
 String Show = "2000";
 String Startup = "1000";
 String end10lapB = "5534";
@@ -56,7 +57,7 @@ void setup() {
 }
 void loop() {
   Currentmillisx = millis(); // Assign millis value to Currentmillisx for if statements
-  if (State == Show || State == Race  ) { //Delay time for receive serial data, if necessary...
+  if (State == Show || State == StartRace  ) { //Delay time for receive serial data, if necessary...
     RecStr1();
     if (newData1 == true) { //(Serial1.available()>0){
       //Serial.println("C'è qualcosa in seriale");
@@ -69,7 +70,7 @@ void loop() {
 
 
   Currentmillisx = millis();
-  if (State == Show || State == Race ) {
+  if (State == Show || State == StartRace ) {
     RecStr2();
     if (newData2 == true) { //(Serial2.available()>0){
       //Serial.println("C'è qualcosa in seriale");
@@ -81,7 +82,7 @@ void loop() {
 
 
   Currentmillisx = millis();
-  if (State == Show || State == Race ) {
+  if (State == Show || State == StartRace ) {
     RecStr3();
     if (newData3 == true) { //(Serial3.available()>0){
       //Serial.println("C'è qualcosa in seriale");
@@ -95,7 +96,7 @@ void loop() {
 
 
   Currentmilliss = millis(); // millis assignments for send delay control
-  if ((Currentmilliss - Timesend) >= Delaysend && (State == Show || State == Race)) { //If the last receive is older than Delaysend, and state is race or show
+  if ((Currentmilliss - Timesend) >= Delaysend && (State == Show || State == StartRace)) { //If the last receive is older than Delaysend, and state is race or show
     if (Dateserial1 != "0" || Dateserial2 != "0" || Dateserial3 != "0")  { //If some button was pressed
       Dateserial = State;
       Dateserial.concat(",");
