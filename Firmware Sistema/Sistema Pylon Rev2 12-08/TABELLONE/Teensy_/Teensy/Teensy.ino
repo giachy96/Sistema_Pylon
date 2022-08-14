@@ -196,7 +196,7 @@ void loop() {
       pack.concat(receivedChars6);
       pack.concat(">");
       Serial3.print(pack); // palo1
-      Serial5.print(pack;)//palo2-3 rosso
+      Serial5.print(pack);//palo2-3 rosso
     }
     newData6 = false;
   }
