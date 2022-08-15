@@ -110,10 +110,10 @@ void loop() {
     String Rxs8;
     Rxs8 = receivedChars8;
     if (Rxs8.indexOf("4514") != -1 || Rxs8.indexOf("5514") != -1 || Rxs8.indexOf("2510") != -1) {
-      String pack = "<";
-      pack.concat(receivedChars8);
-      pack.concat(">");
-      Serial6.print(pack);
+      String pack8 = "<";
+      pack8.concat(receivedChars8);
+      pack8.concat(">");
+      Serial6.print(pack8);
 
       if (Rxs8.indexOf("4514") != -1 ) {
         decodecomma(Rxs8, values);
@@ -133,11 +133,11 @@ void loop() {
     String Rxs1;
     Rxs1 = receivedChars1;
     if (Rxs1.indexOf("4534") != -1 || Rxs1.indexOf("5534") != -1 || Rxs1.indexOf("2530") != -1) {
-      String pack = "<";
-      pack.concat(receivedChars1);
-      pack.concat(">");
-      Serial6.print(pack);
-      Serial.println(pack);
+      String pack1 = "<";
+      pack1.concat(receivedChars1);
+      pack1.concat(">");
+      Serial6.print(pack1);
+      Serial.println(pack1);
 
       if (Rxs1.indexOf("4534") != -1 ) {
         decodecomma(Rxs1, values);
@@ -157,10 +157,10 @@ void loop() {
     String Rxs7;
     Rxs7 = receivedChars7;
     if (Rxs7.indexOf("4524") != -1 || Rxs7.indexOf("5524") != -1 || Rxs7.indexOf("2520") != -1) {
-      String pack = "<";
-      pack.concat(receivedChars7);
-      pack.concat(">");
-      Serial6.print(pack);
+      String pack7 = "<";
+      pack7.concat(receivedChars7);
+      pack7.concat(">");
+      Serial6.print(pack7);
 
       if (Rxs7.indexOf("4524") != -1 ) {
         decodecomma(Rxs7, values);
@@ -180,31 +180,31 @@ void loop() {
     String Rxs6;
     Rxs6 = receivedChars6;
     if (Rxs6.indexOf("3513") != -1 ) { // avvio rosso
-      String pack = "<";
-      pack.concat(receivedChars6);
-      pack.concat(">");
-      Serial8.print(pack);
+      String pack6_r = "<";
+      pack6_r.concat(receivedChars6);
+      pack6_r.concat(">");
+      Serial8.print(pack6_r);
     }
     if (Rxs6.indexOf("3523") != -1 ) { // avvio verde
-      String pack = "<";
-      pack.concat(receivedChars6);
-      pack.concat(">");
-      Serial7.print(pack);
+      String pack6_v = "<";
+      pack6_v.concat(receivedChars6);
+      pack6_v.concat(">");
+      Serial7.print(pack6_v);
     }
     if (Rxs6.indexOf("3533") != -1 ) { // avvio blu
-      String pack = "<";
-      pack.concat(receivedChars6);
-      pack.concat(">");
-      Serial1.print(pack);
+      String pack6_b = "<";
+      pack6_b.concat(receivedChars6);
+      pack6_b.concat(">");
+      Serial1.print(pack6_b);
     }
     if (Rxs6.indexOf("3001") != -1 ) { // avvio tutti i tagli
-      String pack = "<";
-      pack.concat(receivedChars6);
-      pack.concat(">");
-      Serial3.print(pack); // palo1
-      Serial5.print(pack);//palo2-3 rosso
-      Serial4.print(pack);//palo2-3 rosso
-      Serial2.print(pack);//palo2-3 rosso
+      String pack6_t = "<";
+      pack6_t.concat(receivedChars6);
+      pack6_t.concat(">");
+      Serial3.print(pack6_t); // palo1
+      Serial5.print(pack6_t);//palo2-3 rosso
+      Serial4.print(pack6_t);//palo2-3 rosso
+      Serial2.print(pack6_t);//palo2-3 rosso
     }
     newData6 = false;
   }
