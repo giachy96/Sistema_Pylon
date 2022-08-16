@@ -20,7 +20,7 @@ String PressRace = "3122";
 String end10lap = "5524";
 int Key = 0;
 int Add = 1;
-int Chan = 4;
+int Chan = 20;
 //Fine Configurazione Ricevente
 
 int RelayRed = 12;

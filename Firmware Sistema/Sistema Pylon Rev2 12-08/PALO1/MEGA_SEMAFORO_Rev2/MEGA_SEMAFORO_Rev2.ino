@@ -36,7 +36,7 @@ String OldState = Startup;
 unsigned long Delaysend = 200;
 int Key = 0;
 int Add = 0;
-int Chan = 2;
+int Chan = 10;
 //Fine Configurazione Mega
 
 boolean newData1 = false;
