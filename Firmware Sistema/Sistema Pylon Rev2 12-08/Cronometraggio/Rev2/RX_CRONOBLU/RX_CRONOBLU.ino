@@ -33,7 +33,7 @@ void loop() {
   State = RecCh;
 
   if(newData == true){
-    ResponseStatus rs = e22ttl.sendFixedMessage(0, 1, 8, RecCh);
+    ResponseStatus rs = e22ttl.sendFixedMessage(0, 1, 40, RecCh);
     newData = false;
     }
   if (e22ttl.available() > 1) { // If there is something arrived from lora (Transmitter)

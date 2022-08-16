@@ -41,7 +41,7 @@ String PressCut3 = "3321";
 String State = Startup;
 unsigned long Delaysend = 200;
 unsigned long DelayState = 350;
-byte Chan = 11;
+byte Chan = 50;
 //Fine Configurazioni Ricevente
 
 void setup() {

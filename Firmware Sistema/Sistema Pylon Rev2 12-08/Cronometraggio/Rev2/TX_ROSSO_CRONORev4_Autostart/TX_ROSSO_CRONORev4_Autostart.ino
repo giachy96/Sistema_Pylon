@@ -127,7 +127,7 @@ void loop() {
       
 
       if (digitalRead(pulsante) == LOW && (CurrentPress - Lastpress) >= Delaypress) {
-        ResponseStatus rs = e22ttl.sendFixedMessage(0, 0, 6, "2510");
+        ResponseStatus rs = e22ttl.sendFixedMessage(0, 0, 30, "2510");
         tone(buzzer, 1000, 200);
         Lastpress = millis();
       }
@@ -167,7 +167,7 @@ void loop() {
         msg.concat(lapcounter);
         msg.concat(",");
         msg.concat(bu);
-        ResponseStatus rs = e22ttl.sendFixedMessage(0, 0, 6, msg);
+        ResponseStatus rs = e22ttl.sendFixedMessage(0, 0, 30, msg);
         tone(buzzer, 1000, 200);
         Lastpress = millis();
         draw(3 , u8x8);
@@ -190,7 +190,7 @@ void loop() {
         msg.concat("11");
         msg.concat(",");
         msg.concat(bu);
-        ResponseStatus rs = e22ttl.sendFixedMessage(0, 0, 6, msg);
+        ResponseStatus rs = e22ttl.sendFixedMessage(0, 0, 30, msg);
         State = "";
         draw(4 , u8x8);
         lapcounter = -2;
@@ -209,7 +209,7 @@ void loop() {
         msg.concat(lapcounter);
         msg.concat(",");
         msg.concat(bu);
-        ResponseStatus rs = e22ttl.sendFixedMessage(0, 0, 6, msg);
+        ResponseStatus rs = e22ttl.sendFixedMessage(0, 0, 30, msg);
         tone(buzzer, 1000, 200);
         Lastpress = millis();
         draw(3 , u8x8);

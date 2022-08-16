@@ -69,7 +69,7 @@ void loop() {
     digitalWrite( lucerosso, LOW);
     digitalWrite( luceverde, LOW);
     TxDatastr = "";
-    ResponseStatus rs = e22ttl.sendFixedMessage(0, 1, 2, RecCh);
+    ResponseStatus rs = e22ttl.sendFixedMessage(0, 1, 10, RecCh);
     newData = false;
      FlagState = 1;
   }
