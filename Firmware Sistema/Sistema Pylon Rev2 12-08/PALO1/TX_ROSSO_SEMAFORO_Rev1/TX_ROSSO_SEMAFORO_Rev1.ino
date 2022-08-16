@@ -31,6 +31,7 @@ unsigned long previousMillis = 0;        // will store last time voltage was upd
 unsigned long currentMillis = 0;
 unsigned long CurrentPress = 0;
 unsigned long Lastpress = 0;
+unsigned long LastBuzzer=0;
 int changeState = 0;
 
 // Inizio configurazione Telecomando
@@ -136,10 +137,12 @@ void loop() {
       Serial.println("Nuovo stato");//debug
       Serial.println(State);//debug
       changeState = 1; //attivo il flag di cambiostato per i display
-      tone(buzzer, 1000, 200);
+       if (millis()-LastBuzzer>1000){
+        tone(buzzer, 1000, 200);
+        LastBuzzer=millis();
+      }
       Serial.println("flag");//debug
       Serial.println(changeState);//debug
-
     }
     CurrentPress = millis();
     if (digitalRead(pulsante) == LOW && (CurrentPress - Lastpress) >= Delaypress && State == Show) { //se il pulsante è premuto, sono in show e la sicurezza sulle pressioni ripetute è passata
