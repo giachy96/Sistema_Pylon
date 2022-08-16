@@ -25,7 +25,7 @@ int pinbatt = A0;
 int bootup = 1;
 int dcase = 0;
 int altupdatelcd = 0;
-char t[5] = { '3', ',', '3', '3',  '\0' };
+//char t[5] = { '3', ',', '3', '3',  '\0' };
 LoRa_E22 e22ttl(2, 3); // Arduino RX --> e22 TX - Arduino TX --> e22 RX
 unsigned long previousMillis = 0;        // will store last time voltage was updated
 unsigned long currentMillis = 0;
@@ -51,7 +51,7 @@ String end10lap = "5514";
 int ntagli = 0;
 int Key = 0;
 int Add = 0;
-int Chan = 3;
+int Chan = 15;
 //Fine configurazione Telecomando
 
 void setup() {
