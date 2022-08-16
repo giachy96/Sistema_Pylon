@@ -72,11 +72,12 @@ void loop() {
     ResponseStatus rs = e22ttl.sendFixedMessage(0, 1, 10, RecCh);
     newData = false;
      FlagState = 1;
+     Serial.println("Ricevo dalla seriale e mando immediataente");
   }
   if (e22ttl.available() > 1) { // If there is something arrived from lora (Transmitter)
     ResponseContainer rc = e22ttl.receiveMessage();// Receive message
     TxData = rc.data; //Assign incoming data on TxData variable
-    // Serial.println("Ricevo dal lora");
+     Serial.println("Ricevo dal lora");
     Serial.println(TxData);
 
     if (TxData != "0" && (State == Show  || State == StartRace  )) { //Condition for sent to mega press

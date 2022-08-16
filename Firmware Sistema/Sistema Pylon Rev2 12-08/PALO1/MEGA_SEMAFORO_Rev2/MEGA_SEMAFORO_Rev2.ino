@@ -1,5 +1,5 @@
 #include "LoRa_E22.h"
-LoRa_E22 e22ttl(10, 11); // Arduino RX --> e22 TX - Arduino TX --> e22 RX
+LoRa_E22 e22ttl(10, 11);  // Arduino RX --> e22 TX - Arduino TX --> e22 RX
 
 unsigned long Timeserial1 = 0;
 unsigned long Timeserial2 = 0;
@@ -21,7 +21,7 @@ const byte numChars = 32;
 char RecCh1[numChars];
 char RecCh2[numChars];
 char RecCh3[numChars];
-int FlagState=0;
+int FlagState = 0;
 
 //Inizio Configurazione Mega
 String Race = "3000";
@@ -44,37 +44,37 @@ boolean newData2 = false;
 boolean newData3 = false;
 
 void setup() {
-  Serial1.begin(9600); // Serial Rosso
+  Serial1.begin(9600);  // Serial Rosso
   delay(300);
-  Serial2.begin(9600);// Serial Verde
+  Serial2.begin(9600);  // Serial Verde
   delay(300);
-  Serial3.begin(9600);// Serial Blu
+  Serial3.begin(9600);  // Serial Blu
   delay(300);
-  Serial.begin(9600);// Serial Pc interface
+  Serial.begin(9600);  // Serial Pc interface
   delay(300);
-  e22ttl.begin(); //Start e22ttl
+  e22ttl.begin();  //Start e22ttl
   // Serial.println("prova");
 }
 void loop() {
-  Currentmillisx = millis(); // Assign millis value to Currentmillisx for if statements
-  if (State == Show || State == StartRace  ) { //Delay time for receive serial data, if necessary...
+  Currentmillisx = millis();                  // Assign millis value to Currentmillisx for if statements
+  if (State == Show || State == StartRace) {  //Delay time for receive serial data, if necessary...
     RecStr1();
-    if (newData1 == true) { //(Serial1.available()>0){
+    if (newData1 == true) {  //(Serial1.available()>0){
       //Serial.println("C'è qualcosa in seriale");
-      Dateserial1 = RecCh1; //Assign incoming data from Serial1 to Dateserial1
+      Dateserial1 = RecCh1;  //Assign incoming data from Serial1 to Dateserial1
       Serial.println(Dateserial1);
-      Timeserial1 = millis(); // Assign millis value for turning off relay
+      Timeserial1 = millis();  // Assign millis value for turning off relay
       newData1 = false;
     }
   }
 
 
   Currentmillisx = millis();
-  if (State == Show || State == StartRace ) {
+  if (State == Show || State == StartRace) {
     RecStr2();
-    if (newData2 == true) { //(Serial2.available()>0){
+    if (newData2 == true) {  //(Serial2.available()>0){
       //Serial.println("C'è qualcosa in seriale");
-      Dateserial2 = RecCh2; //Assign incoming data from Serial1 to Dateserial2
+      Dateserial2 = RecCh2;  //Assign incoming data from Serial1 to Dateserial2
       Timeserial2 = millis();
       newData2 = false;
     }
@@ -82,11 +82,11 @@ void loop() {
 
 
   Currentmillisx = millis();
-  if (State == Show || State == StartRace ) {
+  if (State == Show || State == StartRace) {
     RecStr3();
-    if (newData3 == true) { //(Serial3.available()>0){
+    if (newData3 == true) {  //(Serial3.available()>0){
       //Serial.println("C'è qualcosa in seriale");
-      Dateserial3 = RecCh3; //Assign incoming data from Serial3 to Dateserial3
+      Dateserial3 = RecCh3;  //Assign incoming data from Serial3 to Dateserial3
       Timeserial3 = millis();
       newData3 = false;
     }
@@ -95,79 +95,67 @@ void loop() {
 
 
 
-  Currentmilliss = millis(); // millis assignments for send delay control
-  if ((Currentmilliss - Timesend) >= Delaysend && (State == Show || State == StartRace)) { //If the last receive is older than Delaysend, and state is race or show
-    if (Dateserial1 != "0" || Dateserial2 != "0" || Dateserial3 != "0")  { //If some button was pressed
+  Currentmilliss = millis();                                                                // millis assignments for send delay control
+  if ((Currentmilliss - Timesend) >= Delaysend && (State == Show || State == StartRace)) {  //If the last receive is older than Delaysend, and state is race or show
+    if (Dateserial1 != "0" || Dateserial2 != "0" || Dateserial3 != "0") {                   //If some button was pressed
       Dateserial = State;
       Dateserial.concat(",");
-      Dateserial.concat(Dateserial2); // Compose message for send with Lora
+      Dateserial.concat(Dateserial2);  // Compose message for send with Lora
       Dateserial.concat(",");
       Dateserial.concat(Dateserial1);
       Dateserial.concat(",");
       Dateserial.concat(Dateserial3);
-      ResponseStatus rs = e22ttl.sendFixedMessage(Key, Add, Chan, Dateserial); // Send fixedmessage Dateseria that contain all update of Dateserial1/2/3
-      Serial.println(Dateserial); // DEBUG
-      Dateserial1 = "0"; //Reset condition for received press button
+      ResponseStatus rs = e22ttl.sendFixedMessage(Key, Add, Chan, Dateserial);  // Send fixedmessage Dateseria that contain all update of Dateserial1/2/3
+      Serial.println(Dateserial);                                               // DEBUG
+      Dateserial1 = "0";                                                        //Reset condition for received press button
       Dateserial2 = "0";
       Dateserial3 = "0";
     }
   }
-  if (e22ttl.available() > 1) { //If there's something incoming from lora
-    ResponseContainer rc = e22ttl.receiveMessage(); //Receive message
-    if (rc.status.code != 1) { // Is something goes wrong
-      rc.status.getResponseDescription(); //Get error response
-    }
-    else {
-      State = rc.data; // if there isn't any error assign the incoming data to State
-      Serial.println(rc.data);//debug
-      FlagState=1;
-    }
-    Timesend = millis(); // millis assigment for last data receive
-  }
-  if (Serial.available() > 0) { // DEBUG
-    Serial.println("Ricezione Dato");//debug
-    State = Serial.readString(); // DEBUG
-    Timesend = millis(); // DEBUG
-    Serial.println(State);//debug
+  if (e22ttl.available() > 1) {                      //If there's something incoming from lora
+    ResponseContainer rc = e22ttl.receiveMessage();  //Receive message
+    State = rc.data;          // if there isn't any error assign the incoming data to State
+    Serial.println(rc.data);  //debug
+    Serial.println("Ricevo dal lora");
+    FlagState = 1;
+    Timesend = millis();  // millis assigment for last data receive
   }
 
-
-  if (FlagState==1) { //If state was change on previous code
+  if (FlagState == 1) {  //If state was change on previous code
     String str = "<";
     str.concat(State);
     str.concat(">");
     Serial.println("Cambio stato");
-    RecStr1();
-    if (newData1 == true) { //(Serial1.available()>0){ //check if some press was incoming from receiver 1
-      Dateserial1p = RecCh1; //Assign incoming data from Serial1 to Dateserial1//Assign useless press on Dateserial1
-      //Serial.println("Assegno provvisorio");
-      Serial.println(RecCh1);
-      newData1 = false;
-    }
-    if (str.indexOf( end10lapB) == -1 || str.indexOf( end10lapV) == -1 ) {
-     
-      Serial1.print(str);//Send to receiver 1 State
+    // RecStr1();
+    // if (newData1 == true) {   //(Serial1.available()>0){ //check if some press was incoming from receiver 1
+    //   Dateserial1p = RecCh1;  //Assign incoming data from Serial1 to Dateserial1//Assign useless press on Dateserial1
+    //   //Serial.println("Assegno provvisorio");
+    //   Serial.println(RecCh1);
+    //   newData1 = false;
+    // }
+    if (str.indexOf(end10lapB) == -1 || str.indexOf(end10lapV) == -1) {
+      Serial1.print(str);  //Send to receiver 1 State
       //Serial.println(State);
     }
-    RecStr2();
-    if (newData2 == true) { //(Serial2.available()>0){
-      Dateserial2 = RecCh2; //Assign incoming data from Serial1 to Dateserial1
-      Serial.println(RecCh2);
-      newData2 = false;
-    }
-    if (str.indexOf( end10lapB) == -1 || str.indexOf( end10lapR) == -1 ) {
+    // RecStr2();
+    // if (newData2 == true) {  //(Serial2.available()>0){
+    //   Dateserial2p = RecCh2;  //Assign incoming data from Serial1 to Dateserial1
+    //   Serial.println(RecCh2);
+    //   newData2 = false;
+    // }
+    if (str.indexOf(end10lapB) == -1 || str.indexOf(end10lapR) == -1) {
       Serial2.print(str);
     }
-    RecStr3();
-    if (newData3 == true) { //(Serial3.available()>0){
-      Dateserial3p = RecCh3; //Assign incoming data from Serial1 to Dateserial1
-      Serial.println(RecCh3);
-      newData3 == false;
-    }
-    if (str.indexOf( end10lapR) == -1 || str.indexOf( end10lapV) == -1 ) {
+    // RecStr3();
+    // if (newData3 == true) {   //(Serial3.available()>0){
+    //   Dateserial3p = RecCh3;  //Assign incoming data from Serial1 to Dateserial1
+    //   Serial.println(RecCh3);
+    //   newData3 == false;
+    // }
+    if (str.indexOf(end10lapR) == -1 || str.indexOf(end10lapV) == -1) {
       Serial3.print(str);
     }
-    FlagState=0; //Reset condition for send State to the rx
+    FlagState = 0;  //Reset condition for send State to the rx
   }
 }
 
@@ -189,9 +177,8 @@ void RecStr1() {
         if (ndx1 >= numChars) {
           ndx1 = numChars - 1;
         }
-      }
-      else {
-        RecCh1[ndx1] = '\0'; // terminate the string
+      } else {
+        RecCh1[ndx1] = '\0';  // terminate the string
         recvInProgress1 = false;
         ndx1 = 0;
         newData1 = true;
@@ -224,9 +211,8 @@ void RecStr2() {
         if (ndx2 >= numChars) {
           ndx2 = numChars - 1;
         }
-      }
-      else {
-        RecCh2[ndx2] = '\0'; // terminate the string
+      } else {
+        RecCh2[ndx2] = '\0';  // terminate the string
         recvInProgress2 = false;
         ndx2 = 0;
         newData2 = true;
@@ -257,9 +243,8 @@ void RecStr3() {
         if (ndx3 >= numChars) {
           ndx3 = numChars - 1;
         }
-      }
-      else {
-        RecCh3[ndx3] = '\0'; // terminate the string
+      } else {
+        RecCh3[ndx3] = '\0';  // terminate the string
         recvInProgress3 = false;
         ndx3 = 0;
         newData3 = true;
