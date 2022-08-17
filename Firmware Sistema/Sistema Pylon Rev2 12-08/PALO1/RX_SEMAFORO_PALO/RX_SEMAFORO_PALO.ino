@@ -28,9 +28,11 @@ void setup() {
 
   Serial.begin(9600);
   delay(500);
+    e22ttl.begin();
+    delay(500);
   AltSerial.begin(9600);
-  delay(500);
-  e22ttl.begin();
+  
+
 
 }
 void loop() {
@@ -50,6 +52,12 @@ void loop() {
     TxData = rc.data; //Assign incoming data on TxData variable
      Serial.println("Ricevo dal lora");
     Serial.println(TxData);
+    String pack  = "<";
+        pack.concat(TxData);
+        pack.concat(">");
+        AltSerial.print(pack); //Send Txdata from rx to Mega
+         Serial.println("Mando via il dato");
+        Serial.println(pack);
 
     if (TxData != "0" && (State == Show  || State == StartRace  )) { //Condition for sent to mega press
       if (AltSerial.available() > 0) { // If mega will sent state to sem_rx
@@ -57,12 +65,12 @@ void loop() {
         State = RecCh;
  
       }
-      if (State == Show  || State == StartRace ) { //if nothing has change from previous if-statements
+      if (true){ //(State == Show  || State == StartRace ) { //if nothing has change from previous if-statements
         String pack  = "<";
         pack.concat(TxData);
         pack.concat(">");
         AltSerial.print(pack); //Send Txdata from rx to Mega
-        // Serial.println("Mando via il dato");
+         Serial.println("Mando via il dato");
         Serial.println(pack);
       }
       TxDatastr = TxData;
