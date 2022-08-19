@@ -58,9 +58,9 @@ void draw(int cases , U8X8_SH1106_128X64_NONAME_HW_I2C u8x8) {
       u8x8.drawString(1, 1 , "IN GARA");
       u8x8.drawString(0, 4, " N.Tagli: ");
       //String temptagli = string(ntagli,DEC);
-      u8x8.setCursor(10,4);
+      u8x8.setCursor(10, 4);
       u8x8.print( ntagli);
-     // u8x8.drawString( 10, 6 , temptagli);
+      // u8x8.drawString( 10, 6 , temptagli);
 
       break;
 
@@ -69,12 +69,12 @@ void draw(int cases , U8X8_SH1106_128X64_NONAME_HW_I2C u8x8) {
       u8x8.clear();
       u8x8.setFont(u8x8_font_8x13B_1x2_r);
       u8x8.drawString(1, 0 , "LAP N:10");
-     // dtostrf(*(poitem + 10), 6, 3, buff2);
-    //  u8x8.drawString( 3, 2 , buff2);
+      // dtostrf(*(poitem + 10), 6, 3, buff2);
+      //  u8x8.drawString( 3, 2 , buff2);
       u8x8.drawString(9, 2 , "s");
       u8x8.drawString(1, 4 , "Totale ");
-    //  dtostrf(*(poitem + 11), 6, 3, buff);
-    //  u8x8.drawString(3, 6 , buff);
+      //  dtostrf(*(poitem + 11), 6, 3, buff);
+      //  u8x8.drawString(3, 6 , buff);
       u8x8.drawString(9, 6 , "s");
       break;
 
@@ -93,10 +93,10 @@ void draw(int cases , U8X8_SH1106_128X64_NONAME_HW_I2C u8x8) {
       dtostrf(tensione_float, 6, 2, vout); // Leave room for too large numbers!
 
       u8x8.setFont(u8x8_font_8x13B_1x2_r);
-      u8x8.drawString(0, 5 , " Fine Manche");
-      u8x8.drawString(0, 25 , " In Attesa.... ");
-      u8x8.drawString(60, 40 , " V");
-      u8x8.drawString(10, 40, vout );
+      u8x8.drawString(0, 1 , " Fine Manche");
+      u8x8.drawString(0, 3 , " In Attesa.... ");
+      u8x8.drawString(7, 6, " V");
+      u8x8.drawString(5, 6, vout );
       break;
 
     default:

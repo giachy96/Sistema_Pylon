@@ -19,7 +19,7 @@ boolean newData7 = false;
 boolean newData8 = false;
 unsigned long currentMillis ;
 unsigned long oldMillis;
-unsigned long pressbutton = 1000;
+unsigned long pressbutton = 1200;
 
 String cnc ;
 String tempiverde[11];
@@ -30,6 +30,7 @@ String values [5];
 int pStop = 38;
 int pGo = 39;
 int pShow = 40;
+
 
 
 
@@ -71,7 +72,8 @@ void loop() {
   //showSerial8(); attenziona al new data
 
   if (currentMillis - oldMillis >= pressbutton) {
-    if (digitalRead(pStop) == HIGH) {
+    if (digitalRead(pStop) == HIGH ) {
+       Serial.println("<STOP>");
       Serial6.print("<STOP>");
       Serial8.print("<6000>");
       Serial1.print("<6000>");
@@ -81,8 +83,11 @@ void loop() {
       Serial4.print("<6000>");
       Serial2.print("<6000>");
       oldMillis = millis();
+     
+      
     }
-    if (digitalRead(pGo) == LOW ) {
+    if (digitalRead(pGo) == LOW  ) {
+       Serial.println("<GO>");
       Serial6.print("<GO>");
       Serial8.print("<3000>");
       Serial1.print("<3000>");
@@ -92,8 +97,10 @@ void loop() {
       Serial4.print("<3000>");
       Serial2.print("<3000>");
       oldMillis = millis();
+     
     }
-    if (digitalRead(pShow) == LOW ) {
+    if (digitalRead(pShow) == LOW) {
+      Serial.println("<SHOW>");
       Serial6.print("<SHOW>");
       Serial8.print("<2000>");
       Serial1.print("<2000>");
@@ -103,6 +110,7 @@ void loop() {
       Serial4.print("<2000>");
       Serial2.print("<2000>");      
       oldMillis = millis();
+    
     }
   }
 
@@ -123,6 +131,7 @@ void loop() {
         decodecomma(Rxs8, values);
         tempirosso[11] = values[2];
         Serial3.print("<5514>");
+        Serial5.print("<5514>");
       }
 
     }
@@ -147,6 +156,7 @@ void loop() {
         decodecomma(Rxs1, values);
         tempiblu[11] = values[2];
         Serial3.print("<5534>");
+        Serial2.print("<5534>");
       }
 
     }
@@ -170,6 +180,7 @@ void loop() {
         decodecomma(Rxs7, values);
         tempiverde[11] = values[2];
         Serial3.print("<5524>");
+         Serial4.print("<5524>");
       }
 
     }

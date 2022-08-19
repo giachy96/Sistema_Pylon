@@ -22,7 +22,7 @@ char RecCh1[numChars];
 char RecCh2[numChars];
 char RecCh3[numChars];
 char  RecChAltSerial[numChars];
-int FlagState = 0;
+int FlagState = 200;
 
 //Inizio Configurazione Mega
 String Race = "3000";
@@ -34,7 +34,7 @@ String end10lapV = "5524";
 String end10lapR = "5514";
 String State = Startup;
 String OldState = Startup;
-unsigned long Delaysend = 200;
+unsigned long Delaysend = 0;
 
 //Fine Configurazione Mega
 
@@ -119,8 +119,9 @@ void loop() {
     RecStrAlt();
     if (newDataAltSerial == true) {  //(Serial1.available()>0){
       State = RecChAltSerial;  //Assign incoming data from Serial3 to Dateserial3
-      Serial.println(State);  //debug
+
       Serial.println("Ricevo dalla seriale AltSerial ");
+      Serial.println(State);  //debug
       FlagState = 1;
       Timesend = millis();  // millis assigment for last data receive
       newDataAltSerial = false;
@@ -140,28 +141,32 @@ void loop() {
     //   Serial.println(RecCh1);
     //   newData1 = false;
     // }
-    if (str.indexOf(end10lapB) == -1 || str.indexOf(end10lapV) == -1) {
-      Serial1.print(str);  //Send to receiver 1 State
-      //Serial.println(State);
-    }
+    //    if (str.indexOf(end10lapB) == -1 || str.indexOf(end10lapV) == -1) {
+    //      Serial1.print(str);  //Send to receiver 1 State
+    //      //Serial.println(State);
+    //    }
     // RecStr2();
     // if (newData2 == true) {  //(Serial2.available()>0){
     //   Dateserial2p = RecCh2;  //Assign incoming data from Serial1 to Dateserial1
     //   Serial.println(RecCh2);
     //   newData2 = false;
     // }
-    if (str.indexOf(end10lapB) == -1 || str.indexOf(end10lapR) == -1) {
-      Serial2.print(str);
-    }
+    //    if (str.indexOf(end10lapB) == -1 || str.indexOf(end10lapR) == -1) {
+    //      Serial2.print(str);
+    //    }
     // RecStr3();
     // if (newData3 == true) {   //(Serial3.available()>0){
     //   Dateserial3p = RecCh3;  //Assign incoming data from Serial1 to Dateserial1
     //   Serial.println(RecCh3);
     //   newData3 == false;
     // }
-    if (str.indexOf(end10lapR) == -1 || str.indexOf(end10lapV) == -1) {
-      Serial3.print(str);
-    }
+    //    if (str.indexOf(end10lapR) == -1 || str.indexOf(end10lapV) == -1) {
+    //      Serial3.print(str);
+    //    }
+    Serial1.print(str);
+    Serial2.print(str);
+    Serial3.print(str);
+    Serial.println("Mando i pachetti");
     FlagState = 0;  //Reset condition for send State to the rx
   }
 }

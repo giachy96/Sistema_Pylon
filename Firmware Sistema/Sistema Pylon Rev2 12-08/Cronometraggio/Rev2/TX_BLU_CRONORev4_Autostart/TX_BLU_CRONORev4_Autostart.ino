@@ -103,7 +103,7 @@ void loop() {
       previousMillis = currentMillis;
       altupdatelcd = 0;
       // picture loop
-      draw(0, u8x8);
+      draw(6, u8x8);
     }
 
     if (currentMillis - previousMillis >= 10000  && altupdatelcd == 2) {
