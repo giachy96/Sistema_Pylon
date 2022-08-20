@@ -1,11 +1,11 @@
 #include <SPI.h>
 #include <DMD2.h>
 #include <fonts/SystemFont5x7.h>
-
+#include "codedecode.h"
 #include "SystemFont5x7.h"
 #include "Arial_Black_16.h"
 
-const byte numChars = 32;
+const byte numChars = 200;
 char receivedChars1[numChars];
 char oldreceivedChars1[numChars];
 boolean newData = false;
@@ -44,6 +44,12 @@ String temporosso [5];
 String tempoblu [5];
 String tempoverde [5];
 String values [5];
+String arraytempirosso[11];
+String arraytaglirosso[10];
+String arraytempiverde[11];
+String arraytagliverde[10];
+String arraytempiblu[11];
+String arraytagliblu[10];
 
 unsigned long old523update;
 int bounce = 0;
@@ -58,7 +64,7 @@ void setup() {
   delay(500);
   Serial.begin(9600);
   delay(200);
-  Serial1.begin(9600);
+  Serial1.begin(9600); // SERIALE CON IL TEENSY
 
 }
 
@@ -71,6 +77,7 @@ void loop() {
   if (newData == true) {    // se ricevo un nuovo dato in seriale
     String Rxs;
     Rxs = receivedChars1;
+    //  Serial.println(Rxs);
 
     if (Rxs.indexOf("2510") != -1 || Rxs.indexOf("2520") != -1 || Rxs.indexOf("2530") != -1) { // codice show
       values[0] = "0";
@@ -124,22 +131,23 @@ void loop() {
 
 
     if (Rxs.indexOf("5514") != -1 ||  Rxs.indexOf("5524") != -1 || Rxs.indexOf("5534") != -1) { // codice ricezione 10 giri
-      decodecomma(Rxs, values);
+      decodestringone(Rxs);
       if (values[0] == "5514") {
-        temporosso[0] = values[0];
-        temporosso[3] = values[2];
+        //decodestringone(Rxs);
+        //        temporosso[0] = values[0];
+        //        temporosso[3] = values[2];
       } else if (values[0] == "5534") {
-        tempoblu[0] = values[0];
-        tempoblu[3] = values[2];
+        //        tempoblu[0] = values[0];
+        //        tempoblu[3] = values[2];
       } if (values[0] == "5524") {
-        tempoverde[0] = values[0];
-        tempoverde[3] = values[2];
+        //        tempoverde[0] = values[0];
+        //        tempoverde[3] = values[2];
       }
 
     }
     newData = false;
   }
- String strx = receivedChars1;
+  String strx = receivedChars1;
   if (strx.indexOf("5514") != -1  || strx.indexOf("5524") != -1 || strx.indexOf("5534") != -1) {
 
     if (millis() - old523update >= 1000) {
@@ -166,7 +174,7 @@ void loop() {
   }
 
   // GESTIONE DEL CONTO ALLA ROVESCIA
-   flagcount = countdown(flagcount);
+  flagcount = countdown(flagcount);
 
   // GESTIONE DELLA SIRENA
   if (sirenaflag == 1) {
@@ -185,6 +193,9 @@ void loop() {
       sirenaflag = 0;
     }
   }
+
+  //FINE GESTIONE SIRENA
+
   if (strcmp(receivedChars1, oldreceivedChars1) != 0) {
     updatescreen = 0;
 
@@ -200,20 +211,28 @@ void loop() {
       memcpy(oldreceivedChars1, receivedChars1, sizeof(receivedChars1));
     }
     if (strcmp(receivedChars1, "GO") == 0 && updatescreen == 0  ) {
-      //      dmd.clearScreen();
-      //      dmd.drawString(0, 4, "GO");
-      //      dmd.drawString(0, 20, "GO");
-      //      dmd.drawString(0, 36, "GO");
       flagcount = true;
       updatescreen = 1;
+      memset(arraytempirosso, 0 , sizeof(arraytempirosso));
+      memset(arraytaglirosso, 0 , sizeof(arraytaglirosso));
+      memset(arraytempiverde, 0 , sizeof(arraytempiverde));
+      memset(arraytagliverde, 0 , sizeof(arraytagliverde));
+      memset(arraytempiblu, 0 , sizeof(arraytempiblu));
+      memset(arraytagliblu, 0 , sizeof(arraytagliblu));
+      
       memcpy(oldreceivedChars1, receivedChars1, sizeof(receivedChars1));
 
     }
     if (strcmp(receivedChars1, "SHOW") == 0 && updatescreen == 0  ) {
+      memset(arraytempirosso, 0 , sizeof(arraytempirosso));
+      memset(arraytaglirosso, 0 , sizeof(arraytaglirosso));
+      memset(arraytempiverde, 0 , sizeof(arraytempiverde));
+      memset(arraytagliverde, 0 , sizeof(arraytagliverde));
+      memset(arraytempiblu, 0 , sizeof(arraytempiblu));
+      memset(arraytagliblu, 0 , sizeof(arraytagliblu));
+
+
       dmd.clearScreen();
-      //      dmd.drawString(8, 1, "SHOW");
-      //      dmd.drawString(8, 17, "SHOW");
-      //      dmd.drawString(8, 33, "SHOW");
       dmd.drawString(0, 1, "SHOW");
       dmd.drawString(0, 17, "SHOW");
       dmd.drawString(0, 33, "SHOW");
@@ -225,23 +244,12 @@ void loop() {
       showcrorosso = false;
       showcroblu = false;
       updatescreen = 1;
-       flagcount = false;
+      flagcount = false;
       memcpy(oldreceivedChars1, receivedChars1, sizeof(receivedChars1));
       memcpy(oldreceivedChars1, receivedChars1, sizeof(receivedChars1));
     }
 
   }
-
-  //  if (  currentMillis -  lastdiplayupdate >= intervalstandby  && strcmp(receivedChars1, oldreceivedChars1) == 0 && updatescreen ==  ) {
-  //
-  //
-  //    dmd.clearScreen();
-  //    dmd.drawString(0, 4, "ATTESA");
-  //    dmd.drawString(0, 20, "SISTEMA IN");
-  //    dmd.drawString(0, 36, "FT MODELS");
-  //    lastdiplayupdate = millis();
-  //
-  //  }
 }
 
 
@@ -286,32 +294,6 @@ void  recvWithStartEndMarkers( HardwareSerial &port , char receivedChars[numChar
 
 }
 
-
-
-
-int decodecomma (String str , String tempi[]) {
-  int lungh_str = str.length();
-  char buff[lungh_str + 1];
-  str.toCharArray(buff, lungh_str + 1);
-  //Serial.println(parseData(buff));
-  int i = 0;
-  char* p;
-  //Serial.println("Example of splitting a string into tokens: ");
-  // Serial.print("The input string is: '");
-  // Serial.print(buff);
-  // Serial.println("'");
-
-  p = strtok(buff, "{,}"); //2nd argument is a char[] of delimiters
-  while (p != '\0') { //not equal to NULL
-    //Serial.println(p);
-    tempi[i] = p;
-
-    p = strtok('\0', "{,}");  //expects NULL for string on subsequent calls
-    i++;
-  }
-
-  return tempi;
-}
 
 void checkboxcrono (int xs , int ys , int xe , int ye, boolean flg ) {
 

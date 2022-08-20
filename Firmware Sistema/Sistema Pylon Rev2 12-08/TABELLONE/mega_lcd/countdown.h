@@ -21,8 +21,6 @@ boolean countdown(boolean flag) {
         dmd.drawString(24, 17, cstr);
         dmd.drawString(24, 33, cstr);
         milliscountdown = millis();
-        Serial.println(sec);
-        Serial.println(flag);
         sirenaflag = 0;
         sec = sec - 1;
       }  else if (sec == 32) {
@@ -109,8 +107,6 @@ boolean countdown(boolean flag) {
         dmd.clearScreen();
         dmd.drawString(24, 33, "GO");
         milliscountdown = millis();
-        Serial.println(sec);
-        Serial.println(flag);
         Serial1.println("<3513>"); //parte il rosso cronometro
         Serial1.println("<3001>"); //partono tutti i telecomandi dei tagli
         sirenaflag = 1;
@@ -126,8 +122,6 @@ boolean countdown(boolean flag) {
         dmd.drawString(24, 17, "GO");
         dmd.drawString(24, 33, "GO");
         milliscountdown = millis();
-        Serial.println(sec);
-        Serial.println(flag);
         Serial1.println("<3523>"); // parte il verde
         sirenaflag = 1;
         sec = sec - 1;
@@ -143,8 +137,6 @@ boolean countdown(boolean flag) {
         dmd.drawString(24, 17, "GO");
         dmd.drawString(24, 33, "GO");
         milliscountdown = millis();
-        Serial.println(sec);
-        Serial.println(flag);
         Serial1.println("<3533>"); // parte il blu
         sirenaflag = 1;
         sec = sec - 1;
@@ -163,8 +155,6 @@ boolean countdown(boolean flag) {
         sirenaflag = 0;
         flag = false;
         sec = 62;
-        Serial.println(sec);
-        Serial.println(flag);
       }
 
     }
