@@ -67,6 +67,8 @@ void loop() {
     //If there isn't any problem we're going to receive press
     TxData = rc.data; //Assign incoming data on TxData variable
     Timesend = millis();
+    Serial.println("Dato ricevuto dal telecomando ");
+    Serial.println( TxData);
     if (TxData != "0" && (State == Show || State == StartRace)) { //Condition for sent to mega cut
       RecStr();//valutare se disabilitare
       if (newData == true) { //(SwSerial.available()>0){  // If mega will sent state to sem_rx
@@ -75,16 +77,23 @@ void loop() {
         Serial.println(State);
         newData = false;
         FlagState = 1;
+        Serial.println("newData == true ");
       }
       if (State == Show || State == StartRace) { //if nothing has change from previous if-statements
-        SwSerial.print(TxData); //Send Txdata from rx to Mega
+        String str="<";
+        str.concat(TxData);
+        str.concat(">");
+        SwSerial.print(str); //Send Txdata from rx to Mega
         Plotmillis = millis();
         Serial.print(Plotmillis);
         Serial.println(" ");
-        Serial.println(TxData);
+        Serial.println(str);
+        Serial.println("Dentro State == Show || State == StartRace, dove mando il dato ");
+
       }
       TxDatastr = TxData;
       TxData = "0"; //Reset condition for set data
+       Serial.println("TxData !=  && (State == Show || State == StartRace) ");
     }
   }
   CurrentMillis = millis();
@@ -103,7 +112,7 @@ void loop() {
     lampeggianteP3 = 0;
     TxDatastr = "";
     FlagState = 0;
-    Serial.println("PINS LOW");
+    
   }
 
 
@@ -139,7 +148,7 @@ void loop() {
       }
       if (ntagliP3 > 1) {
         lampeggianteP3 = 1;
-        Serial.println("lampeggiante P3");
+      
 
       }
       TxDatastr = "";
@@ -153,18 +162,18 @@ void loop() {
       lampmillisP2 = millis();
       onP2 = 1;
       digitalWrite( PinLight2, HIGH);
-      Serial.println(" P2 HIGH ");
+     
 
     }
     if (onP2 == 1 && millis()  - lampmillisP2 >= 500 ) {
       digitalWrite( PinLight2, LOW);
       onP2 = 0;
       lampmillisP2 = millis();
-      Serial.println(" P2 LOW ");
+    
     }
   }
 
-  
+
   if (lampeggianteP3 == 1) {
     if (onP3 == 0 && millis() - lampmillisP3 >= 500) {
       lampmillisP3 = millis();
@@ -176,7 +185,7 @@ void loop() {
       digitalWrite( PinLight3, LOW);
       onP3 = 0;
       lampmillisP3 = millis();
-      Serial.println(" P3 LOW ");
+    
     }
   }
   // fine codice lampeggio

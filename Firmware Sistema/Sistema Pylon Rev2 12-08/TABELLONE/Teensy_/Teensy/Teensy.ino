@@ -76,21 +76,14 @@ void setup() {
 void loop() {
   currentMillis = millis();
   recvSerial1();
-  /// showSerial1();attenziona al new data
   recvSerial2();
-  // showSerial2();
   recvSerial3();
-  // showSerial3();
   recvSerial4();
-  // showSerial4();
   recvSerial5();
-  //  showSerial5();
   recvSerial6();
-  // showSerial6();
   recvSerial7();
-  //showSerial7();attenziona al new data
   recvSerial8();
-  //showSerial8(); attenziona al new data
+
 
   if (currentMillis - oldMillis >= pressbutton) {
     if (digitalRead(pStop) == HIGH ) {
@@ -295,6 +288,7 @@ void loop() {
   if (newData5 == true) {
     String Rxs5;
     Rxs5 = receivedChars5;
+     Serial.println(Rxs5);
     if (Rxs5.indexOf("3211") != -1 ) { // tagli palo 2 rosso
       Serial.println("Taglio P2 Rosso");
       ntagliP2_rosso++;
@@ -342,29 +336,33 @@ void loop() {
     newData2 = false;
   }
 
+
   if (end10lap_rosso == 1) {
     Serial.println("So dentro al end10lap");
     String stringone = "";
-    
-      for (int i = 1; i <= 10; i++) {
+
+    for (int i = 1; i <= 10; i++) {
       stringone.concat(tempirosso[i]);
-     
-       Serial.println(tempirosso[i]);
-//            if (arrayP1_rosso[i] != 0) {
-//              stringone.concat("-P1");
-//            }
-//            if (arrayP2_rosso[i] !=  0) {
-//              stringone.concat("-P2");
-//            }
-            if (arrayP3_rosso[i] !=  0) {
-              stringone.concat("-P3");
-            }
+
+      Serial.println(tempirosso[i]);
+//      if (arrayP1_rosso[i] != 0) {
+//        stringone.concat("-P1");
+//      }
+//      if (arrayP2_rosso[i] !=  0) {
+//        stringone.concat("-P2");
+//      }
+//      if (arrayP3_rosso[i] !=  0) {
+//        stringone.concat("-P3");
+//      }
       stringone.concat(",");
-     
+
     }
     stringone.concat(tempirosso[11]);
     end10lap_rosso = 0;
     Serial.println(stringone);
+  }
+  if(newData5 == true){
+  Serial.println( newData5 );
   }
 }
 

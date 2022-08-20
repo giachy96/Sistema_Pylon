@@ -77,11 +77,14 @@ void loop() {
         FlagState = 1;
       }
       if (State == Show || State == StartRace) { //if nothing has change from previous if-statements
-        SwSerial.print(TxData); //Send Txdata from rx to Mega
+        String str = "<";
+        str.concat(TxData);
+        str.concat(">");
+        SwSerial.print(str); //Send Txdata from rx to Mega
         Plotmillis = millis();
         Serial.print(Plotmillis);
         Serial.println(" ");
-        Serial.println(TxData);
+        Serial.println(str);
       }
       TxDatastr = TxData;
       TxData = "0"; //Reset condition for set data
@@ -164,7 +167,7 @@ void loop() {
     }
   }
 
-  
+
   if (lampeggianteP3 == 1) {
     if (onP3 == 0 && millis() - lampmillisP3 >= 500) {
       lampmillisP3 = millis();
