@@ -26,6 +26,8 @@ String tempiverde[11];
 String tempirosso[11];
 String tempiblu[11];
 int end10lap_rosso = 0;
+int end10lap_verde = 0;
+int end10lap_blu = 0;
 String values [5];
 
 int ngiri_blu = 0;
@@ -151,11 +153,13 @@ void loop() {
         ntagliP1_rosso = 0;
         ntagliP2_rosso = 0;
         ntagliP3_rosso = 0;
+        Serial.println( "ngiri_rosso");
+        Serial.println( ngiri_rosso);
       }
       if (Rxs8.indexOf("5514") != -1 ) { // fine 10 giri rosso
         decodecomma(Rxs8, values);
         tempirosso[11] = values[2];
-        Serial3.print("<5514>");
+        //Serial3.print("<5514>");
         Serial5.print("<5514>");
         end10lap_rosso = 1;
       }
@@ -175,7 +179,7 @@ void loop() {
       Serial6.print(pack1);
       Serial.println(pack1);
 
-      if (Rxs1.indexOf("4534") != -1 ) {
+      if (Rxs1.indexOf("4534") != -1 ) {       // nuovo giro blu
         decodecomma(Rxs1, values);
         tempiblu[values[1].toInt()] = values[2];
         ngiri_blu++;
@@ -183,11 +187,12 @@ void loop() {
         ntagliP2_blu = 0;
         ntagliP3_blu = 0;
       }
-      if (Rxs1.indexOf("5534") != -1 ) {
+      if (Rxs1.indexOf("5534") != -1 ) {     // fine 10 giri blu
         decodecomma(Rxs1, values);
         tempiblu[11] = values[2];
-        Serial3.print("<5534>");
+        //Serial3.print("<5534>");
         Serial2.print("<5534>");
+        end10lap_blu = 1;
       }
 
     }
@@ -212,11 +217,12 @@ void loop() {
         ntagliP2_verde = 0;
         ntagliP3_verde = 0;
       }
-      if (Rxs7.indexOf("5524") != -1 ) {
+      if (Rxs7.indexOf("5524") != -1 ) {     //fine 10 giri verde
         decodecomma(Rxs7, values);
         tempiverde[11] = values[2];
-        Serial3.print("<5524>");
+        //Serial3.print("<5524>");
         Serial4.print("<5524>");
+         end10lap_verde = 1;
       }
 
     }
@@ -232,21 +238,20 @@ void loop() {
       pack6_r.concat(receivedChars6);
       pack6_r.concat(">");
       Serial8.print(pack6_r);
-      ngiri_rosso++;
     }
     if (Rxs6.indexOf("3523") != -1 ) { // avvio verde
       String pack6_v = "<";
       pack6_v.concat(receivedChars6);
       pack6_v.concat(">");
       Serial7.print(pack6_v);
-      ngiri_verde++;
+   
     }
     if (Rxs6.indexOf("3533") != -1 ) { // avvio blu
       String pack6_b = "<";
       pack6_b.concat(receivedChars6);
       pack6_b.concat(">");
       Serial1.print(pack6_b);
-      ngiri_blu++;
+     
     }
     if (Rxs6.indexOf("3001") != -1 ) { // avvio tutti i tagli
       String pack6_t = "<";
@@ -267,17 +272,17 @@ void loop() {
     if (Rxs3.indexOf("3111") != -1 ) { // tagli palo 1 rosso
       Serial.println("Taglio P1 Rosso");
       ntagliP1_rosso++;
-      arrayP1_rosso[ngiri_rosso] = ntagliP1_rosso;
+      arrayP1_rosso[ngiri_rosso-1] = ntagliP1_rosso;
 
     }
     if (Rxs3.indexOf("3121") != -1 ) { // tagli palo 1 rosso
       ntagliP1_verde++;
-      arrayP1_verde[ngiri_verde] = ntagliP1_verde;
+      arrayP1_verde[ngiri_verde-1] = ntagliP1_verde;
 
     }
     if (Rxs3.indexOf("3131") != -1 ) { // tagli palo 1 rosso
       ntagliP1_blu++;
-      arrayP1_verde[ngiri_blu] = ntagliP1_blu;
+      arrayP1_verde[ngiri_blu-1] = ntagliP1_blu;
 
     }
     newData3 = false;
@@ -288,16 +293,15 @@ void loop() {
   if (newData5 == true) {
     String Rxs5;
     Rxs5 = receivedChars5;
-     Serial.println(Rxs5);
     if (Rxs5.indexOf("3211") != -1 ) { // tagli palo 2 rosso
       Serial.println("Taglio P2 Rosso");
       ntagliP2_rosso++;
-      arrayP2_rosso[ngiri_rosso] = ntagliP2_rosso;
+      arrayP2_rosso[ngiri_rosso-1] = ntagliP2_rosso;
     }
     if (Rxs5.indexOf("3311") != -1 ) { // tagli palo 3 rosso
       Serial.println("Taglio P3 Rosso");
       ntagliP3_rosso++;
-      arrayP3_rosso[ngiri_rosso] = ntagliP3_rosso;
+      arrayP3_rosso[ngiri_rosso-1] = ntagliP3_rosso;
     }
     newData5 = false;
   }
@@ -309,12 +313,12 @@ void loop() {
     if (Rxs4.indexOf("3221") != -1 ) { // tagli palo 2 verde
       Serial.println("Taglio P2 Verde");
       ntagliP2_verde++;
-      arrayP2_verde[ngiri_verde] = ntagliP2_verde;
+      arrayP2_verde[ngiri_verde-1] = ntagliP2_verde;
     }
     if (Rxs4.indexOf("3321") != -1 ) { // tagli palo 3 verde
       Serial.println("Taglio P3 verde");
       ntagliP3_verde++;
-      arrayP3_verde[ngiri_verde] = ntagliP3_verde;
+      arrayP3_verde[ngiri_verde-1] = ntagliP3_verde;
     }
     newData4 = false;
   }
@@ -326,44 +330,95 @@ void loop() {
     if (Rxs2.indexOf("3231") != -1 ) { // tagli palo 2 blu
       Serial.println("Taglio P2 Blu");
       ntagliP2_blu++;
-      arrayP2_blu[ngiri_blu] = ntagliP2_blu;
+      arrayP2_blu[ngiri_blu-1] = ntagliP2_blu;
     }
     if (Rxs2.indexOf("3331") != -1 ) { // tagli palo 3 blu
       Serial.println("Taglio P3 blu");
       ntagliP3_blu++;
-      arrayP3_blu[ngiri_blu] = ntagliP3_blu;
+      arrayP3_blu[ngiri_blu-1] = ntagliP3_blu;
     }
     newData2 = false;
   }
 
+// codice che crea le stringhe finali per i colori 
+  if (end10lap_rosso == 1) {               // creo la stringa finale per il rosso
+    String stringonerosso = "<5514,";
 
-  if (end10lap_rosso == 1) {
-    Serial.println("So dentro al end10lap");
-    String stringone = "";
 
     for (int i = 1; i <= 10; i++) {
-      stringone.concat(tempirosso[i]);
+      stringonerosso.concat(tempirosso[i]);
 
-      Serial.println(tempirosso[i]);
-//      if (arrayP1_rosso[i] != 0) {
-//        stringone.concat("-P1");
-//      }
-//      if (arrayP2_rosso[i] !=  0) {
-//        stringone.concat("-P2");
-//      }
-//      if (arrayP3_rosso[i] !=  0) {
-//        stringone.concat("-P3");
-//      }
-      stringone.concat(",");
+      if (arrayP1_rosso[i-1] != 0) {
+        stringonerosso.concat("-P1");
+      }
+      if (arrayP2_rosso[i-1] !=  0) {
+        stringonerosso.concat("-P2");
+      }
+      if (arrayP3_rosso[i-1] !=  0) {
+        stringonerosso.concat("-P3");
+      }
+      stringonerosso.concat(",");
 
     }
-    stringone.concat(tempirosso[11]);
+    stringonerosso.concat(tempirosso[11]);
+    stringonerosso.concat(">");
     end10lap_rosso = 0;
-    Serial.println(stringone);
+    Serial3.println(stringonerosso);
   }
-  if(newData5 == true){
-  Serial.println( newData5 );
+
+  if (end10lap_verde == 1) {                      // creo la stringa finale per il verde
+    String stringoneverde = "<5524,";
+
+
+    for (int i = 1; i <= 10; i++) {
+      stringoneverde.concat(tempiverde[i]);
+
+      if (arrayP1_verde[i-1] != 0) {
+        stringoneverde.concat("-P1");
+      }
+      if (arrayP2_verde[i-1] !=  0) {
+        stringoneverde.concat("-P2");
+      }
+      if (arrayP3_verde[i-1] !=  0) {
+        stringoneverde.concat("-P3");
+      }
+      stringoneverde.concat(",");
+
+    }
+    stringoneverde.concat(tempiverde[11]);
+    stringoneverde.concat(">");
+    end10lap_verde = 0;
+    Serial3.println(stringoneverde);
   }
+
+
+    if (end10lap_blu == 1) {       // creo la stringa finale per il blu
+    String stringoneblu = "<5534,";
+
+
+    for (int i = 1; i <= 10; i++) {
+      stringoneblu.concat(tempiblu[i]);
+
+      if (arrayP1_blu[i-1] != 0) {
+        stringoneblu.concat("-P1");
+      }
+      if (arrayP2_blu[i-1] !=  0) {
+        stringoneblu.concat("-P2");
+      }
+      if (arrayP3_blu[i-1] !=  0) {
+        stringoneblu.concat("-P3");
+      }
+      stringoneblu.concat(",");
+
+    }
+    stringoneblu.concat(tempiblu[11]);
+    stringoneblu.concat(">");
+    end10lap_blu = 0;
+    Serial3.println(stringoneblu);
+  }
+
+ // fine codice delle stringhe finali
+
 }
 
 
