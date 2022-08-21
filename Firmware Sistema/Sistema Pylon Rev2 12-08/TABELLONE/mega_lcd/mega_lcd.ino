@@ -4,6 +4,9 @@
 #include "codedecode.h"
 #include "SystemFont5x7.h"
 #include "Arial_Black_16.h"
+#include "LoRa_E22.h"
+
+LoRa_E22 e22ttl(10, 11);  // Arduino RX --> e22 TX - Arduino TX --> e22 RX
 
 const byte numChars = 200;
 char receivedChars1[numChars];
@@ -24,7 +27,7 @@ int updatescreen = 0;
 //Fire up the DMD library as dmd
 #define DISPLAYS_ACROSS 2
 #define DISPLAYS_DOWN 3
-SPIDMD dmd(DISPLAYS_ACROSS, DISPLAYS_DOWN, 11, 6, 7, 8); // DMD controls the entire display
+SPIDMD dmd(DISPLAYS_ACROSS, DISPLAYS_DOWN, 3, 6, 7, 8); // DMD controls the entire display
 #include "countdown.h"
 unsigned long currentMillis;
 unsigned long lastdiplayupdate;
@@ -33,7 +36,7 @@ unsigned long milliscountdown;
 unsigned long sirenamillis;
 unsigned long startsirena;
 int sec;
-int sirena = 10;
+int sirena = 2;
 int sirenaflag = 0;
 int k = 0;
 boolean flagcount;
@@ -51,6 +54,11 @@ String arraytagliverde[10];
 String arraytempiblu[11];
 String arraytagliblu[10];
 
+byte Key = 0;
+byte Add = 1;
+byte Chan = 5;
+
+
 unsigned long old523update;
 int bounce = 0;
 
@@ -65,6 +73,8 @@ void setup() {
   Serial.begin(9600);
   delay(200);
   Serial1.begin(9600); // SERIALE CON IL TEENSY
+  delay(200);
+  e22ttl.begin();  //Start e22ttl
 
 }
 
@@ -132,6 +142,8 @@ void loop() {
 
     if (Rxs.indexOf("5514") != -1 ||  Rxs.indexOf("5524") != -1 || Rxs.indexOf("5534") != -1) { // codice ricezione 10 giri
       decodestringone(Rxs);
+    //  memcpy(pacchettone.loraarraytempirosso, arraytempirosso, sizeof(arraytempirosso));
+      ResponseStatus rs = e22ttl.sendFixedMessage(Key, Add, Chan,Rxs);
       if (values[0] == "5514") {
         //decodestringone(Rxs);
         //        temporosso[0] = values[0];
@@ -204,7 +216,8 @@ void loop() {
       dmd.drawString(8, 1, "STOP");
       dmd.drawString(8, 17, "STOP");
       dmd.drawString(8, 33, "STOP");
-
+      
+       ResponseStatus rs = e22ttl.sendFixedMessage(Key, Add, Chan,"6000");
       flagcount = false;
 
       updatescreen = 1;
@@ -219,8 +232,10 @@ void loop() {
       memset(arraytagliverde, 0 , sizeof(arraytagliverde));
       memset(arraytempiblu, 0 , sizeof(arraytempiblu));
       memset(arraytagliblu, 0 , sizeof(arraytagliblu));
-      
+
       memcpy(oldreceivedChars1, receivedChars1, sizeof(receivedChars1));
+     
+       ResponseStatus rs = e22ttl.sendFixedMessage(Key, Add, Chan,"3000");
 
     }
     if (strcmp(receivedChars1, "SHOW") == 0 && updatescreen == 0  ) {
@@ -230,7 +245,8 @@ void loop() {
       memset(arraytagliverde, 0 , sizeof(arraytagliverde));
       memset(arraytempiblu, 0 , sizeof(arraytempiblu));
       memset(arraytagliblu, 0 , sizeof(arraytagliblu));
-
+      
+      ResponseStatus rs = e22ttl.sendFixedMessage(Key, Add, Chan,"2000");
 
       dmd.clearScreen();
       dmd.drawString(0, 1, "SHOW");
