@@ -16,15 +16,18 @@ byte Chan = 5;
 
 
 int buzzer = 12 ;
-int pstop = 10;
-int pgo = 9;
+int pstop = 2;
+int pgo = 3;
+int pshow = 6;
 int r_print = 8;
-//int pinbatt = A0; ho disabilitato la batteria sennò me sona il buzzer
+int ledstatusPC = 4;
 
-int pinbatt = A3;
+int checkPC = 7;
+int pinbatt = A0;
 int secure = 0; // valore per evitare la pressione doppia
 unsigned long previousMillis = 0; // will store last time voltage was updated
-
+long intervalcheckPC = 1000;
+long oldcheckPC = 0 ;
 long interval = 3000;  // refresh schermo
 String arraytempirosso[11];
 String arraytaglirosso[10];
@@ -37,21 +40,22 @@ String RxData = "";
 
 LiquidCrystal_I2C lcd = LiquidCrystal_I2C(0x27, 20, 4);
 // lora parametri
-LoRa_E22 e22ttl(2, 3); // Arduino RX --> e22 TX - Arduino TX --> e22 RX
+LoRa_E22 e22ttl(10, 11); // Arduino RX --> e22 TX - Arduino TX --> e22 RX
 
 
 
 void setup() {
   Serial.begin(9600);        // imposta la comunicazione seriale
-  printerSerial.begin(9600);  // Initialize SoftwareSerial
+  Serial2.begin(9600);  // Initialize HwSerial per la Stampanate
   printer.begin();        // Init printer (same regardless of serial type)
   pinMode(buzzer, OUTPUT);        // imposta come input il pin 10
   pinMode(pstop, INPUT_PULLUP);        // imposta come input il pin 11
   pinMode(pgo, INPUT_PULLUP );        // imposta come input il pin 12
   pinMode (pinbatt , INPUT);
   pinMode( r_print , INPUT_PULLUP );       // imposta come input il pin 12
-
-
+  pinMode(checkPC , INPUT );
+  pinMode(pshow , INPUT_PULLUP );
+  pinMode(ledstatusPC, OUTPUT);
   e22ttl.begin();
   lcd.init();
   lcd.backlight();
@@ -65,6 +69,16 @@ void setup() {
 void loop() {
   unsigned long currentMillis = millis();
 
+  if (currentMillis - oldcheckPC >= intervalcheckPC ) {
+    if (digitalRead(checkPC) == HIGH) {
+      digitalWrite(ledstatusPC, HIGH);
+      Serial.println("LED Acceso");
+    } else {
+      digitalWrite(ledstatusPC, LOW);
+      Serial.println("LED Spento");
+    }
+    oldcheckPC = millis();
+  }
 
   if (tensionebatt( pinbatt ) < 9.5) { // allarme tensione batteria
     tone( buzzer, 5000, 500);
@@ -79,14 +93,18 @@ void loop() {
     lcd.print(vout);
   }
 
-  if (digitalRead(pgo) == LOW && secure == 0) {
+  if (digitalRead(pshow) == LOW ) {
     tone( buzzer, 5000, 200);
-    Serial.println("800,0,0,0,0,0,0,0,0,0");
-    secure = 1 ;// qui è lingjippo tra la doppia pressione  e il non aspettare il send first
+    //Serial.println("800,0,0,0,0,0,0,0,0,0");
     draw(1, lcd);
   }
-  if ( digitalRead(pstop) == LOW && secure == 1) {
-    // Send BroadCast message
+
+  if (digitalRead(pgo) == LOW ) {
+    tone( buzzer, 5000, 200);
+    //Serial.println("800,0,0,0,0,0,0,0,0,0");
+    draw(1, lcd);
+  }
+  if ( digitalRead(pstop) == LOW ) {
     tone( buzzer, 4000, 200);
     // stampatotali (gara, manche_rx, round_rx , nome_rosso,  tempi_rosso, nome_verde,  tempi_verde, nome_blu,  tempi_blu) ;
     draw(3, lcd);
@@ -98,22 +116,24 @@ void loop() {
     tone( buzzer, 3000, 200);
   }
 
-  if (RxData == "2000") {
+  if (RxData == "2000") {  // se ricevo show
     draw(1, lcd);
     tone( buzzer, 3000, 200);
+    // provstampa();
     RxData = "";
   }
-  if (RxData.indexOf("5514")!= -1 ) {
+  if (RxData.indexOf("5514") != -1 ) { // se ricevo fine 10 giri rosso
     draw(1, lcd);
     decodestringone(RxData);
-      tone( buzzer, 3000, 200);
+    tone( buzzer, 3000, 200);
     stampatotali ("Q500" , 2 , 1, "Pippo" , "Pluto"  ,  "Paperino");
-    
-      RxData = "";
-    }
 
-    // 805,Q500,2,3,Matteo,Giacomo,Francesco,Luca,Paolo,Pippo
-    // lettura seriale
+    RxData = "";
+  }
+
+  // 805,Q500,2,3,Matteo,Giacomo,Francesco,Luca,Paolo,Pippo
+  // lettura seriale
+  if (digitalRead(checkPC) == HIGH) {
     if (Serial.available() > 0 ) {
       // read the incoming byte:
       incomingByte = Serial.read();
@@ -129,23 +149,22 @@ void loop() {
         for (int i = 0; i <= len - 1; i++) {
           my_str[i] = 0;
         }
-
         pos = 0;
       }
-
-    }
-
-
-
-
-
-    // If something available
-    if (e22ttl.available() > 1) {
-      // read the  message
-      ResponseContainer rc = e22ttl.receiveMessage();
-      Serial.println(rc.data);
-      RxData = rc.data;
-
-      // Print the data received
     }
   }
+
+
+
+
+
+  // If something available
+  if (e22ttl.available() > 1) {
+    // read the  message
+    ResponseContainer rc = e22ttl.receiveMessage();
+    Serial.println(rc.data);
+    RxData = rc.data;
+
+    // Print the data received
+  }
+}

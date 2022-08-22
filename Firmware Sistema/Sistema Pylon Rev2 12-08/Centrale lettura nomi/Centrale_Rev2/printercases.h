@@ -1,8 +1,8 @@
 #include "Adafruit_Thermal.h"
-#include "SoftwareSerial.h"
+//#include "SoftwareSerial.h"
 
-#define TX_PIN 6 // Arduino transmit  YELLOW WIRE  labeled RX on Stampanate
-#define RX_PIN 5 // Arduino receive   GREEN WIRE   labeled TX on Stampanate
+//#define TX_PIN 5// Arduino transmit  YELLOW WIRE  labeled RX on Stampanate
+//#define RX_PIN 6// Arduino receive   GREEN WIRE   labeled TX on Stampanate
 
 extern String nome_rosso ;
 
@@ -13,9 +13,20 @@ extern String arraytagliverde[10];
 extern String arraytempiblu[11];
 extern String arraytagliblu[10];
 
-SoftwareSerial printerSerial(RX_PIN, TX_PIN); // Declare SoftwareSerial obj first
-Adafruit_Thermal printer(&printerSerial, 4);    // Pass addr to printer constructor
+Adafruit_Thermal printer(&Serial2,5);      // Or Serial2, Serial3, etc.
 
+
+void provstampa() {
+  printer.setSize('M');        // Set type size, accepts 'S', 'M', 'L'
+  printer.print(F("GARA "));
+
+  printer.feed(1);
+  printer.print(F("MANCHE N :"));
+
+  printer.print(F("ROUND N :"));
+
+
+}
 void stampatotali (String gara , int manche_rx , int round_rx, String nome_rosso , String nome_verde  , String nome_blu ) {
   printer.setSize('M');        // Set type size, accepts 'S', 'M', 'L'
   printer.print(F("GARA "));
