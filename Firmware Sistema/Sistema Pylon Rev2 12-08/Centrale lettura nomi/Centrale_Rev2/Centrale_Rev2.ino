@@ -38,18 +38,33 @@ String arraytempiverde[11];
 String arraytagliverde[10];
 String arraytempiblu[11];
 String arraytagliblu[10];
+int datiblu = 0;
+int datirosso = 0;
+int dativerde = 0;
+String stringonerosso ;
+String stringoneverde ;
+String stringoneblu ;
+
+extern int code_rx;
+extern String gara ;
+extern int manche_rx;
+extern int round_rx;
+extern String nome_rosso;
+extern String nome_verde;
+extern String nome_blu;
+extern String last ;
 
 String RxData = "";
 
 LiquidCrystal_I2C lcd = LiquidCrystal_I2C(0x27, 20, 4);
 // lora parametri
-LoRa_E22 e22ttl(10, 11);  // Arduino RX --> e22 TX - Arduino TX --> e22 RX
+LoRa_E22 e22ttl(&Serial2);  // Arduino RX --> e22 TX - Arduino TX --> e22 RX
 
 
 
 void setup() {
   Serial.begin(9600);            // imposta la comunicazione seriale
-  Serial2.begin(9600);           // Initialize HwSerial per la Stampanate
+  Serial3.begin(9600);           // Initialize HwSerial per la Stampanate
   printer.begin();               // Init printer (same regardless of serial type)
   pinMode(buzzer, OUTPUT);       // imposta come input il pin 10
   pinMode(pstop, INPUT_PULLUP);  // imposta come input il pin 11
@@ -59,6 +74,7 @@ void setup() {
   pinMode(checkPC, INPUT);
   pinMode(pshow, INPUT_PULLUP);
   pinMode(ledstatusPC, OUTPUT);
+  Serial2.begin(9600);
   e22ttl.begin();
   lcd.init();
   lcd.backlight();
@@ -71,7 +87,7 @@ void setup() {
 void loop() {
   unsigned long currentMillis = millis();
 
-  if (currentMillis - oldcheckPC >= intervalcheckPC) {
+  if (currentMillis - oldcheckPC >= intervalcheckPC) { // intervallo per vedere se il pc è connesso
     if (digitalRead(checkPC) == HIGH) {
       digitalWrite(ledstatusPC, HIGH);
       statusPC = true;
@@ -82,14 +98,14 @@ void loop() {
     oldcheckPC = millis();
   }
 
-  if (currentMillis - oldPress >= intervalPress) {
+  if (currentMillis - oldPress >= intervalPress) { // intervallo per la doppia pressione del pulsante
     doublePress = 0;
   }
 
   if (tensionebatt(pinbatt) < 9.5) {  // allarme tensione batteria
     tone(buzzer, 5000, 500);
   }
-  if (currentMillis - previousMillis >= interval) {
+  if (currentMillis - previousMillis >= interval) { // intervallo lettura batteria
     // save the last time you read
     previousMillis = currentMillis;
     // read the tension of the battery
@@ -99,60 +115,102 @@ void loop() {
     lcd.print(vout);
   }
 
-  if (digitalRead(pshow) == LOW && doublePress == 0) {
+  if ( RxData == "700") { // ho ricevuto il comando INDIETRO
+    tone(buzzer, 2000, 200);
+    draw(1, lcd);
+    if (statusPC == true) {
+      // stringa con i nomi
+    } else {
+      ResponseStatus rs = e22ttl.sendFixedMessage(Key, Add, Chan, "750,NO PC,ROSSO,NO PC,VERDE,NO PC,BLU");
+    }
+    doublePress = 1;
+    oldPress = millis();
+    RxData = "";
+  }
+  if ( RxData == "800") { // ho ricevuto il comando AVANTI
+    tone(buzzer, 3000, 200);
+    draw(1, lcd);
+    if (statusPC == true) {
+      // stringa con i nomi
+    } else {
+      ResponseStatus rs = e22ttl.sendFixedMessage(Key, Add, Chan, "850,NO PC,ROSSO,NO PC,VERDE,NO PC,BLU");
+    }
+
+    doublePress = 1;
+    oldPress = millis();
+    RxData = "";
+  }
+
+  if ((digitalRead(pshow) == LOW && doublePress == 0 ) || RxData == "2000") { // caso show
     tone(buzzer, 4000, 200);
     doublePress = 1;
     oldPress = millis();
-    //Serial.println("800,0,0,0,0,0,0,0,0,0");
+    if (RxData != "2000") {
+      ResponseStatus rs = e22ttl.sendFixedMessage(Key, Add, Chan, "2000");
+    }
     draw(2, lcd);
+    RxData = "";
   }
 
-  if (digitalRead(pgo) == LOW && doublePress == 0) {
-    tone(buzzer, 4000, 200);
+  if ((digitalRead(pgo) == LOW && doublePress == 0  ) || RxData == "3000") { // caos go
+    tone(buzzer, 4500, 200);
     //Serial.println("800,0,0,0,0,0,0,0,0,0");
+    if (RxData != "3000") {
+      ResponseStatus rs = e22ttl.sendFixedMessage(Key, Add, Chan, "3000");
+    }
     draw(3, lcd);
     doublePress = 1;
     oldPress = millis();
+    RxData = "";
   }
-  if (digitalRead(pstop) == LOW && doublePress == 0) {
+  if ((digitalRead(pstop) == LOW && doublePress == 0) ||  RxData == "6000") { // caso di stop
     tone(buzzer, 5000, 200);
-    // stampatotali (gara, manche_rx, round_rx , nome_rosso,  tempi_rosso, nome_verde,  tempi_verde, nome_blu,  tempi_blu) ;
     draw(5, lcd);
+    if (RxData != "6000") {
+      ResponseStatus rs = e22ttl.sendFixedMessage(Key, Add, Chan, "6000");
+    }
     doublePress = 1;
     oldPress = millis();
+    RxData = "";
   }
 
   if (digitalRead(r_print) == LOW && doublePress == 0) {  // ristampa tempi
-    // stampatotali (gara, manche_rx, round_rx , nome_rosso,  old_rosso, nome_verde,  old_verde, nome_blu,  old_blu) ;
+    stampatotali("Q500", 2, 1, "Pippo", "Pluto", "Paperino");
     tone(buzzer, 3000, 200);
     doublePress = 1;
     oldPress = millis();
   }
 
-  if (RxData == "2000") {  // se ricevo show
-    draw(2, lcd);
-    tone(buzzer, 3000, 200);
-    RxData = "";
-  }
 
-    if (RxData == "3000") {  // se ricevo show
-    draw(3, lcd);
-    tone(buzzer, 3000, 200);
-    RxData = "";
-  }
-
-     if (RxData == "6000") {  // se ricevo show
-    draw(5, lcd);
-    tone(buzzer, 5000, 200);
-    RxData = "";
-  }
-
-  if (RxData.indexOf("5514") != -1) {  // se ricevo fine 10 giri rosso
+  if (RxData.indexOf("5514") != -1 || RxData.indexOf("5534") != -1 || RxData.indexOf("5524") != -1) {  // se ricevo fine 10 giri
     draw(1, lcd);
-    decodestringone(RxData);
     tone(buzzer, 3000, 200);
-    stampatotali("Q500", 2, 1, "Pippo", "Pluto", "Paperino");
+    if (RxData.indexOf("5514") != -1) {
+      decodestringone(RxData, 1);
+      stringonerosso = RxData;
+      datirosso = 1;
+    }
+    if (RxData.indexOf("5524") != -1) {
+      decodestringone(RxData, 2);
+      stringoneverde = RxData;
+      dativerde = 1;
+    }
+    if (RxData.indexOf("5534") != -1) {
+      decodestringone(RxData, 3);
+      stringoneblu = RxData;
+      dativerde = 1;
+    }
     RxData = "";
+  }
+
+  if ( dativerde == 1 &&  datirosso == 1 &&  datiblu == 1 ) { // una volta che ho ricevuto tutto stampo e mando al PC
+    stampatotali("Q500", 2, 1, "Pippo", "Pluto", "Paperino");
+    datirosso = 1;
+    dativerde = 1;
+    datiblu = 1;
+    Serial.println( stringonerosso);
+    Serial.println( stringoneverde);
+    Serial.println( stringoneblu);
   }
 
   // 805,Q500,2,3,Matteo,Giacomo,Francesco,Luca,Paolo,Pippo
@@ -161,14 +219,10 @@ void loop() {
     if (Serial.available() > 0) {
       // read the incoming byte:
       incomingByte = Serial.read();
-
       my_str[pos] = incomingByte;
       pos++;
-
-
       if (incomingByte == 10) {  //10 is line feed character
         splitCommaSeparated();
-
         //clear the string for next time
         for (int i = 0; i <= len - 1; i++) {
           my_str[i] = 0;
@@ -178,10 +232,6 @@ void loop() {
     }
   }
 
-
-
-
-
   // If something available
   if (e22ttl.available() > 1) {
     // read the  message
@@ -189,6 +239,5 @@ void loop() {
     Serial.println(rc.data);
     RxData = rc.data;
 
-    // Print the data received
   }
 }

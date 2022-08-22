@@ -54,7 +54,7 @@ int arrayP3_verde[10] ;
 int pStop = 38;
 int pGo = 39;
 int pShow = 40;
-
+int codicecentrale =0;
 
 
 void setup() {
@@ -88,7 +88,7 @@ void loop() {
 
 
   if (currentMillis - oldMillis >= pressbutton) {
-    if (digitalRead(pStop) == HIGH ) {
+    if (digitalRead(pStop) == HIGH || codicecentrale == 6000) {
       Serial.println("<STOP>");
       Serial6.print("<STOP>");
       Serial8.print("<6000>");
@@ -99,11 +99,12 @@ void loop() {
       Serial4.print("<6000>");
       Serial2.print("<6000>");
       oldMillis = millis();
+      codicecentrale = 0;
 
 
 
     }
-    if (digitalRead(pGo) == LOW  ) {
+    if (digitalRead(pGo) == LOW ||  codicecentrale == 3000 ) {
       Serial.println("<GO>");
       Serial6.print("<GO>");
       Serial8.print("<3000>");
@@ -135,10 +136,11 @@ void loop() {
       ngiri_blu = 0;
       ngiri_rosso = 0;
       ngiri_verde = 0;
+      codicecentrale = 0;
 
 
     }
-    if (digitalRead(pShow) == LOW) {
+    if (digitalRead(pShow) == LOW ||  codicecentrale == 2000) {
       Serial.println("<SHOW>");
       Serial6.print("<SHOW>");
       Serial8.print("<2000>");
@@ -149,7 +151,7 @@ void loop() {
       Serial4.print("<2000>");
       Serial2.print("<2000>");
       oldMillis = millis();
-       ntagliP1_rosso = 0;
+      ntagliP1_rosso = 0;
       memset(arrayP1_rosso, 0 , sizeof(arrayP1_rosso));
       ntagliP2_rosso = 0;
       memset(arrayP2_rosso, 0 , sizeof(arrayP1_rosso));
@@ -170,6 +172,7 @@ void loop() {
       ngiri_blu = 0;
       ngiri_rosso = 0;
       ngiri_verde = 0;
+      codicecentrale = 0;
 
 
     }
@@ -283,6 +286,16 @@ void loop() {
   if (newData6 == true) {
     String Rxs6;
     Rxs6 = receivedChars6;
+
+    if (Rxs6.indexOf("2000") != -1 ) { // ho ricevuto lo show dalla centrale
+      codicecentrale = 2000;
+    }
+    if (Rxs6.indexOf("3000") != -1 ) { // ho ricevuto GO dalla centrale
+      codicecentrale = 3000;
+    }
+    if (Rxs6.indexOf("6000") != -1 ) { // ho ricevuto lo show dalla centrale
+      codicecentrale = 6000;
+    }
     if (Rxs6.indexOf("3513") != -1 ) { // avvio rosso
       String pack6_r = "<";
       pack6_r.concat(receivedChars6);

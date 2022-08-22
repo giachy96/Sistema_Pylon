@@ -13,7 +13,7 @@ extern String arraytagliverde[10];
 extern String arraytempiblu[11];
 extern String arraytagliblu[10];
 
-Adafruit_Thermal printer(&Serial2,5);      // Or Serial2, Serial3, etc.
+Adafruit_Thermal printer(&Serial3,5);      // Or Serial2, Serial3, etc.
 
 
 void provstampa() {

@@ -10,12 +10,10 @@ String gara ;
 int manche_rx = 0;
 int round_rx = 0;
 String nome_rosso;
-String last ;
 String nome_verde;
-
 String nome_blu;
+String last ;
 
-int riga_primo;
 
 
 void processParam(char * param, int paramNum){
@@ -27,9 +25,6 @@ void processParam(char * param, int paramNum){
     }
    if (paramNum == 1){
       code_rx = atoi(param); //codice dell'evento
-      if(code_rx == 800){
-        tone( buzzer, 3000, 200);
-        }
    }
    if (paramNum == 2){
       gara = param;

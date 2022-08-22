@@ -6,7 +6,7 @@
 #include "Arial_Black_16.h"
 #include "LoRa_E22.h"
 
-LoRa_E22 e22ttl(10, 11);  // Arduino RX --> e22 TX - Arduino TX --> e22 RX
+LoRa_E22 e22ttl(&Serial2);  // Arduino RX --> e22 TX - Arduino TX --> e22 RX
 
 const byte numChars = 200;
 char receivedChars1[numChars];
@@ -54,6 +54,7 @@ String arraytagliverde[10];
 String arraytempiblu[11];
 String arraytagliblu[10];
 
+String RxData;
 byte Key = 0;
 byte Add = 1;
 byte Chan = 5;
@@ -74,6 +75,7 @@ void setup() {
   delay(200);
   Serial1.begin(9600); // SERIALE CON IL TEENSY
   delay(200);
+  Serial2.begin(9600);
   e22ttl.begin();  //Start e22ttl
 
 }
@@ -83,6 +85,24 @@ void loop() {
   currentMillis = millis();
   recvWithStartEndMarkers( Serial1,  receivedChars1) ;
 
+  // If something available
+  if (e22ttl.available() > 1) {
+    // read the String message
+    ResponseContainer rc = e22ttl.receiveMessage();
+    RxData = rc.data;
+    Serial.println(rc.data);
+
+  }
+
+  if (RxData == "2000") { // se ricevo lo show dalla centrale
+    Serial1.println("<2000>");
+  }
+  if (RxData == "3000") { // se ricevo GO dalla centrale
+    Serial1.println("<3000>");
+  }
+  if (RxData == "6000") { // se ricevo STOP dalla centrale
+    Serial1.println("<6000>");
+  }
 
   if (newData == true) {    // se ricevo un nuovo dato in seriale
     String Rxs;
@@ -142,8 +162,8 @@ void loop() {
 
     if (Rxs.indexOf("5514") != -1 ||  Rxs.indexOf("5524") != -1 || Rxs.indexOf("5534") != -1) { // codice ricezione 10 giri
       decodestringone(Rxs);
-    //  memcpy(pacchettone.loraarraytempirosso, arraytempirosso, sizeof(arraytempirosso));
-      ResponseStatus rs = e22ttl.sendFixedMessage(Key, Add, Chan,Rxs);
+      //  memcpy(pacchettone.loraarraytempirosso, arraytempirosso, sizeof(arraytempirosso));
+      ResponseStatus rs = e22ttl.sendFixedMessage(Key, Add, Chan, Rxs);
       if (values[0] == "5514") {
         //decodestringone(Rxs);
         //        temporosso[0] = values[0];
@@ -216,10 +236,12 @@ void loop() {
       dmd.drawString(8, 1, "STOP");
       dmd.drawString(8, 17, "STOP");
       dmd.drawString(8, 33, "STOP");
-      
-       ResponseStatus rs = e22ttl.sendFixedMessage(Key, Add, Chan,"6000");
-      flagcount = false;
 
+      if (RxData != "6000") {
+        ResponseStatus rs = e22ttl.sendFixedMessage(Key, Add, Chan, "6000");
+      }
+      flagcount = false;
+      RxData = "";
       updatescreen = 1;
       memcpy(oldreceivedChars1, receivedChars1, sizeof(receivedChars1));
     }
@@ -234,8 +256,12 @@ void loop() {
       memset(arraytagliblu, 0 , sizeof(arraytagliblu));
 
       memcpy(oldreceivedChars1, receivedChars1, sizeof(receivedChars1));
-     
-       ResponseStatus rs = e22ttl.sendFixedMessage(Key, Add, Chan,"3000");
+
+      if (RxData != "3000") {
+        ResponseStatus rs = e22ttl.sendFixedMessage(Key, Add, Chan, "3000");
+      }
+      RxData = "";
+
 
     }
     if (strcmp(receivedChars1, "SHOW") == 0 && updatescreen == 0  ) {
@@ -245,8 +271,9 @@ void loop() {
       memset(arraytagliverde, 0 , sizeof(arraytagliverde));
       memset(arraytempiblu, 0 , sizeof(arraytempiblu));
       memset(arraytagliblu, 0 , sizeof(arraytagliblu));
-      
-      ResponseStatus rs = e22ttl.sendFixedMessage(Key, Add, Chan,"2000");
+      if (RxData != "2000") {
+        ResponseStatus rs = e22ttl.sendFixedMessage(Key, Add, Chan, "2000");
+      }
 
       dmd.clearScreen();
       dmd.drawString(0, 1, "SHOW");
@@ -260,6 +287,7 @@ void loop() {
       showcrorosso = false;
       showcroblu = false;
       updatescreen = 1;
+      RxData = "";
       flagcount = false;
       memcpy(oldreceivedChars1, receivedChars1, sizeof(receivedChars1));
       memcpy(oldreceivedChars1, receivedChars1, sizeof(receivedChars1));
@@ -276,7 +304,7 @@ void loop() {
 
 
 
-void  recvWithStartEndMarkers( HardwareSerial &port , char receivedChars[numChars] ) {
+void  recvWithStartEndMarkers( HardwareSerial & port , char receivedChars[numChars] ) {
   static boolean recvInProgress = false;
   static byte ndx = 0;
   char startMarker = '<';

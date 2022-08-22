@@ -34,7 +34,7 @@ void draw(int cases, LiquidCrystal_I2C lcd) {
       lcd.setCursor(5, 0);
       lcd.print("FT Models");
       lcd.setCursor(0, 1);
-      lcd.print("Centrale");
+      lcd.print("    Centrale");
       lcd.setCursor(3, 2);
       lcd.print("Avviamento...");
       vout = tensionebatt(pinbatt);
