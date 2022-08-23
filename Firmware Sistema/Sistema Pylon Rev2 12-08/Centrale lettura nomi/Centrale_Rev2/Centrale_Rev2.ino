@@ -50,9 +50,12 @@ extern String gara ;
 extern int manche_rx;
 extern int round_rx;
 extern String nome_rosso;
+extern String cognome_rosso;
 extern String nome_verde;
+extern String cognome_verde;
 extern String nome_blu;
-extern String last ;
+extern String cognnome_blu;
+extern bool newDataPC;
 
 String RxData = "";
 
@@ -117,23 +120,23 @@ void loop() {
 
   if ( RxData == "700") { // ho ricevuto il comando INDIETRO
     tone(buzzer, 2000, 200);
-    draw(1, lcd);
+    draw(11, lcd);
     if (statusPC == true) {
-      // stringa con i nomi
+     Serial.println("700,0,0,0,0,0,0,0,0,0");
     } else {
-      ResponseStatus rs = e22ttl.sendFixedMessage(Key, Add, Chan, "750,NO PC,ROSSO,NO PC,VERDE,NO PC,BLU");
+      ResponseStatus rs = e22ttl.sendFixedMessage(Key, Add, Chan, "750, ,0,0, ,NO PC, ,NO PC, ,NO PC");
     }
     doublePress = 1;
     oldPress = millis();
     RxData = "";
   }
   if ( RxData == "800") { // ho ricevuto il comando AVANTI
-    tone(buzzer, 3000, 200);
+    tone(buzzer, 4000, 200);
     draw(1, lcd);
     if (statusPC == true) {
-      // stringa con i nomi
+         Serial.println("800,0,0,0,0,0,0,0,0,0");
     } else {
-      ResponseStatus rs = e22ttl.sendFixedMessage(Key, Add, Chan, "850,NO PC,ROSSO,NO PC,VERDE,NO PC,BLU");
+    ResponseStatus rs = e22ttl.sendFixedMessage(Key, Add, Chan, "850, ,0,0, ,NO PC, ,NO PC, ,NO PC");
     }
 
     doublePress = 1;
@@ -232,11 +235,38 @@ void loop() {
     }
   }
 
+  if (newDataPC == true) {
+
+    String stringanomi ="";
+    stringanomi.concat(String(code_rx));
+    stringanomi.concat(",");
+    stringanomi.concat(gara);
+    stringanomi.concat(",");
+    stringanomi.concat(String(manche_rx));
+    stringanomi.concat(",");
+    stringanomi.concat(String(round_rx));
+    stringanomi.concat(",");
+    stringanomi.concat(nome_rosso);
+    stringanomi.concat(",");
+    stringanomi.concat(cognome_rosso);
+    stringanomi.concat(",");
+    stringanomi.concat(nome_verde);
+    stringanomi.concat(",");
+    stringanomi.concat(cognome_verde);
+    stringanomi.concat(",");
+    stringanomi.concat(nome_blu);
+     stringanomi.concat(",");
+    stringanomi.concat(cognome_blu);
+
+    ResponseStatus rs = e22ttl.sendFixedMessage(Key, Add, Chan, stringanomi);
+    
+    newDataPC = false;
+  }
+
   // If something available
   if (e22ttl.available() > 1) {
     // read the  message
     ResponseContainer rc = e22ttl.receiveMessage();
-    Serial.println(rc.data);
     RxData = rc.data;
 
   }

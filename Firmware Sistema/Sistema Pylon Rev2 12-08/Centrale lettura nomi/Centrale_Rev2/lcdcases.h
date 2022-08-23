@@ -1,8 +1,8 @@
 extern int pinbatt;  // This is a declaration
 float vout;
-float out_max = 14.5;
+float out_max = 15.6;
 float out_min = 0.2;
-float in_max = 4.91;
+float in_max = 4.85;
 float in_min = 0.0;
 
 // per la mappatura della tensione batteria in un range
@@ -16,7 +16,7 @@ float fmap(float x, float out_max, float out_min, float in_max, float in_min) {
 float tensionebatt(int pin) {
   float tensione_float = analogRead(pin);
   tensione_float = (tensione_float / 1023) * 5;
-  tensione_float = tensione_float - 0.015;
+  tensione_float = tensione_float ;
   tensione_float = fmap(tensione_float, out_max, out_min, in_max, in_min);
   return tensione_float;
 }
@@ -47,10 +47,29 @@ void draw(int cases, LiquidCrystal_I2C lcd) {
     case 1:
       // Show
       lcd.clear();
-      lcd.setCursor(3, 0);
-      lcd.print("INVIO I NOMI AL TABELLONE ");
-      lcd.setCursor(0, 1);
-      lcd.print("Guardare il tabellone");
+      lcd.setCursor(0, 0);
+      lcd.print("INVIO NOMI - AVANTI");
+      lcd.setCursor(4, 1);
+      lcd.print("Guardare il ");
+      lcd.setCursor(5, 2);
+      lcd.print("tabellone");
+      vout = tensionebatt(pinbatt);
+      lcd.setCursor(3, 3);
+      lcd.print("V.Batt.");
+      lcd.print(vout);
+
+      // statements
+      break;
+
+    case 11:
+      // Show
+      lcd.clear();
+      lcd.setCursor(0, 0);
+      lcd.print("INVIO NOMI - INDIETR");
+      lcd.setCursor(4, 1);
+      lcd.print("Guardare il ");
+      lcd.setCursor(5, 2);
+      lcd.print("tabellone");
       vout = tensionebatt(pinbatt);
       lcd.setCursor(3, 3);
       lcd.print("V.Batt.");

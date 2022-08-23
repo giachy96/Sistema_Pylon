@@ -1,6 +1,6 @@
 
-const int len = 100; // SE NON LI LEGGE BENE IL TESTO RIECVUTO AUMENTARE I CARETTERI
-char my_str[len];
+//const int len = 100; // SE NON LI LEGGE BENE IL TESTO RIECVUTO AUMENTARE I CARETTERI
+//char my_str[len];
 int pos = 0;
 int incomingByte = 0; // for incoming serial data
 extern  int buzzer;
@@ -79,15 +79,17 @@ char* strtoke(char *str, const char *delim)
 }
 
 
-void splitCommaSeparated() {
+void splitCommaSeparated(String my_str) {
   //splits a comma separated char array into separated char arrays for each comma separated value
+  char charBuff[100];
+  my_str.toCharArray(charBuff, 100);
   char * param;
   int paramNum = 1;
 
 
 
   //param = strtok(my_str,",\n");   // strtok explanation at : https://www.cplusplus.com/reference/cstring/strtok/
-  param = strtoke(my_str, ",\n");  // strtoke explanation at : https://stackoverflow.com/questions/42315585/split-string-into-tokens-in-c-when-there-are-2-delimiters-in-a-row
+  param = strtoke(charBuff, ",\n");  // strtoke explanation at : https://stackoverflow.com/questions/42315585/split-string-into-tokens-in-c-when-there-are-2-delimiters-in-a-row
 
   while (param != NULL)
   {

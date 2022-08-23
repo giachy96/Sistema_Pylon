@@ -1,9 +1,10 @@
 #include <SPI.h>
 #include <DMD2.h>
 #include <fonts/SystemFont5x7.h>
+#include <fonts/nomi_font14.h>
+#include <fonts/Arial_Black_16.h>
+#include "exceldecode.h"
 #include "codedecode.h"
-#include "SystemFont5x7.h"
-#include "Arial_Black_16.h"
 #include "LoRa_E22.h"
 
 LoRa_E22 e22ttl(&Serial2);  // Arduino RX --> e22 TX - Arduino TX --> e22 RX
@@ -31,12 +32,16 @@ SPIDMD dmd(DISPLAYS_ACROSS, DISPLAYS_DOWN, 3, 6, 7, 8); // DMD controls the enti
 #include "countdown.h"
 unsigned long currentMillis;
 unsigned long lastdiplayupdate;
+unsigned long oldPress;
+unsigned long intervalPress = 2000;
 unsigned long intervalstandby = 5000;
 unsigned long milliscountdown;
 unsigned long sirenamillis;
 unsigned long startsirena;
 int sec;
 int sirena = 2;
+int pulsanteAvanti = 11;
+int pulsanteIndietro = 10;
 int sirenaflag = 0;
 int k = 0;
 boolean flagcount;
@@ -53,6 +58,12 @@ String arraytempiverde[11];
 String arraytagliverde[10];
 String arraytempiblu[11];
 String arraytagliblu[10];
+extern String nome_rosso;
+extern String cognome_rosso;
+extern String nome_verde;
+extern String cognome_verde;
+extern String nome_blu;
+extern String cognome_blu;
 
 String RxData;
 byte Key = 0;
@@ -66,6 +77,8 @@ int bounce = 0;
 void setup() {
 
   pinMode(sirena, OUTPUT);
+  pinMode(pulsanteAvanti, INPUT_PULLUP);
+  pinMode(pulsanteIndietro, INPUT_PULLUP);
   dmd.setBrightness(255);
   // dmd.selectFont(SystemFont5x7);
   dmd.selectFont(Arial_Black_16);
@@ -94,6 +107,15 @@ void loop() {
 
   }
 
+  if ( digitalRead(pulsanteIndietro)== LOW && currentMillis - oldPress >= intervalPress ) { // se pigio il pulsante indietro
+    ResponseStatus rs = e22ttl.sendFixedMessage(Key, Add, Chan, "700");
+    oldPress =millis();
+  }
+  if ( digitalRead(pulsanteAvanti)== LOW && currentMillis - oldPress >= intervalPress) { // se pigio il pulsante indietro
+     ResponseStatus rs = e22ttl.sendFixedMessage(Key, Add, Chan, "800");
+     oldPress =millis();
+    
+  }
   if (RxData == "2000") { // se ricevo lo show dalla centrale
     Serial1.println("<2000>");
   }
@@ -102,6 +124,36 @@ void loop() {
   }
   if (RxData == "6000") { // se ricevo STOP dalla centrale
     Serial1.println("<6000>");
+  }
+  if (RxData.indexOf("750") != -1 || RxData.indexOf("850") != -1 ) { // se ricevo dalla centrale una striga CONTENTE AVANTI o INDIETRO
+    splitCommaSeparated(RxData);
+    Serial.println(nome_rosso);
+    Serial.println(cognome_rosso);
+    Serial.println(nome_verde);
+    Serial.println(cognome_verde);
+    Serial.println(nome_blu);
+    Serial.println(cognome_blu);
+
+    dmd.clearScreen();
+    dmd.selectFont(nomi_font14);
+    String nomeblutmp = nome_blu;
+    nomeblutmp.remove(1);
+    nomeblutmp.concat(".");
+    dmd.drawString(0, 1, nomeblutmp);
+    dmd.drawString(10, 1, cognome_blu);
+    String nomeverdetmp = nome_verde;
+    nomeverdetmp.remove(1);
+    nomeverdetmp.concat(".");
+    dmd.drawString(0, 17, nomeverdetmp);
+    dmd.drawString(10, 17, cognome_verde);
+    String nomerossotmp = nome_rosso;
+    nomerossotmp.remove(1);
+    nomerossotmp.concat(".");
+    dmd.drawString(0, 33, nomerossotmp);
+    dmd.drawString(10, 33, cognome_rosso);
+
+
+    RxData = "";
   }
 
   if (newData == true) {    // se ricevo un nuovo dato in seriale
@@ -124,6 +176,7 @@ void loop() {
         showcroverde = true;
       }
       dmd.clearScreen();
+      dmd.selectFont(Arial_Black_16);
       dmd.drawString(0, 1, "SHOW");
       dmd.drawString(0, 17, "SHOW");
       dmd.drawString(0, 33, "SHOW");
@@ -151,6 +204,7 @@ void loop() {
         tempoverde[2] = values[2];
       }
       dmd.clearScreen();
+      dmd.selectFont(Arial_Black_16);
       dmd.drawString(0, 33, temporosso[1]);// 24/33
       dmd.drawString(18, 33, temporosso[2]);// 24/33
       dmd.drawString(0, 1, tempoblu[1]);// 24/33
@@ -185,6 +239,7 @@ void loop() {
     if (millis() - old523update >= 1000) {
       if (bounce == 0) {
         dmd.clearScreen();
+        dmd.selectFont(Arial_Black_16);
         dmd.drawString(0, 33, temporosso[1]);// 24/33
         dmd.drawString(18, 33, temporosso[2]);// 24/33
         dmd.drawString(0, 1, tempoblu[1]);// 24/33
@@ -195,6 +250,7 @@ void loop() {
       } else {
 
         dmd.clearScreen();
+        dmd.selectFont(Arial_Black_16);
         dmd.drawString(10, 33, temporosso[3]);// 24/33
         dmd.drawString(10, 1, tempoblu[3]);// 24/33
         dmd.drawString(10, 17, tempoverde[3]);// 24/33
@@ -233,6 +289,7 @@ void loop() {
 
     if (strcmp(receivedChars1, "STOP") == 0 && updatescreen == 0 ) {
       dmd.clearScreen();
+      dmd.selectFont(Arial_Black_16);
       dmd.drawString(8, 1, "STOP");
       dmd.drawString(8, 17, "STOP");
       dmd.drawString(8, 33, "STOP");
@@ -276,6 +333,7 @@ void loop() {
       }
 
       dmd.clearScreen();
+      dmd.selectFont(Arial_Black_16);
       dmd.drawString(0, 1, "SHOW");
       dmd.drawString(0, 17, "SHOW");
       dmd.drawString(0, 33, "SHOW");
