@@ -88,7 +88,7 @@ void setup() {
   delay(200);
   Serial1.begin(9600); // SERIALE CON IL TEENSY
   delay(200);
-  Serial2.begin(9600);
+  Serial2.begin(9600); // seriale per il lora
   e22ttl.begin();  //Start e22ttl
 
 }
@@ -118,21 +118,24 @@ void loop() {
   }
   if (RxData == "2000") { // se ricevo lo show dalla centrale
     Serial1.println("<2000>");
+    sirenaflag =1;
   }
   if (RxData == "3000") { // se ricevo GO dalla centrale
     Serial1.println("<3000>");
+    sirenaflag =1;
   }
   if (RxData == "6000") { // se ricevo STOP dalla centrale
     Serial1.println("<6000>");
+    sirenaflag =1;
   }
   if (RxData.indexOf("750") != -1 || RxData.indexOf("850") != -1 ) { // se ricevo dalla centrale una striga CONTENTE AVANTI o INDIETRO
     splitCommaSeparated(RxData);
-    Serial.println(nome_rosso);
-    Serial.println(cognome_rosso);
-    Serial.println(nome_verde);
-    Serial.println(cognome_verde);
-    Serial.println(nome_blu);
-    Serial.println(cognome_blu);
+    // Serial.println(nome_rosso);
+    // Serial.println(cognome_rosso);
+    // Serial.println(nome_verde);
+    // Serial.println(cognome_verde);
+    // Serial.println(nome_blu);
+    // Serial.println(cognome_blu);
 
     dmd.clearScreen();
     dmd.selectFont(nomi_font14);
@@ -234,7 +237,7 @@ void loop() {
     newData = false;
   }
   String strx = receivedChars1;
-  if (strx.indexOf("5514") != -1  || strx.indexOf("5524") != -1 || strx.indexOf("5534") != -1) {
+  if (strx.indexOf("5514") != -1  || strx.indexOf("5524") != -1 || strx.indexOf("5534") != -1) {  // se ricevo dal teensy i codici di fine gara 
 
     if (millis() - old523update >= 1000) {
       if (bounce == 0) {
@@ -284,8 +287,8 @@ void loop() {
 
   //FINE GESTIONE SIRENA
 
-  if (strcmp(receivedChars1, oldreceivedChars1) != 0) {
-    updatescreen = 0;
+  if (strcmp(receivedChars1, oldreceivedChars1) != 0) {   // se ricevo dal TEENSY gli stati STOP / RACE / SHOW
+    updatescreen = 0; 
 
     if (strcmp(receivedChars1, "STOP") == 0 && updatescreen == 0 ) {
       dmd.clearScreen();
