@@ -41,5 +41,6 @@ COLORE  Z :
            2--> SEMAFORO
 		   3--> AVVIO TEMPI
 		   4---> TEMPI
+           5--> due tagli
 		   
 */
