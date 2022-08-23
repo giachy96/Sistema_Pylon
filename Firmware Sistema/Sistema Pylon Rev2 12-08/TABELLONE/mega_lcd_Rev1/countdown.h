@@ -148,9 +148,12 @@ boolean countdown(boolean flag) {
         itoa(n, cstr, 10);
 
         dmd.clearScreen();
-        dmd.drawString(24, 1, "GO");
-        dmd.drawString(24, 17, "GO");
-        dmd.drawString(24, 33, "GO");
+        dmd.drawString(0, 33, temporosso[1]);
+        dmd.drawString(18, 33, temporosso[2]);
+        dmd.drawString(0, 17, tempoverde[1]);
+        dmd.drawString(18, 17, tempoverde[2]);
+        dmd.drawString(0, 1, tempoblu[1]);
+        dmd.drawString(18, 1, tempoblu[2]);
         milliscountdown = millis();
         sirenaflag = 0;
         flag = false;

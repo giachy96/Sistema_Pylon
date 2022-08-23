@@ -16,7 +16,9 @@ extern bool showcroblu;
 extern String temporosso[5];
 extern String tempoblu[5];
 extern String tempoverde[5];
-
+extern int doppiotaglioverde;
+extern int doppiotagliorosso;
+extern int doppiotaglioblu;
 
 unsigned long oldbounce;
 int bounce = 0;
@@ -38,15 +40,15 @@ void drawsubRosso(int cases) {
   String nomerossotmp;
   switch (cases) {
 
-        case 0:
-          // NOME rosso
-          nomerossotmp = nome_rosso;
-          nomerossotmp.remove(1);
-          nomerossotmp.concat(".");
-          dmd.drawString(0, 33, nomerossotmp);
-          dmd.drawString(10, 33, cognome_rosso);
-    
-          break;
+    case 0:
+      // NOME rosso
+      nomerossotmp = nome_rosso;
+      nomerossotmp.remove(1);
+      nomerossotmp.concat(".");
+      dmd.drawString(0, 33, nomerossotmp);
+      dmd.drawString(10, 33, cognome_rosso);
+
+      break;
     case 1:
       // Show
       dmd.drawString(0, 33, "SHOW");
@@ -78,7 +80,7 @@ void drawsubRosso(int cases) {
 
       break;
     case 5:  // doppio taglio
-      dmd.drawString(3, 33, "DUE TAGLI! ");
+      dmd.drawString(18, 33, "200");
       break;
 
 
@@ -92,14 +94,14 @@ void drawsubVerde(int cases) {
   String nomeverdetmp;
   switch (cases) {
 
-        case 0:
-          // NOME verde
-          nomeverdetmp = nome_verde;
-          nomeverdetmp.remove(1);
-          nomeverdetmp.concat(".");
-          dmd.drawString(0, 17, nomeverdetmp);
-          dmd.drawString(10, 17, cognome_verde);
-          break;
+    case 0:
+      // NOME verde
+      nomeverdetmp = nome_verde;
+      nomeverdetmp.remove(1);
+      nomeverdetmp.concat(".");
+      dmd.drawString(0, 17, nomeverdetmp);
+      dmd.drawString(10, 17, cognome_verde);
+      break;
     case 1:
       // Show
       dmd.drawString(0, 17, "SHOW");
@@ -132,7 +134,7 @@ void drawsubVerde(int cases) {
       break;
 
     case 5:  // doppio taglio
-      dmd.drawString(3, 17, "DUE TAGLI! ");
+      dmd.drawString(18, 17, "200");
       break;
 
 
@@ -145,15 +147,15 @@ void drawsubVerde(int cases) {
 void drawsubBlu(int cases) {
   String nomeblutmp;
   switch (cases) {
-    
-        case 0:
-          // NOME blu
-          nomeblutmp = nome_blu;
-          nomeblutmp.remove(1);
-          nomeblutmp.concat(".");
-          dmd.drawString(0, 1, nomeblutmp);
-          dmd.drawString(10, 1, cognome_blu);
-          break;
+
+    case 0:
+      // NOME blu
+      nomeblutmp = nome_blu;
+      nomeblutmp.remove(1);
+      nomeblutmp.concat(".");
+      dmd.drawString(0, 1, nomeblutmp);
+      dmd.drawString(10, 1, cognome_blu);
+      break;
     case 1:
       // Show
       dmd.drawString(0, 1, "SHOW");
@@ -187,7 +189,7 @@ void drawsubBlu(int cases) {
       break;
 
     case 5:  // doppio taglio
-      dmd.drawString(3, 1, "DUE TAGLI! ");
+      dmd.drawString(18, 1, "200");
       break;
 
     case 6:  // Stop
@@ -197,15 +199,34 @@ void drawsubBlu(int cases) {
 }
 
 void draw(int casoRosso, int casoVerde, int casoBlu) {
+  int cRosso ;
+  int cVerde ;
+  int cBlu ;
+  cRosso = casoRosso;
+  cVerde = casoVerde;
+  cBlu = casoBlu;
   dmd.clearScreen();
+
   if (casoRosso == 0 || casoVerde == 0 || casoBlu == 0) {
     dmd.selectFont(nomi_font14);
   } else {
     dmd.selectFont(Arial_Black_16);
   }
-  drawsubRosso(casoRosso);
-  drawsubVerde(casoVerde);
-  drawsubBlu(casoBlu);
+
+  if (doppiotaglioverde == 1) {
+    cVerde = 5;
+  }
+  if (doppiotagliorosso == 1) {
+    cRosso = 5;
+  }
+  if (doppiotaglioblu == 1) {
+    cBlu = 5;
+  }
+
+
+  drawsubRosso(cRosso);
+  drawsubVerde(cVerde);
+  drawsubBlu(cBlu);
 }
 
 void displayend10lap(int end10laprosso, int  end10lapverde, int end10lapblu ) {

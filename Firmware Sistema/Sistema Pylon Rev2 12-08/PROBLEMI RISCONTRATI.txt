@@ -11,4 +11,4 @@ se non vedo una pressione entro 1minuto faccio finire la manche.
 7) quando si pigia di nuovo lo start, senza passare per lo show i telecomnadi del 2/3 e forse anche dell' 1 non resetteano le varabili  -- in teoria è sistemato 
 da testare 
 
-
+8) quando pigio go mi si devono resettare anche i telecomandi dei crono oltre che agli altri

@@ -70,8 +70,6 @@ void setup() {
 
 void loop() {
 
-
-
   // fase di avvio
   while (bootup < 5) {
     previousMillis = currentMillis;
@@ -95,7 +93,7 @@ void loop() {
 
     //    // allarme tensione
     if (readvoltage(pinbatt) < 2.9) {
-      tone(buzzer, 1000, 200);
+        tone(buzzer, 2000, 200);
     }
 
     if (currentMillis - previousMillis >= interval  && altupdatelcd == 0) {
@@ -124,61 +122,62 @@ void loop() {
     CurrentPress = millis();
 
     if (State == "2000" ) {  // SSHOW
-      
+
 
       if (digitalRead(pulsante) == LOW && (CurrentPress - Lastpress) >= Delaypress) {
         ResponseStatus rs = e22ttl.sendFixedMessage(0, 0, 40, "2530");
-        tone(buzzer, 1000, 200);
+          tone(buzzer, 2000, 200);
         Lastpress = millis();
       }
       if (newData == true) {
-        tone(buzzer, 1000, 200);
+          tone(buzzer, 2000, 200);
         draw(1, u8x8);
         altupdatelcd = 1;
+        lapcounter = -2;
+        tempo_base = 0;
         newData = false;
       }
     }
 
     if (State == "3000") {  // START Gara
-       if (newData == true) {
-        tone(buzzer, 1000, 200);
+      if (newData == true) {
+          tone(buzzer, 2000, 200);
         newData = false;
       }
-     
       altupdatelcd = 1;
+      tempo_base = 0;
       if (lapcounter == -2) {
-        draw(2 , u8x8);
         lapcounter = -1;
+        draw(2 , u8x8);
       }
-      
- 
+
     }
     if (State == "3533") {  // Start cronometro
-       if (newData == true) {
-        tone(buzzer, 1000, 200);
+      if (newData == true) {
+          tone(buzzer, 2000, 200);
         if (lapcounter == -1 ) {
-        tempo_base = millis();
-        lapcounter = lapcounter + 1;
-        Catturatempo(poitem, poiparz, lapcounter, tempo_base);  //balza l'indice a 1Lastpress = millis()
-        float ultimo_tempo = tempo_flt[lapcounter];
-        char bu[10];
-        dtostrf(ultimo_tempo, 4, 3, bu);  //4 is mininum width, 6 is precision
-        String msg = "4534,";
-        msg.concat(lapcounter);
-        msg.concat(",");
-        msg.concat(bu);
-        ResponseStatus rs = e22ttl.sendFixedMessage(0, 0, 40, msg);
-        tone(buzzer, 1000, 200);
-        Lastpress = millis();
-        draw(3 , u8x8);
-        altupdatelcd = 1;
-      }
+          tempo_base = millis();
+          lapcounter = lapcounter + 1;
+          Catturatempo(poitem, poiparz, lapcounter, tempo_base);  //balza l'indice a 1Lastpress = millis()
+          float ultimo_tempo = tempo_flt[lapcounter];
+          char bu[10];
+          dtostrf(ultimo_tempo, 4, 3, bu);  //4 is mininum width, 6 is precision
+          String msg = "4534,";
+          msg.concat(lapcounter);
+          msg.concat(",");
+          msg.concat(bu);
+          ResponseStatus rs = e22ttl.sendFixedMessage(0, 0, 40, msg);
+            tone(buzzer, 2000, 200);
+          Lastpress = millis();
+          draw(3 , u8x8);
+          altupdatelcd = 1;
+        }
         newData = false;
       }
-     
+
       altupdatelcd = 1;
-     
-      
+
+
       if (lapcounter == 10) {
         float tot =  CalcoloTempo(tempo_flt);
         tempo_flt[11] = tot;
@@ -210,7 +209,7 @@ void loop() {
         msg.concat(",");
         msg.concat(bu);
         ResponseStatus rs = e22ttl.sendFixedMessage(0, 0, 40, msg);
-        tone(buzzer, 1000, 200);
+          tone(buzzer, 2000, 200);
         Lastpress = millis();
         draw(3 , u8x8);
         altupdatelcd = 1;
@@ -219,7 +218,7 @@ void loop() {
     }
     if (State == "6000" ) {  // STOP
       if (newData == true) {
-        tone(buzzer, 1000, 200);
+          tone(buzzer, 2000, 200);
         draw(5, u8x8);
         altupdatelcd = 1;
         lapcounter = -2;
@@ -231,12 +230,12 @@ void loop() {
 
 
 
-//    CurrentPress = millis();
-//    if (Press == 1 && (CurrentPress - Timesend) >= Delaysend) {
-//      String msg = "312,";
-//      ResponseStatus rs = e22ttl.sendFixedMessage(0, 0, 7, msg);
-//      Serial.println("invio");
-//      Press = 0;
-//    }
+    //    CurrentPress = millis();
+    //    if (Press == 1 && (CurrentPress - Timesend) >= Delaysend) {
+    //      String msg = "312,";
+    //      ResponseStatus rs = e22ttl.sendFixedMessage(0, 0, 7, msg);
+    //      Serial.println("invio");
+    //      Press = 0;
+    //    }
   }
 }

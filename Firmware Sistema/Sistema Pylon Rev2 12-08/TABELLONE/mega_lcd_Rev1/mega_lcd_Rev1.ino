@@ -55,6 +55,9 @@ String codestringone;
 int end10laprosso;
 int end10lapverde;
 int end10lapblu;
+int doppiotaglioverde;
+int doppiotagliorosso;
+int doppiotaglioblu;
 extern String nome_rosso;
 extern String cognome_rosso;
 extern String nome_verde;
@@ -93,6 +96,7 @@ void setup() {
 void loop() {
   currentMillis = millis();
   recvWithStartEndMarkers(Serial1, receivedChars1);
+
 
   //INIZO PARTE RICEZIONE DAL LORA
   if (e22ttl.available() > 1) {
@@ -134,6 +138,9 @@ void loop() {
     end10lapblu = 0;
     end10lapverde = 0;
     end10laprosso = 0;
+    doppiotaglioverde = 0;
+    doppiotagliorosso = 0;
+    doppiotaglioblu = 0;
     splitCommaSeparated(RxData);
     // Serial.println(nome_rosso);
     // Serial.println(cognome_rosso);
@@ -152,6 +159,7 @@ void loop() {
   if (newData == true) {  // se ricevo un nuovo dato in seriale
     String Rxs;
     Rxs = receivedChars1;
+    Serial.println(Rxs);
     //  Serial.println(Rxs);
     updatescreen = 0;
 
@@ -159,9 +167,11 @@ void loop() {
       end10lapblu = 0;
       end10lapverde = 0;
       end10laprosso = 0;
+      doppiotaglioverde = 0;
+      doppiotagliorosso = 0;
+      doppiotaglioblu = 0;
       draw(6, 6, 6);  // display STOP
       if (Staterx  != "6000") {
-        Serial.println("Rimando STOP");
         ResponseStatus rs = e22ttl.sendFixedMessage(Key, Add, Chan, "6000");
       }
       flagcount = false;
@@ -174,25 +184,34 @@ void loop() {
       end10lapblu = 0;
       end10lapverde = 0;
       end10laprosso = 0;
+      doppiotaglioverde = 0;
+      doppiotagliorosso = 0;
+      doppiotaglioblu = 0;
       flagcount = true;
       updatescreen = 1;
       if (Staterx != "3000") {
-        Serial.println("Rimando GO");
         ResponseStatus rs = e22ttl.sendFixedMessage(Key, Add, Chan, "3000");
       }
-     Staterx = "";
+      Staterx = "";
       memset(arraytempirosso, 0, sizeof(arraytempirosso));
       memset(arraytaglirosso, 0, sizeof(arraytaglirosso));
       memset(arraytempiverde, 0, sizeof(arraytempiverde));
       memset(arraytagliverde, 0, sizeof(arraytagliverde));
       memset(arraytempiblu, 0, sizeof(arraytempiblu));
       memset(arraytagliblu, 0, sizeof(arraytagliblu));
+      memset(temporosso, 0, sizeof(temporosso));
+      memset(tempoverde, 0, sizeof(tempoverde));
+      memset(tempoblu, 0, sizeof(tempoblu));
+
 
 
     }
     if (Rxs.indexOf("SHOW") != -1 && updatescreen == 0) {  // se riveco SHOW dal TEENSY
       end10lapblu = 0;
       end10lapverde = 0;
+      doppiotaglioverde = 0;
+      doppiotagliorosso = 0;
+      doppiotaglioblu = 0;
       end10laprosso = 0;
       memset(arraytempirosso, 0, sizeof(arraytempirosso));
       memset(arraytaglirosso, 0, sizeof(arraytaglirosso));
@@ -200,8 +219,10 @@ void loop() {
       memset(arraytagliverde, 0, sizeof(arraytagliverde));
       memset(arraytempiblu, 0, sizeof(arraytempiblu));
       memset(arraytagliblu, 0, sizeof(arraytagliblu));
+      memset(temporosso, 0, sizeof(temporosso));
+      memset(tempoverde, 0, sizeof(tempoverde));
+      memset(tempoblu, 0, sizeof(tempoblu));
       if (Staterx != "2000") {
-        Serial.println("Rimando Show");
         ResponseStatus rs = e22ttl.sendFixedMessage(Key, Add, Chan, "2000");
       }
       draw(1, 1, 1);  // display show
@@ -267,7 +288,27 @@ void loop() {
       ResponseStatus rs = e22ttl.sendFixedMessage(Key, Add, Chan, Rxs);
 
     }
-    
+
+
+    if (Rxs.indexOf("4015") != -1 || Rxs.indexOf("4025") != -1 || Rxs.indexOf("4035") != -1) {  // se ricevo dal teensy il DOPPIO TAGLIO
+      if (Rxs.indexOf("4015") != -1) {  // se doppiotaglio rosso
+        draw(5, 2, 2);
+        sirenaflag = 1;
+        doppiotagliorosso = 1;
+      }
+      if (Rxs.indexOf("4025") != -1) {  // se doppiotaglio verde
+        draw(2, 5, 2);
+        sirenaflag = 1;
+        doppiotaglioblu = 1;
+      }
+      if (Rxs.indexOf("4035") != -1) { // se doppiotaglio blu
+        draw(2, 2, 5);
+        sirenaflag = 1;
+        doppiotaglioverde = 1;
+
+      }
+    }
+
     newData = false;
   }
   // fine lettura dalla seriale del teesny

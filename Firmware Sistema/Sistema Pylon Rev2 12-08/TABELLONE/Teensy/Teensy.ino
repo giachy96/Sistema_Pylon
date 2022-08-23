@@ -407,16 +407,16 @@ void loop() {
 
 
   if (ntaglitot_rosso > 1) {  // ha fatto due tagli il rosso
-    Serial6.pritnln("4015"); 
+    Serial6.println("<4015>"); 
     ntaglitot_rosso = 0;
   }
    if (ntaglitot_verde > 1) {  // ha fatto due tagli il rosso
-    Serial6.pritnln("4025"); 
+    Serial6.println("<4025>"); 
     ntaglitot_verde = 0;
   }
 
  if (ntaglitot_blu > 1) {  // ha fatto due tagli il rosso
-    Serial6.pritnln("4035"); 
+    Serial6.println("<4035>"); 
     ntaglitot_blu = 0;
   }
 

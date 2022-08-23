@@ -69,9 +69,6 @@ void setup() {
 }
 
 void loop() {
-
-
-
   // fase di avvio
   while (bootup < 5) {
     previousMillis = currentMillis;
@@ -95,7 +92,7 @@ void loop() {
 
     //    // allarme tensione
     if (readvoltage(pinbatt) < 2.9) {
-      tone(buzzer, 5000, 200);
+      tone(buzzer, 2000, 200);
     }
 
     if (currentMillis - previousMillis >= interval  && altupdatelcd == 0) {
@@ -128,24 +125,27 @@ void loop() {
 
       if (digitalRead(pulsante) == LOW && (CurrentPress - Lastpress) >= Delaypress) {
         ResponseStatus rs = e22ttl.sendFixedMessage(0, 0, 30, "2510");
-        tone(buzzer, 1000, 200);
+        tone(buzzer, 2000, 200);
         Lastpress = millis();
       }
       if (newData == true) {
-        tone(buzzer, 1000, 200);
+        tone(buzzer, 2000, 200);
         draw(1, u8x8);
         altupdatelcd = 1;
+        lapcounter = -2;
+        tempo_base = 0;
         newData = false;
       }
     }
 
     if (State == "3000") {  // START Gara
        if (newData == true) {
-        tone(buzzer, 1000, 200);
+        tone(buzzer, 2000, 200);
         newData = false;
       }
      
       altupdatelcd = 1;
+       tempo_base = 0;
       if (lapcounter == -2) {
         draw(2 , u8x8);
         lapcounter = -1;
@@ -155,7 +155,7 @@ void loop() {
     }
     if (State == "3513") {  // Start cronometro
        if (newData == true) {
-        tone(buzzer, 1000, 200);
+        tone(buzzer, 2000, 200);
         if (lapcounter == -1 ) {
         tempo_base = millis();
         lapcounter = lapcounter + 1;
@@ -168,7 +168,7 @@ void loop() {
         msg.concat(",");
         msg.concat(bu);
         ResponseStatus rs = e22ttl.sendFixedMessage(0, 0, 30, msg);
-        tone(buzzer, 1000, 200);
+        tone(buzzer, 2000, 200);
         Lastpress = millis();
         draw(3 , u8x8);
         altupdatelcd = 1;
@@ -210,7 +210,7 @@ void loop() {
         msg.concat(",");
         msg.concat(bu);
         ResponseStatus rs = e22ttl.sendFixedMessage(0, 0, 30, msg);
-        tone(buzzer, 1000, 200);
+        tone(buzzer, 2000, 200);
         Lastpress = millis();
         draw(3 , u8x8);
         altupdatelcd = 1;
@@ -219,7 +219,7 @@ void loop() {
     }
     if (State == "6000" ) {  // STOP
       if (newData == true) {
-        tone(buzzer, 1000, 200);
+        tone(buzzer, 2000, 200);
         draw(5, u8x8);
         altupdatelcd = 1;
         lapcounter = -2;
