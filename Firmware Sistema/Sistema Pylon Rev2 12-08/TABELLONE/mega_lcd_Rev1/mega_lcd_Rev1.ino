@@ -1,13 +1,9 @@
-#include <SPI.h>
-#include <DMD2.h>
-#include <fonts/SystemFont5x7.h>
-//#include <fonts/nomi_font14.h>
-#include <fonts/Arial_Black_16.h>
+
 #include "exceldecode.h"
 #include "codedecode.h"
 #include "dmdcases.h"
 #include "LoRa_E22.h"
-
+#include "countdown.h"
 LoRa_E22 e22ttl(&Serial2);  // Arduino RX --> e22 TX - Arduino TX --> e22 RX
 
 const byte numChars = 200;
@@ -26,10 +22,7 @@ int updatescreen = 0;
 */
 
 //Fire up the DMD library as dmd
-#define DISPLAYS_ACROSS 2
-#define DISPLAYS_DOWN 3
-SPIDMD dmd(DISPLAYS_ACROSS, DISPLAYS_DOWN, 3, 6, 7, 8);  // DMD controls the entire display
-#include "countdown.h"
+
 unsigned long currentMillis;
 unsigned long lastdiplayupdate;
 unsigned long oldPress;
@@ -68,7 +61,7 @@ extern String nome_verde;
 extern String cognome_verde;
 extern String nome_blu;
 extern String cognome_blu;
-
+String Staterx;
 String RxData;
 byte Key = 0;
 byte Add = 1;
@@ -106,6 +99,7 @@ void loop() {
     // read the String message
     ResponseContainer rc = e22ttl.receiveMessage();
     RxData = rc.data;
+    Serial.println("Ricevo DATO");
     Serial.println(rc.data);
   }
 
@@ -118,18 +112,25 @@ void loop() {
     oldPress = millis();
   }
   if (RxData == "2000") {  // se ricevo lo show dalla centrale
+    Staterx = RxData;
     Serial1.println("<2000>");
     sirenaflag = 1;
+    RxData = "";
   }
   if (RxData == "3000") {  // se ricevo GO dalla centrale
+    Staterx = RxData;
     Serial1.println("<3000>");
     sirenaflag = 1;
+    RxData = "";
   }
   if (RxData == "6000") {  // se ricevo STOP dalla centrale
+    Staterx = RxData;
     Serial1.println("<6000>");
     sirenaflag = 1;
+    RxData = "";
   }
   if (RxData.indexOf("750") != -1 || RxData.indexOf("850") != -1) {  // se ricevo dalla centrale una striga CONTENTE AVANTI o INDIETRO
+    Staterx = RxData;
     end10lapblu = 0;
     end10lapverde = 0;
     end10laprosso = 0;
@@ -140,7 +141,7 @@ void loop() {
     // Serial.println(cognome_verde);
     // Serial.println(nome_blu);
     // Serial.println(cognome_blu);
-    draw(0, 0, 0, dmd);
+    draw(0, 0, 0);
     RxData = "";
   }
 
@@ -158,12 +159,13 @@ void loop() {
       end10lapblu = 0;
       end10lapverde = 0;
       end10laprosso = 0;
-      draw(6, 6, 6, dmd);  // display STOP
-      if (RxData != "6000") {
+      draw(6, 6, 6);  // display STOP
+      if (Staterx  != "6000") {
+        Serial.println("Rimando STOP");
         ResponseStatus rs = e22ttl.sendFixedMessage(Key, Add, Chan, "6000");
       }
       flagcount = false;
-      RxData = "";
+      Staterx = "";
       updatescreen = 1;
     }
 
@@ -174,6 +176,11 @@ void loop() {
       end10laprosso = 0;
       flagcount = true;
       updatescreen = 1;
+      if (Staterx != "3000") {
+        Serial.println("Rimando GO");
+        ResponseStatus rs = e22ttl.sendFixedMessage(Key, Add, Chan, "3000");
+      }
+     Staterx = "";
       memset(arraytempirosso, 0, sizeof(arraytempirosso));
       memset(arraytaglirosso, 0, sizeof(arraytaglirosso));
       memset(arraytempiverde, 0, sizeof(arraytempiverde));
@@ -181,10 +188,7 @@ void loop() {
       memset(arraytempiblu, 0, sizeof(arraytempiblu));
       memset(arraytagliblu, 0, sizeof(arraytagliblu));
 
-      if (RxData != "3000") {
-        ResponseStatus rs = e22ttl.sendFixedMessage(Key, Add, Chan, "3000");
-      }
-      RxData = "";
+
     }
     if (Rxs.indexOf("SHOW") != -1 && updatescreen == 0) {  // se riveco SHOW dal TEENSY
       end10lapblu = 0;
@@ -196,16 +200,17 @@ void loop() {
       memset(arraytagliverde, 0, sizeof(arraytagliverde));
       memset(arraytempiblu, 0, sizeof(arraytempiblu));
       memset(arraytagliblu, 0, sizeof(arraytagliblu));
-      if (RxData != "2000") {
+      if (Staterx != "2000") {
+        Serial.println("Rimando Show");
         ResponseStatus rs = e22ttl.sendFixedMessage(Key, Add, Chan, "2000");
       }
-      draw(1, 1, 1, dmd);  // display show
+      draw(1, 1, 1);  // display show
 
       showcroverde = false;
       showcrorosso = false;
       showcroblu = false;
       updatescreen = 1;
-      RxData = "";
+      Staterx = "";
       flagcount = false;
     }
 
@@ -223,7 +228,7 @@ void loop() {
         tempoverde[0] = values[0];
         showcroverde = true;
       }
-      draw(1, 1, 1, dmd);  // display show
+      draw(1, 1, 1);  // display show
     }
 
 
@@ -244,7 +249,7 @@ void loop() {
         tempoverde[1] = values[1];
         tempoverde[2] = values[2];
       }
-      draw(2, 2, 2, dmd);
+      draw(2, 2, 2);
     }
 
 
@@ -260,14 +265,16 @@ void loop() {
         end10lapblu = 1;
       }
       ResponseStatus rs = e22ttl.sendFixedMessage(Key, Add, Chan, Rxs);
-      newData = false;
+
     }
+    
+    newData = false;
   }
   // fine lettura dalla seriale del teesny
 
   // GESTIONE DEL DISPLAY A FINE 10 GIRI
 
-  displayend10lap (end10laprosso,end10lapverde , end10lapblu , dmd);
+  displayend10lap (end10laprosso, end10lapverde , end10lapblu );
 
 
   // GESTIONE DEL CONTO ALLA ROVESCIA
