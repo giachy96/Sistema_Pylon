@@ -1,11 +1,16 @@
 /* 
 Githb percorso di lavoro Giacomo v2
-  CODICE STRUTTURA : XYZ
- // X --> STATO y --> CHI Z ---> COlore K--> Dato
+  CODICE STRUTTURA : XYZK
+ // X --> STATO y --> CHI Z ---> COlore   K--> Dato
  
- 
-STATO :
 
+Per la centrale invece ci sono gli stati 700 indietro
+                                         750 conferma indietr
+                                         800 avanti
+                                         850 conferma avanti
+ 
+STATO :                                                             
+ 
 1XXX --> STARTUP
 2XXX-->SHOW
 3XXX-->START GARA

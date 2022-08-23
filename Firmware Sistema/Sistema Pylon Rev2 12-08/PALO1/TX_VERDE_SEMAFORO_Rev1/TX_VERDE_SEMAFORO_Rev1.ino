@@ -91,6 +91,7 @@ void loop() {
       Serial.println("Case0");//debug
       draw(0, u8x8);
       changeState = 0;
+     
 
     }
     if ( changeState == 1 && State == Show) { // Casistica per display, se siamo in Show, metti la schermata 1 e aggiorna ogni 5 sec, o aggiorna quando il flag changestate  è attivo
@@ -106,6 +107,7 @@ void loop() {
       Serial.println("Case2");//debug
       draw(2, u8x8);
       changeState = 0;
+      ntagli = 0;
 
     }
     if (changeState == 1 && State == StartRace) { // Casistica per display, se siamo in Race, metti la schermata 2 e aggiorna solo quando il flag changestate  è attivo
@@ -128,6 +130,7 @@ void loop() {
       draw(5, u8x8);
       Serial.println("Case5");//debug
       changeState = 0;
+       ntagli = 0;
 
     }
     if (e22ttl.available() > 1) { //se il lora riceve qualcosa

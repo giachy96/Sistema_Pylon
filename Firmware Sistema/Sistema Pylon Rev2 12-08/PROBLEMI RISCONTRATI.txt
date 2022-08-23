@@ -8,6 +8,7 @@ se ho i 2 tagli, NON segno niente a nessuno (perche cosi continuo l'ipotetica ac
 Risolvo la condiione di emergenza / 2 taglio in 2 modi : STOP da parte del giudice o TIMER sul rispettivo Telecomando Cronoemtro che 
 se non vedo una pressione entro 1minuto faccio finire la manche.
 
-7) quando si pigia di nuovo lo start, senza passare per lo show i telecomnadi del 2/3 e forse anche dell' 1 non resetteano le varabili 
+7) quando si pigia di nuovo lo start, senza passare per lo show i telecomnadi del 2/3 e forse anche dell' 1 non resetteano le varabili  -- in teoria è sistemato 
+da testare 
 
 
