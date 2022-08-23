@@ -58,6 +58,10 @@ String arraytempiverde[11];
 String arraytagliverde[10];
 String arraytempiblu[11];
 String arraytagliblu[10];
+String codestringone;
+int end10laprosso;
+int end10lapverde;
+int end10lapblu;
 extern String nome_rosso;
 extern String cognome_rosso;
 extern String nome_verde;
@@ -71,8 +75,8 @@ byte Add = 1;
 byte Chan = 5;
 
 
-unsigned long old523update;
-int bounce = 0;
+
+
 
 void setup() {
 
@@ -126,6 +130,9 @@ void loop() {
     sirenaflag = 1;
   }
   if (RxData.indexOf("750") != -1 || RxData.indexOf("850") != -1) {  // se ricevo dalla centrale una striga CONTENTE AVANTI o INDIETRO
+    end10lapblu = 0;
+    end10lapverde = 0;
+    end10laprosso = 0;
     splitCommaSeparated(RxData);
     // Serial.println(nome_rosso);
     // Serial.println(cognome_rosso);
@@ -133,11 +140,11 @@ void loop() {
     // Serial.println(cognome_verde);
     // Serial.println(nome_blu);
     // Serial.println(cognome_blu);
-    draw(0,0,0,dmd);
+    draw(0, 0, 0, dmd);
     RxData = "";
   }
 
-  // FINE PARTE RICEZIONE DAL LORA 
+  // FINE PARTE RICEZIONE DAL LORA
 
   // inzio la lettura dalla seriale del teesny
 
@@ -145,10 +152,13 @@ void loop() {
     String Rxs;
     Rxs = receivedChars1;
     //  Serial.println(Rxs);
-    updatescreen =0;
+    updatescreen = 0;
 
-     if (Rxs.indexOf("STOP") != -1 && updatescreen == 0) { // se riveco STOP dal TEENSY
-      draw(6,6,6, dmd);  // display STOP
+    if (Rxs.indexOf("STOP") != -1 && updatescreen == 0) {  // se riveco STOP dal TEENSY
+      end10lapblu = 0;
+      end10lapverde = 0;
+      end10laprosso = 0;
+      draw(6, 6, 6, dmd);  // display STOP
       if (RxData != "6000") {
         ResponseStatus rs = e22ttl.sendFixedMessage(Key, Add, Chan, "6000");
       }
@@ -156,9 +166,12 @@ void loop() {
       RxData = "";
       updatescreen = 1;
     }
-    
-   
-    if (Rxs.indexOf("GO") != -1 && updatescreen == 0) {    // se riveco GO dal TEENSY
+
+
+    if (Rxs.indexOf("GO") != -1 && updatescreen == 0) {  // se riveco GO dal TEENSY
+      end10lapblu = 0;
+      end10lapverde = 0;
+      end10laprosso = 0;
       flagcount = true;
       updatescreen = 1;
       memset(arraytempirosso, 0, sizeof(arraytempirosso));
@@ -173,7 +186,10 @@ void loop() {
       }
       RxData = "";
     }
-    if (Rxs.indexOf("SHOW") != -1 && updatescreen == 0) {      // se riveco SHOW dal TEENSY
+    if (Rxs.indexOf("SHOW") != -1 && updatescreen == 0) {  // se riveco SHOW dal TEENSY
+      end10lapblu = 0;
+      end10lapverde = 0;
+      end10laprosso = 0;
       memset(arraytempirosso, 0, sizeof(arraytempirosso));
       memset(arraytaglirosso, 0, sizeof(arraytaglirosso));
       memset(arraytempiverde, 0, sizeof(arraytempiverde));
@@ -183,7 +199,7 @@ void loop() {
       if (RxData != "2000") {
         ResponseStatus rs = e22ttl.sendFixedMessage(Key, Add, Chan, "2000");
       }
-      draw(1,1,1, dmd);  // display show
+      draw(1, 1, 1, dmd);  // display show
 
       showcroverde = false;
       showcrorosso = false;
@@ -193,7 +209,7 @@ void loop() {
       flagcount = false;
     }
 
-    if (Rxs.indexOf("2510") != -1 || Rxs.indexOf("2520") != -1 || Rxs.indexOf("2530") != -1) {  // codice  show dai telecomandi del cronometro 
+    if (Rxs.indexOf("2510") != -1 || Rxs.indexOf("2520") != -1 || Rxs.indexOf("2530") != -1) {  // codice  show dai telecomandi del cronometro
       values[0] = "0";
       decodecomma(Rxs, values);  // decodifico i valori
 
@@ -207,7 +223,7 @@ void loop() {
         tempoverde[0] = values[0];
         showcroverde = true;
       }
-      draw(1,1,1, dmd);  // display show
+      draw(1, 1, 1, dmd);  // display show
     }
 
 
@@ -228,46 +244,31 @@ void loop() {
         tempoverde[1] = values[1];
         tempoverde[2] = values[2];
       }
-       draw(2,2,2,dmd);
+      draw(2, 2, 2, dmd);
     }
 
 
     if (Rxs.indexOf("5514") != -1 || Rxs.indexOf("5524") != -1 || Rxs.indexOf("5534") != -1) {  // se ricevo dal teensy i codici di fine gara codice ricezione 10 giri
-      decodestringone(Rxs);
+      codestringone = decodestringone(Rxs);
+      if (codestringone.indexOf("5514") != -1) {
+        end10laprosso = 1;
+      }
+      if (codestringone.indexOf("5524") != -1) {
+        end10lapverde = 1;
+      }
+      if (codestringone.indexOf("5534") != -1) {
+        end10lapblu = 1;
+      }
       ResponseStatus rs = e22ttl.sendFixedMessage(Key, Add, Chan, Rxs);
-      if (values[0] == "5514") {
-        //decodestringone(Rxs);
-        //        temporosso[0] = values[0];
-        //        temporosso[3] = values[2];
-      } else if (values[0] == "5534") {
-        //        tempoblu[0] = values[0];
-        //        tempoblu[3] = values[2];
-      }
-      if (values[0] == "5524") {
-        //        tempoverde[0] = values[0];
-        //        tempoverde[3] = values[2];
-      }
-    }
-    newData = false;
-  }
-
-  // fine lettura dalla seriale del teesny 
-
-
-  String strx = receivedChars1;
-  if (strx.indexOf("5514") != -1 || strx.indexOf("5524") != -1 || strx.indexOf("5534") != -1) {  // se ricevo dal teensy i codici di fine gara
-
-    if (millis() - old523update >= 1000) {
-      if (bounce == 0) {
-       draw(3,3,3,dmd);
-        bounce = 1;
-      } else {
-       draw(4,4,4,dmd);
-        bounce = 0;
-      }
-      old523update = millis();
+      newData = false;
     }
   }
+  // fine lettura dalla seriale del teesny
+
+  // GESTIONE DEL DISPLAY A FINE 10 GIRI
+
+  displayend10lap (end10laprosso,end10lapverde , end10lapblu , dmd);
+
 
   // GESTIONE DEL CONTO ALLA ROVESCIA
   flagcount = countdown(flagcount);

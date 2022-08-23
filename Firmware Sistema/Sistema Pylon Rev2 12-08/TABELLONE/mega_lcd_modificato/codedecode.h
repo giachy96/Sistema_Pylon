@@ -30,8 +30,9 @@ int decodecomma (String str , String tempi[]) {
   return tempi;
 }
 
-void decodestringone (String strx) {
+String decodestringone (String strx) {
   String arraytmp [12];
+  String code ;
   decodecomma (strx , arraytmp);
   //caso rosso
   if (arraytmp[0] == "5514") {
@@ -55,6 +56,7 @@ void decodestringone (String strx) {
 
       arraytempirosso[i] = tmp;
     }
+    code = "5514";
   }
 
  //caso verde
@@ -79,6 +81,7 @@ void decodestringone (String strx) {
 
       arraytempiverde[i] = tmp;
     }
+      code = "5524";
   }
  //caso blu
     if (arraytmp[0] == "5534") {
@@ -102,6 +105,7 @@ void decodestringone (String strx) {
 
       arraytempiblu[i] = tmp;
     }
+      code = "5534";
   }
  //debug caso rosso
   Serial.println("Tempi rosso ");
@@ -120,5 +124,7 @@ void decodestringone (String strx) {
     Serial.print(" ");
   }
   Serial.println("");
+
+  return code;
 
 }

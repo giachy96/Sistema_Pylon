@@ -12,6 +12,9 @@ extern String cognome_verde;
 extern String nome_blu;
 extern String cognome_blu;
 
+unsigned long oldbounce;
+int bounce = 0;
+
 void checkboxcrono(SPIDMD dmd, int xs, int ys, int xe, int ye, boolean flg) {
 
   if (flg == true) {
@@ -20,6 +23,7 @@ void checkboxcrono(SPIDMD dmd, int xs, int ys, int xe, int ye, boolean flg) {
     dmd.drawBox(xs, ys, xe, ye);
   }
 }
+
 
 
 
@@ -48,13 +52,22 @@ void drawsubRosso(int cases, SPIDMD dmd) {
 
       break;
 
-    case 3:  // tempo 10 giro
-      dmd.drawString(0, 33, temporosso[1]);
-      dmd.drawString(18, 33, temporosso[2]);
+      // case 3:  // tempo 10 giro
+      //   dmd.drawString(0, 33, temporosso[1]);
+      //   dmd.drawString(18, 33, temporosso[2]);
+      //   break;
+
+      // case 4:  // totale tempo
+      //   dmd.drawString(10, 33, temporosso[3]);
+
+      //   break;
+
+    case 3:  // totale tempo
+      dmd.drawString(10, 33, temporosso[3]);
       break;
 
-    case 4:  // totale tempo
-      dmd.drawString(10, 33, temporosso[3]);
+    case 4:  // numero tagli
+      dmd.drawString(2, 33, "Tagli");
 
       break;
     case 5:  // doppio taglio
@@ -91,13 +104,22 @@ void drawsubVerde(int cases, SPIDMD dmd) {
       break;
 
 
-      case 3:  // tempo 10 giri
-      dmd.drawString(0, 17, tempoverde[1]);
-      dmd.drawString(18, 17, tempoverde[2]);
+      // case 3:  // tempo 10 giri
+      //   dmd.drawString(0, 17, tempoverde[1]);
+      //   dmd.drawString(18, 17, tempoverde[2]);
+      //   break;
+
+      // case 4:  // tempo totale
+      //   dmd.drawString(10, 17, tempoverde[3]);
+
+      //   break;
+
+    case 3:  // totale tempo
+      dmd.drawString(10, 17, tempoverde[3]);
       break;
 
-    case 4:  // tempo totale
-      dmd.drawString(10, 17, tempoverde[3]);
+    case 4:  // numero tagli
+      dmd.drawString(10, 17, "Tagli");
 
       break;
 
@@ -135,17 +157,24 @@ void drawsubBlu(int cases, SPIDMD dmd) {
       break;
 
 
-    case 3:  // tempo giro 10
+      // case 3:  // tempo giro 10
 
-      dmd.drawString(0, 1, tempoblu[1]);
-      dmd.drawString(18, 1, tempoblu[2]);
+      //   dmd.drawString(0, 1, tempoblu[1]);
+      //   dmd.drawString(18, 1, tempoblu[2]);
 
+      //   break;
+
+      // case 4:  // tempo totale
+      //   dmd.drawString(10, 1, tempoblu[3]);
+
+
+      //   break;
+    case 3:  // tempo totale
+      dmd.drawString(10, 1, tempoblu[3]);
       break;
 
-    case 4:  // tempo totale
-      dmd.drawString(10, 1, tempoblu[3]);
-
-
+    case 4:  // numero tagli
+      dmd.drawString(2, 1, "Tagli");
       break;
 
     case 5:  // doppio taglio
@@ -165,8 +194,38 @@ void draw(int casoRosso, int casoVerde, int casoBlu, SPIDMD dmd) {
   } else {
     dmd.selectFont(Arial_Black_16);
   }
-  drawsubRosso(casoRosso,  dmd);
-  drawsubVerde(casoVerde,  dmd);
+  drawsubRosso(casoRosso, dmd);
+  drawsubVerde(casoVerde, dmd);
   drawsubBlu(casoBlu, dmd);
+}
 
+void displayend10lap(int end10laprosso, int  end10lapverde, int end10lapblu, SPIDMD dmd ) {
+  if (end10laprosso == 1 || end10lapverde == 1 || end10lapblu == 1) {  // se ricevo dal teensy i codici di fine gara
+    int r;
+    int g;
+    int b;
+
+    if (millis() - oldbounce >= 1000) {
+      if (bounce == 0) {
+        if (end10laprosso == 1) { r = 3; }
+        if (end10laprosso == 0) { r = 2; }
+        if (end10lapverde == 1) { g = 3; }
+        if (end10lapverde == 0) { g = 2; }
+        if (end10lapblu == 1) { b = 3; }
+        if (end10lapblu == 0) { b = 2; }
+        bounce = 1;
+      } else {
+        if (end10laprosso == 1) { r = 4; }
+        if (end10laprosso == 0) { r = 2; }
+        if (end10lapverde == 1) { g = 4; }
+        if (end10lapverde == 0) { g = 2; }
+        if (end10lapblu == 1) { b = 4; }
+        if (end10lapblu == 0) { b = 2; }
+        bounce = 0;
+      }
+
+      draw(r, g, b, dmd);
+      oldbounce = millis();
+    }
+  }
 }
