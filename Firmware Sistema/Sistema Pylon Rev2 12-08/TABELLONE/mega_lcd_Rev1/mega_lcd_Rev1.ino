@@ -61,6 +61,9 @@ int end10lapblu;
 int doppiotaglioverde;
 int doppiotagliorosso;
 int doppiotaglioblu;
+int timeoutblu = 0;
+int timeoutverde = 0;
+int timeoutrosso = 0;
 extern String nome_rosso;
 extern String cognome_rosso;
 extern String nome_verde;
@@ -173,6 +176,9 @@ void loop() {
       doppiotaglioverde = 0;
       doppiotagliorosso = 0;
       doppiotaglioblu = 0;
+      timeoutblu = 0;
+      timeoutverde = 0;
+      timeoutrosso = 0;
       draw(6, 6, 6);  // display STOP
       if (Staterx  != "6000") {
         ResponseStatus rs = e22ttl.sendFixedMessage(Key, Add, Chan, "6000");
@@ -190,6 +196,9 @@ void loop() {
       doppiotaglioverde = 0;
       doppiotagliorosso = 0;
       doppiotaglioblu = 0;
+      timeoutblu = 0;
+      timeoutverde = 0;
+      timeoutrosso = 0;
       flagcount = true;
       updatescreen = 1;
       if (Staterx != "3000") {
@@ -216,6 +225,9 @@ void loop() {
       doppiotagliorosso = 0;
       doppiotaglioblu = 0;
       end10laprosso = 0;
+      timeoutblu = 0;
+      timeoutverde = 0;
+      timeoutrosso = 0;
       memset(arraytempirosso, 0, sizeof(arraytempirosso));
       memset(arraytaglirosso, 0, sizeof(arraytaglirosso));
       memset(arraytempiverde, 0, sizeof(arraytempiverde));
@@ -288,7 +300,7 @@ void loop() {
       }
       if (codestringone.indexOf("5524") != -1) {
         end10lapverde = 1;
-       tempototverde = arraytempiverde[11];
+        tempototverde = arraytempiverde[11];
 
       }
       if (codestringone.indexOf("5534") != -1) {
@@ -298,6 +310,30 @@ void loop() {
       ResponseStatus rs = e22ttl.sendFixedMessage(Key, Add, Chan, Rxs);
 
     }
+
+
+    if (Rxs.indexOf("6534") != -1 || Rxs.indexOf("6524") != -1 || Rxs.indexOf("6514") != -1) {  // se ricevo dal teensy i codici di TIMEOUT
+      if (Rxs.indexOf("6514") != -1) {
+        end10laprosso = 1;
+        tempototrosso = "200";
+        timeoutrosso = 1;
+
+      }
+      if (Rxs.indexOf("6524") != -1) {
+        end10lapverde = 1;
+        tempototverde = "200";
+        timeoutverde = 1;
+
+      }
+      if (Rxs.indexOf("6534") != -1) {
+        end10lapblu = 1;
+        tempototblu = "200";
+        timeoutblu = 1;
+      }
+      ResponseStatus rs = e22ttl.sendFixedMessage(Key, Add, Chan, Rxs);
+
+    }
+
 
 
     if (Rxs.indexOf("4015") != -1 || Rxs.indexOf("4025") != -1 || Rxs.indexOf("4035") != -1) {  // se ricevo dal teensy il DOPPIO TAGLIO

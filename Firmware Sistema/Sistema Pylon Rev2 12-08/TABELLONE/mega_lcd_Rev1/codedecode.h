@@ -125,22 +125,22 @@ String decodestringone (String strx) {
     code = "5534";
   }
   //debug caso rosso
-  Serial.println("Tempi rosso ");
-  for (int l = 0 ; l < 12 ; l++) {
-    Serial.print(arraytempirosso[l]);
-    Serial.print(" ");
-  }
-  Serial.println("Tagli Rosso");
-  for (int l = 0 ; l < 10 ; l++) {
-    if ( arraytaglirosso[l] == "") {
-      Serial.print("/");
-    }
-    else {
-      Serial.print(arraytaglirosso[l]);
-    }
-    Serial.print(" ");
-  }
-  Serial.println("");
+//  Serial.println("Tempi rosso ");
+//  for (int l = 0 ; l < 12 ; l++) {
+//    Serial.print(arraytempirosso[l]);
+//    Serial.print(" ");
+//  }
+//  Serial.println("Tagli Rosso");
+//  for (int l = 0 ; l < 10 ; l++) {
+//    if ( arraytaglirosso[l] == "") {
+//      Serial.print("/");
+//    }
+//    else {
+//      Serial.print(arraytaglirosso[l]);
+//    }
+//    Serial.print(" ");
+//  }
+//  Serial.println("");
 
   return code;
 

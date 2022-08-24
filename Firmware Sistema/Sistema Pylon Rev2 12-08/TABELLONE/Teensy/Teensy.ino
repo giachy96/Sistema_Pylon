@@ -27,6 +27,10 @@ String tempiblu[11];
 int end10lap_rosso = 0;
 int end10lap_verde = 0;
 int end10lap_blu = 0;
+String stringoneblu ;
+String stringoneverde ;
+String stringonerosso ;
+
 String values[5];
 
 int ngiri_blu = 0;
@@ -182,7 +186,7 @@ void loop() {
   if (newData8 == true) {
     String Rxs8;
     Rxs8 = receivedChars8;
-    if (Rxs8.indexOf("4514") != -1 || Rxs8.indexOf("5514") != -1 || Rxs8.indexOf("2510") != -1) {
+    if (Rxs8.indexOf("4514") != -1 || Rxs8.indexOf("5514") != -1 || Rxs8.indexOf("2510") != -1 || Rxs8.indexOf("6514") != -1) {
       String pack8 = "<";
       pack8.concat(receivedChars8);
       pack8.concat(">");
@@ -209,6 +213,9 @@ void loop() {
         Serial5.print("<5514>");
         end10lap_rosso = 1;
       }
+      if (Rxs8.indexOf("6514") != -1) {  // timeout rosso
+        ntaglitot_rosso = 10;
+      }
     }
     newData8 = false;
   }
@@ -217,7 +224,7 @@ void loop() {
   if (newData1 == true) {
     String Rxs1;
     Rxs1 = receivedChars1;
-    if (Rxs1.indexOf("4534") != -1 || Rxs1.indexOf("5534") != -1 || Rxs1.indexOf("2530") != -1) {
+    if (Rxs1.indexOf("4534") != -1 || Rxs1.indexOf("5534") != -1 || Rxs1.indexOf("2530") != -1 || Rxs1.indexOf("6534") != -1) {
       String pack1 = "<";
       pack1.concat(receivedChars1);
       pack1.concat(">");
@@ -242,6 +249,9 @@ void loop() {
         Serial2.print("<5534>");
         end10lap_blu = 1;
       }
+      if (Rxs1.indexOf("6534") != -1) {  // timeout blu
+        ntaglitot_blu = 10;
+      }
     }
     newData1 = false;
   }
@@ -250,7 +260,7 @@ void loop() {
   if (newData7 == true) {
     String Rxs7;
     Rxs7 = receivedChars7;
-    if (Rxs7.indexOf("4524") != -1 || Rxs7.indexOf("5524") != -1 || Rxs7.indexOf("2520") != -1) {
+    if (Rxs7.indexOf("4524") != -1 || Rxs7.indexOf("5524") != -1 || Rxs7.indexOf("2520") != -1 || Rxs7.indexOf("6524") != -1) {
       String pack7 = "<";
       pack7.concat(receivedChars7);
       pack7.concat(">");
@@ -274,6 +284,9 @@ void loop() {
         Serial3.print("<5524>");
         Serial4.print("<5524>");
         end10lap_verde = 1;
+      }
+      if (Rxs7.indexOf("6524") != -1) {  // timeout verde
+        ntaglitot_verde = 10;
       }
     }
     newData7 = false;
@@ -406,38 +419,62 @@ void loop() {
 
 
 
-  if (ntaglitot_rosso > 1) {  // ha fatto due tagli il rosso
-    Serial6.println("<4015>");
+  if (ntaglitot_rosso > 1 && ntaglitot_rosso < 10 ) {  // ha fatto due tagli il rosso
+    //Serial6.println("<4015>");
     Serial3.println("<4015>");
     Serial5.println("<4015>");
     Serial8.println("<4015>");
     ntaglitot_rosso = 0;
     end10lap_rosso = 1;
+    stringonerosso = "<5514,";
   }
-  if (ntaglitot_verde > 1) {  // ha fatto due tagli il verde
-    Serial6.println("<4025>");
+  if (ntaglitot_verde > 1 && ntaglitot_verde < 10) {  // ha fatto due tagli il verde
+    // Serial6.println("<4025>");
     Serial3.println("<4025>");
     Serial7.println("<4025>");
     Serial4.println("<4025>");
     ntaglitot_verde = 0;
     end10lap_verde = 1;
+    stringoneverde = "<5524,";
   }
 
-  if (ntaglitot_blu > 1) {  // ha fatto due tagli il rosso
-    Serial6.println("<4035>");
+  if (ntaglitot_blu > 1 && ntaglitot_blu < 10) {  // ha fatto due tagli il rosso
+    // Serial6.println("<4035>");
     Serial3.println("<4035>");
     Serial1.println("<4035>");
     Serial2.println("<4035>");
     ntaglitot_blu = 0;
     end10lap_blu = 1;
+    stringoneblu = "<5534,";
   }
-
+  if ( ntaglitot_blu == 10) {  // ATTENZIONE PER PULIZA SI è riustao il ntagli blu per il TIMEOUT!
+    // Serial6.println("<6534>");  // timeout blu
+    Serial3.println("<6534>");
+    Serial2.println("<6534>");
+    ntaglitot_blu = 0;
+    end10lap_blu = 1;
+    stringoneblu = "<6534,";
+  }
+  if ( ntaglitot_verde == 10) {  //timeout verde
+    // Serial6.println("<6534>");
+    Serial3.println("<6524>");
+    Serial4.println("<6524>");
+    ntaglitot_verde = 0;
+    end10lap_verde = 1;
+    stringoneverde = "<6524,";
+  }
+  if ( ntaglitot_rosso == 10) {  //timeout rosso
+    // Serial6.println("<6534>");
+    Serial3.println("<6514>");
+    Serial5.println("<6514>");
+    ntaglitot_rosso = 0;
+    end10lap_rosso = 1;
+    stringonerosso = "<6514,";
+  }
 
 
   // codice che crea le stringhe finali per i colori
   if (end10lap_rosso == 1) {  // creo la stringa finale per il rosso
-    String stringonerosso = "<5514,";
-
 
     for (int i = 1; i <= 10; i++) {
       stringonerosso.concat(tempirosso[i]);
@@ -460,7 +497,7 @@ void loop() {
   }
 
   if (end10lap_verde == 1) {  // creo la stringa finale per il verde
-    String stringoneverde = "<5524,";
+
 
 
     for (int i = 1; i <= 10; i++) {
@@ -485,7 +522,7 @@ void loop() {
 
 
   if (end10lap_blu == 1) {  // creo la stringa finale per il blu
-    String stringoneblu = "<5534,";
+
 
 
     for (int i = 1; i <= 10; i++) {

@@ -92,9 +92,22 @@ void draw(int cases , U8X8_SH1106_128X64_NONAME_HW_I2C u8x8) {
       tensione_float = readvoltage(pinbatt);
       dtostrf(tensione_float, 6, 2, vout); // Leave room for too large numbers!
 
-     u8x8.setFont(u8x8_font_8x13B_1x2_r);
+      u8x8.setFont(u8x8_font_8x13B_1x2_r);
       u8x8.drawString(0, 1 , " Fine Manche");
       u8x8.drawString(0, 3 , " In Attesa.... ");
+      u8x8.drawString(6, 6, " V");
+      u8x8.drawString(5, 6, vout );
+      break;
+
+    case 7:
+      // attesa nuova
+      u8x8.clear();
+      tensione_float = readvoltage(pinbatt);
+      dtostrf(tensione_float, 6, 2, vout); // Leave room for too large numbers!
+
+      u8x8.setFont(u8x8_font_8x13B_1x2_r);
+      u8x8.drawString(0, 1 , " FUORI TEMPO MAX");
+      u8x8.drawString(0, 3, "Squalificato ");
       u8x8.drawString(6, 6, " V");
       u8x8.drawString(5, 6, vout );
       break;

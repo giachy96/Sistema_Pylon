@@ -28,7 +28,9 @@ extern String tempototverde;
 extern String arraytagliverde[10];
 extern String tempototblu;
 extern String arraytagliblu[10];
-
+extern int timeoutblu ;
+extern int timeoutverde ;
+extern int timeoutrosso ;
 
 unsigned long oldbounce;
 int bounce = 0;
@@ -362,6 +364,15 @@ void draw(int casoRosso, int casoVerde, int casoBlu) {
     cRosso = 5;
   }
   if (doppiotaglioblu == 1 && casoBlu != 4) {
+    cBlu = 5;
+  }
+  if (timeoutverde == 1  ) {
+    cVerde = 5;
+  }
+  if (timeoutrosso == 1 ) {
+    cRosso = 5;
+  }
+  if (timeoutblu == 1 ) {
     cBlu = 5;
   }
 
