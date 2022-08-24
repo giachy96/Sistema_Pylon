@@ -48,6 +48,7 @@ String ShowCut="2330";
 String RaceCut="3331";
 String StartRace = "3001";
 String end10lap = "5534";
+String DoubleCut = "4035";
 int ntagli = 0;
 byte Key=0;
 byte Add=0;
@@ -130,6 +131,14 @@ void loop() {
       changeState = 0;
        ntagli = 0;
     }
+       if ( changeState == 1 && State ==  DoubleCut) { // Casistica per display, se siamo in End, metti la schermata 6 e aggiorna ogni 5 sec, o aggiorna quando il flag changestate  è attivo
+      previousMillis = currentMillis;
+      draw(7, u8x8);
+      Serial.println("Case7");//debug
+      changeState = 0;
+      ntagli = 0;
+    }
+    
     if (e22ttl.available()>1){ 
       Serial.println("ricevo qualcosa");
       ResponseContainer rc = e22ttl.receiveMessage();// Receive message

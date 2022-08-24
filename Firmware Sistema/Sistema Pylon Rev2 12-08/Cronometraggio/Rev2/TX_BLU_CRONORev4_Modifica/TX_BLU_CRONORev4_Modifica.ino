@@ -17,14 +17,14 @@
 #include "Arduino.h"
 #include "LoRa_E22.h"
 #include "lcdcases.h"
+#include "timestructure.h"
+
 U8X8_SH1106_128X64_NONAME_HW_I2C u8x8(/* reset=*/U8X8_PIN_NONE);
 int pulsante = 9;
-int taglio = 10;
 int buzzer = 5;
 int pinbatt = A0;
 int bootup = 1;
 int dcase = 0;
-int altupdatelcd = 0;
 //char t[5] = { '3', ',', '3', '3',  '\0' };
 LoRa_E22 e22ttl(2, 3);             // Arduino RX --> e22 TX - Arduino TX --> e22 RX
 unsigned long previousMillis = 0;  // will store last time voltage was updated
@@ -34,33 +34,45 @@ unsigned long Lastpress = 0;
 unsigned long LastBuzzer = 0;
 int changeState = 0;
 
+// tempi
+int lapcounter = -2;
+unsigned long tempo_base;
+unsigned long tempo_totale;
+long tempo_parziale[11] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+long* poiparz = &tempo_parziale[0];
+float tempo_flt[11] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+int ultimo_tempo;
+int ultimo_inviato = 0;
+float* poitem = &tempo_flt[0];
+
+
+
 // Inizio configurazione Telecomando
 String Race = "3000";
 String Show = "2000";
 String End = "5000";
 String Stop = "6000";
-String StartRace = "3001";
 String Startup = "1000";
 String State = Startup;          //Startup state
 unsigned long interval = 10000;  // constants won't change:
 unsigned long Delaypress = 2500;
 unsigned long Delaysend = 200;
-String PressShow = "2120";
-String PressRace = "3122";
-String PressCut = "3121";
-String end10lap = "5524";
-String DoubleCut = "4025";
-int ntagli = 0;
+unsigned long DelayStop = 30000;
+String PressShow = "2530";
+String PressTime = "4534";
+String StartRace = "3533";
+String end10lap = "5534";
+String DoubleCut = "4035";
+String StopTime = "6534";
 int Key = 0;
 int Add = 0;
-int Chan = 20;
+int Chan = 40;
 //Fine configurazione Telecomando
 
 void setup() {
   pinMode(pulsante, INPUT_PULLUP);
   pinMode(buzzer, OUTPUT);
   pinMode(pinbatt, INPUT);
-  pinMode(taglio, INPUT_PULLUP);
   Serial.begin(9600);
   delay(500);
   e22ttl.begin();  // Startup all pins and UART
@@ -93,49 +105,77 @@ void loop() {
       draw(0, u8x8);
       changeState = 0;
     }
-    if (changeState == 1 && State == Show) {  // Casistica per display, se siamo in Show, metti la schermata 1 e aggiorna ogni 5 sec, o aggiorna quando il flag changestate  è attivo
+    if (changeState == 1 && State == Show) {  // Casistica per display, se siamo in Show, metti la schermata 1
       previousMillis = currentMillis;
       Serial.println("Case1");  //debug
       draw(1, u8x8);
+      tempo_base = 0;
+      tempo_totale = 0;
+      memset(tempo_parziale, 0, sizeof(tempo_parziale));
+      memset(tempo_flt, 0, sizeof(tempo_flt));
+      ultimo_tempo = 0;
+      ultimo_inviato = 0;
+      lapcounter = -2;
       changeState = 0;
-      ntagli = 0;
     }
-    if (changeState == 1 && State == Race) {  // Casistica per display, se siamo in Race, metti la schermata 2 e aggiorna solo quando il flag changestate  è attivo
+    if (changeState == 1 && State == Race) {  // Casistica per display, se siamo in Race, metti la schermata 2
       previousMillis = currentMillis;
       Serial.println("Case2");  //debug
       draw(2, u8x8);
+      tempo_base = 0;
+      tempo_totale = 0;
+      memset(tempo_parziale, 0, sizeof(tempo_parziale));
+      memset(tempo_flt, 0, sizeof(tempo_flt));
+      ultimo_tempo = 0;
+      ultimo_inviato = 0;
+      lapcounter = -2;
       changeState = 0;
-      ntagli = 0;
     }
-    if (changeState == 1 && State == StartRace) {  // Casistica per display, se siamo in Race, metti la schermata 2 e aggiorna solo quando il flag changestate  è attivo
+    if (changeState == 1 && State == StartRace) {  // Casistica per display, se siamo in StartRace
       previousMillis = currentMillis;
       Serial.println("Case2.1");  //debug
+      tempo_base = millis();
+      lapcounter = lapcounter + 1;
+      Catturatempo(poitem, poiparz, lapcounter, tempo_base);  //balza l'indice a 1Lastpress = millis()
+      float ultimo_tempo = tempo_flt[lapcounter];
+      char bu[10];
+      dtostrf(ultimo_tempo, 4, 3, bu);  //4 is mininum width, 6 is precision
+      String msg = PressTime;
+      msg.concat(",");
+      msg.concat(lapcounter);
+      msg.concat(",");
+      msg.concat(bu);
+      ResponseStatus rs = e22ttl.sendFixedMessage(Key, Add, Chan, msg);
+      tone(buzzer, 2000, 200);
+      Lastpress = millis();
       draw(3, u8x8);
       changeState = 0;
       tone(buzzer, 1000, 200);
     }
-    if (changeState == 1 && State == end10lap) {  // Casistica per display, se siamo in End, metti la schermata 6 e aggiorna ogni 5 sec, o aggiorna quando il flag changestate  è attivo
-      previousMillis = currentMillis;
-      draw(6, u8x8);
-      Serial.println("Case6");  //debug
-      changeState = 0;
-    }
 
-    if (changeState == 1 && State == Stop) {  // Casistica per display, se siamo in End, metti la schermata 6 e aggiorna ogni 5 sec, o aggiorna quando il flag changestate  è attivo
+    if (changeState == 1 && State == Stop) {  // Casistica per display, se siamo in STOP
       previousMillis = currentMillis;
       draw(5, u8x8);
+      tempo_base = 0;
+      tempo_totale = 0;
+      memset(tempo_parziale, 0, sizeof(tempo_parziale));
+      memset(tempo_flt, 0, sizeof(tempo_flt));
+      ultimo_tempo = 0;
+      ultimo_inviato = 0;
+      lapcounter = -2;
+      State = "";
       Serial.println("Case5");  //debug
       changeState = 0;
-      ntagli = 0;
     }
-
-    if (changeState == 1 && State == DoubleCut) {  // Casistica per display, se siamo in End, metti la schermata 6 e aggiorna ogni 5 sec, o aggiorna quando il flag changestate  è attivo
+    if (changeState == 1 && State == DoubleCut) {  // Casistica per display, se siamo in DOPPIO TAGLIO
       previousMillis = currentMillis;
       draw(7, u8x8);
+      lapcounter = -2;
+      State = "";
       Serial.println("Case7");  //debug
       changeState = 0;
-      ntagli = 0;
     }
+
     if (e22ttl.available() > 1) {                      //se il lora riceve qualcosa
       Serial.println("ricevo qualcosa");               //debug
       ResponseContainer rc = e22ttl.receiveMessage();  // Receive message
@@ -160,20 +200,62 @@ void loop() {
       Serial.println(currentMillis - previousMillis);  //debug
     }
     CurrentPress = millis();
-    if (digitalRead(pulsante) == LOW && (CurrentPress - Lastpress) >= Delaypress && State == StartRace) {  //se il pulsante del semaforo è premuto, sono in race e la sicurezza sulle pressioni ripetute è passata
+    if (digitalRead(pulsante) == LOW && (CurrentPress - Lastpress) >= Delaypress && State == StartRace && lapcounter < 10) {  //se il pulsante del semaforo è premuto, sono in race e la sicurezza sulle pressioni ripetute è passata
       Lastpress = millis();
-      ResponseStatus rs = e22ttl.sendFixedMessage(Key, Add, Chan, PressRace);  //invio il codice race
+      lapcounter = lapcounter + 1;
+      Catturatempo(poitem, poiparz, lapcounter, tempo_base);  //balza l'indice a 1Lastpress = millis()
+      float ultimo_tempo = tempo_flt[lapcounter];
+      char bu[10];
+      dtostrf(ultimo_tempo, 4, 3, bu);  //4 is mininum width, 6 is precision
+      String msg = PressTime;
+      msg.concat(",");
+      msg.concat(lapcounter);
+      msg.concat(",");
+      msg.concat(bu);
+      Lastpress = millis();
+      draw(3, u8x8);
+      ResponseStatus rs = e22ttl.sendFixedMessage(Key, Add, Chan, msg);
       tone(buzzer, 1000, 200);
       Serial.println("invio");  //debug
     }
     CurrentPress = millis();
-    if (digitalRead(taglio) == LOW && (CurrentPress - Lastpress) >= Delaypress && State == StartRace) {  //se il pulsante del taglio è premuto, sono in race e non sono stati premuti altri tasti prima di delaypress
+    if ((CurrentPress - Lastpress) >= DelayStop && State == StartRace && lapcounter < 10) {  //se sono passati DelayStop secondi è non ho avuto pressioni
       Lastpress = millis();
-      ResponseStatus rs = e22ttl.sendFixedMessage(Key, Add, Chan, PressCut);  //invio il codice di taglio
-      ntagli = ntagli + 1;
-      tone(buzzer, 1000, 1000);
+      lapcounter = lapcounter + 1;
+      Catturatempo(poitem, poiparz, lapcounter, tempo_base);  //balza l'indice a 1Lastpress = millis()
+      float ultimo_tempo = tempo_flt[lapcounter];
+      char bu[10];
+      dtostrf(ultimo_tempo, 4, 3, bu);  //4 is mininum width, 6 is precision
+      String msg = StopTime;
+      msg.concat(",");
+      msg.concat(lapcounter);
+      msg.concat(",");
+      msg.concat(bu);
+      Lastpress = millis();
+      draw(3, u8x8);
+      ResponseStatus rs = e22ttl.sendFixedMessage(Key, Add, Chan, msg);
+      tone(buzzer, 1000, 200);
+      lapcounter = -2;
+      State = "";
       Serial.println("invio");  //debug
-      changeState = 1;
+    }
+    if (lapcounter == 10) {  //se il pulsante del semaforo è premuto, sono in race e la sicurezza sulle pressioni ripetute è passata
+      float tot = CalcoloTempo(tempo_flt);
+      tempo_flt[11] = tot;
+      tempo_parziale[11] = (int)(tot * 100);  // per inserire il totale sulla stringa con virgole
+      float ultimo_tempo = tempo_flt[11];
+      char bu[10];
+      dtostrf(ultimo_tempo, 4, 3, bu);  //4 is mininum width, 6 is precision
+      String msg = end10lap;
+      msg.concat(",");
+      msg.concat("11");
+      msg.concat(",");
+      msg.concat(bu);
+      ResponseStatus rs = e22ttl.sendFixedMessage(Key, Add, Chan, msg);
+      State = "";
+      draw(4, u8x8);
+      lapcounter = -2;
+      previousMillis = millis();
     }
   }
 }

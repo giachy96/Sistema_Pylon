@@ -12,3 +12,5 @@ da testare
 9) con i doppio taglio deve arrestrarsi tutto il relativo colore sennò si inchioda mezzo mondo
 
 10) se il cornometro passa i 30 secondi senza una pressione di deve fermare il tutto sennò va in overflow il telecomando
+11) se il tizio fa 2 tagli al palo 1 non li vede, ci sta qualche problema sull' arry dei tagli 
+12) forse sarebbe da inibire 1 solo taglio fino alla fine del giro 

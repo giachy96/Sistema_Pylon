@@ -42,5 +42,6 @@ COLORE  Z :
 		   3--> AVVIO TEMPI
 		   4---> TEMPI
            5--> due tagli
+           
 		   
 */
