@@ -51,6 +51,9 @@ String arraytempiverde[11];
 String arraytagliverde[10];
 String arraytempiblu[11];
 String arraytagliblu[10];
+String tempototrosso;
+String tempototverde;
+String tempototblu;
 String codestringone;
 int end10laprosso;
 int end10lapverde;
@@ -270,7 +273,9 @@ void loop() {
         tempoverde[1] = values[1];
         tempoverde[2] = values[2];
       }
-      draw(2, 2, 2);
+      if (flagcount == false) {
+        draw(2, 2, 2);
+      }
     }
 
 
@@ -278,12 +283,17 @@ void loop() {
       codestringone = decodestringone(Rxs);
       if (codestringone.indexOf("5514") != -1) {
         end10laprosso = 1;
+        tempototrosso = arraytempirosso[11];
+
       }
       if (codestringone.indexOf("5524") != -1) {
         end10lapverde = 1;
+       tempototverde = arraytempiverde[11];
+
       }
       if (codestringone.indexOf("5534") != -1) {
         end10lapblu = 1;
+        tempototblu = arraytempiblu[11];
       }
       ResponseStatus rs = e22ttl.sendFixedMessage(Key, Add, Chan, Rxs);
 

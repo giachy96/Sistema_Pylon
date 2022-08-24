@@ -4,6 +4,9 @@ extern String arraytempiverde[11];
 extern String arraytagliverde[10];
 extern String arraytempiblu[11];
 extern String arraytagliblu[10];
+int ntaglitotrosso = 0;
+int ntaglitotverde = 0;
+int ntaglitotblu = 0;
 
 
 int decodecomma (String str , String tempi[]) {
@@ -31,25 +34,31 @@ int decodecomma (String str , String tempi[]) {
 }
 
 String decodestringone (String strx) {
+
+
   String arraytmp [12];
   String code ;
   decodecomma (strx , arraytmp);
   //caso rosso
   if (arraytmp[0] == "5514") {
+    ntaglitotrosso = 0;
     for (int i = 1 ; i < 12; i++) {
       String tmp = arraytmp[i];
       if (arraytmp[i].indexOf("-P1") != -1) {
         arraytaglirosso[i - 1] = "P1";
+        ntaglitotrosso++;
         tmp.remove(tmp.indexOf("-P1"), 3);
         arraytempirosso[i] = tmp;
       }
       if (arraytmp[i].indexOf("-P2") != -1) {
         arraytaglirosso[i - 1] = "P2";
+        ntaglitotrosso++;
         tmp.remove(tmp.indexOf("-P2"), 3);
         arraytempirosso[i] = tmp;
       }
       if (arraytmp[i].indexOf("-P3") != -1) {
         arraytaglirosso[i - 1] = "P3";
+        ntaglitotrosso++;
         tmp.remove(tmp.indexOf("-P3"), 3);
         arraytempirosso[i] = tmp;
       }
@@ -59,55 +68,63 @@ String decodestringone (String strx) {
     code = "5514";
   }
 
- //caso verde
-   if (arraytmp[0] == "5524") {
+  //caso verde
+  if (arraytmp[0] == "5524") {
+    ntaglitotverde = 0;
     for (int i = 1 ; i < 12; i++) {
       String tmp = arraytmp[i];
       if (arraytmp[i].indexOf("-P1") != -1) {
         arraytagliverde[i - 1] = "P1";
+        ntaglitotverde++;
         tmp.remove(tmp.indexOf("-P1"), 3);
         arraytempiverde[i] = tmp;
       }
       if (arraytmp[i].indexOf("-P2") != -1) {
         arraytagliverde[i - 1] = "P2";
+        ntaglitotverde++;
         tmp.remove(tmp.indexOf("-P2"), 3);
         arraytempiverde[i] = tmp;
       }
       if (arraytmp[i].indexOf("-P3") != -1) {
         arraytagliverde[i - 1] = "P3";
+        ntaglitotverde++;
         tmp.remove(tmp.indexOf("-P3"), 3);
         arraytempiverde[i] = tmp;
       }
 
       arraytempiverde[i] = tmp;
     }
-      code = "5524";
+    code = "5524";
   }
- //caso blu
-    if (arraytmp[0] == "5534") {
+  //caso blu
+  if (arraytmp[0] == "5534") {
+    ntaglitotblu = 0;
     for (int i = 1 ; i < 12; i++) {
       String tmp = arraytmp[i];
       if (arraytmp[i].indexOf("-P1") != -1) {
         arraytagliblu[i - 1] = "P1";
+        ntaglitotblu++;
         tmp.remove(tmp.indexOf("-P1"), 3);
         arraytempiblu[i] = tmp;
       }
       if (arraytmp[i].indexOf("-P2") != -1) {
         arraytagliblu[i - 1] = "P2";
+        ntaglitotblu++;
         tmp.remove(tmp.indexOf("-P2"), 3);
         arraytempiblu[i] = tmp;
       }
       if (arraytmp[i].indexOf("-P3") != -1) {
         arraytagliblu[i - 1] = "P3";
+        ntaglitotblu++;
         tmp.remove(tmp.indexOf("-P3"), 3);
         arraytempiblu[i] = tmp;
       }
 
       arraytempiblu[i] = tmp;
     }
-      code = "5534";
+    code = "5534";
   }
- //debug caso rosso
+  //debug caso rosso
   Serial.println("Tempi rosso ");
   for (int l = 0 ; l < 12 ; l++) {
     Serial.print(arraytempirosso[l]);
@@ -117,7 +134,7 @@ String decodestringone (String strx) {
   for (int l = 0 ; l < 10 ; l++) {
     if ( arraytaglirosso[l] == "") {
       Serial.print("/");
-      }
+    }
     else {
       Serial.print(arraytaglirosso[l]);
     }

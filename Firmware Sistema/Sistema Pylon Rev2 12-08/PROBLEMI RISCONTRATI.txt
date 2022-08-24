@@ -1,7 +1,3 @@
-1) nel tabellone quando arrivano i 10 giri ci sta qualche problema quando arrivano contemporaneamente
-  e anche quando arrivano scaglionati , da controllare.
-
-5) qundo il tabellone fa go dopo dovrebbe venire  0 0.000 ma invece no...
 
 6) lo stato di squalifica! Quando si sono fatti 2 tagli oppure quando ci sta una condizione di emergenza.
 se ho i 2 tagli, NON segno niente a nessuno (perche cosi continuo l'ipotetica acquisizione dati in caso di emergenza) a meno del tabellone, 
@@ -12,3 +8,7 @@ se non vedo una pressione entro 1minuto faccio finire la manche.
 da testare 
 
 8) quando pigio go mi si devono resettare anche i telecomandi dei crono oltre che agli altri
+
+9) con i doppio taglio deve arrestrarsi tutto il relativo colore sennò si inchioda mezzo mondo
+
+10) se il cornometro passa i 30 secondi senza una pressione di deve fermare il tutto sennò va in overflow il telecomando
