@@ -407,17 +407,29 @@ void loop() {
 
 
   if (ntaglitot_rosso > 1) {  // ha fatto due tagli il rosso
-    Serial6.println("<4015>"); 
+    Serial6.println("<4015>");
+    Serial3.println("<4015>");
+    Serial5.println("<4015>");
+    Serial8.println("<4015>");
     ntaglitot_rosso = 0;
+    end10lap_rosso = 1;
   }
-   if (ntaglitot_verde > 1) {  // ha fatto due tagli il rosso
-    Serial6.println("<4025>"); 
+  if (ntaglitot_verde > 1) {  // ha fatto due tagli il verde
+    Serial6.println("<4025>");
+    Serial3.println("<4025>");
+    Serial7.println("<4025>");
+    Serial4.println("<4025>");
     ntaglitot_verde = 0;
+    end10lap_verde = 1;
   }
 
- if (ntaglitot_blu > 1) {  // ha fatto due tagli il rosso
-    Serial6.println("<4035>"); 
+  if (ntaglitot_blu > 1) {  // ha fatto due tagli il rosso
+    Serial6.println("<4035>");
+    Serial3.println("<4035>");
+    Serial1.println("<4035>");
+    Serial2.println("<4035>");
     ntaglitot_blu = 0;
+    end10lap_blu = 1;
   }
 
 

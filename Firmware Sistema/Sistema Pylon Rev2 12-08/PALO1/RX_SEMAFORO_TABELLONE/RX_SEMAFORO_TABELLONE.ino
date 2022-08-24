@@ -23,6 +23,9 @@ String PressShowB = "2130";
 String PressRaceB = "3132";
 String PressCutB = "3131";
 String end10lapB = "5534";
+String DoubleCutR = "4015";
+String DoubleCutV = "4015";
+String DoubleCutB = "4015";
 //Fine Configurazione
 
 String TxData = "0";
@@ -71,151 +74,153 @@ void loop() {
     TxDatastr = "";
     ResponseStatus rs = e22ttl.sendFixedMessage(0, 1, 10, RecCh);
     newData = false;
-     FlagState = 1;
-     Serial.println("Ricevo dalla seriale e mando immediataente");
+    if (State.indexOf(DoubleCutR) == -1 || State.indexOf(DoubleCutB) == -1 || State.indexOf(DoubleCutV) == -1 ) { //se NON ricevo lo stato di doppio taglio
+      FlagState = 1;
   }
-  if (e22ttl.available() > 1) { // If there is something arrived from lora (Transmitter)
-    ResponseContainer rc = e22ttl.receiveMessage();// Receive message
-    TxData = rc.data; //Assign incoming data on TxData variable
-     Serial.println("Ricevo dal lora");
-    Serial.println(TxData);
+  Serial.println("Ricevo dalla seriale e mando immediataente");
+}
+if (e22ttl.available() > 1) { // If there is something arrived from lora (Transmitter)
+  ResponseContainer rc = e22ttl.receiveMessage();// Receive message
+  TxData = rc.data; //Assign incoming data on TxData variable
+  Serial.println("Ricevo dal lora");
+  Serial.println(TxData);
 
-    if (TxData != "0" && (State == Show  || State == StartRace  )) { //Condition for sent to mega press
-      if (AltSerial.available() > 0) { // If mega will sent state to sem_rx
-        recvWithStartEndMarkers( RecCh );
-        State = RecCh;
-        FlagState = 1;
-      }
-      if (State == Show  || State == StartRace ) { //if nothing has change from previous if-statements
-        String pack  = "<";
-        pack.concat(TxData);
-        pack.concat(">");
-        AltSerial.print(pack); //Send Txdata from rx to Mega
-        // Serial.println("Mando via il dato");
-        Serial.println(pack);
-      }
-      TxDatastr = TxData;
-      TxData = "0"; //Reset condition for set data
+  if (TxData != "0" && (State == Show  || State == StartRace  )) { //Condition for sent to mega press
+    if (AltSerial.available() > 0) { // If mega will sent state to sem_rx
+      recvWithStartEndMarkers( RecCh );
+      State = RecCh;
+      FlagState = 1;
+    }
+    if (State == Show  || State == StartRace ) { //if nothing has change from previous if-statements
+      String pack  = "<";
+      pack.concat(TxData);
+      pack.concat(">");
+      AltSerial.print(pack); //Send Txdata from rx to Mega
+      // Serial.println("Mando via il dato");
+      Serial.println(pack);
+    }
+    TxDatastr = TxData;
+    TxData = "0"; //Reset condition for set data
+  }
+}
+
+
+if (TxDatastr.indexOf(Show) != -1 ) {
+  decodecomma(TxDatastr , valrx );
+  Serial.println(valrx[3]);
+
+
+
+  if (valrx[1] == PressShowR) { // controllo se mi è arrivato lo show del rosso
+    digitalWrite( lucerosso, HIGH);
+
+  }
+  if (valrx[2] == PressShowV) { // controllo se mi è arrivato lo show del verde
+    digitalWrite( luceverde, HIGH);
+  }
+  if (valrx[3] == PressShowB) { // controllo se mi è arrivato lo show del blu
+    digitalWrite( luceblu, HIGH);
+
+  }
+}
+
+
+if (TxDatastr.indexOf(StartRace) != -1 ) {
+  decodecomma(TxDatastr , valrx );
+  if (valrx[2] == PressCutV) { // controllo se mi è arrivato il taglio del verde
+    ntagliverde = ntagliverde + 1;
+    if (ntagliverde == 1) {
+      digitalWrite( luceverde, HIGH);
+    }
+    if (ntagliverde > 1) {
+      lampeggianteverde = 1;
     }
   }
+  if (valrx[1] == PressCutR) { // controllo se mi è arrivato il taglio del rosso
 
-
-  if (TxDatastr.indexOf(Show) != -1 ) {
-    decodecomma(TxDatastr , valrx );
-      Serial.println(valrx[3]);
-
-
-
-    if (valrx[1] == PressShowR) { // controllo se mi è arrivato lo show del rosso
+    ntaglirosso = ntaglirosso + 1;
+    if (ntaglirosso == 1) {
       digitalWrite( lucerosso, HIGH);
 
     }
-    if (valrx[2] == PressShowV) { // controllo se mi è arrivato lo show del verde
-      digitalWrite( luceverde, HIGH);
+    if (ntaglirosso > 1) {
+      lampeggianterosso = 1;
+      Serial.println("ci entro?");
     }
-    if (valrx[3] == PressShowB) { // controllo se mi è arrivato lo show del blu
+    valrx[1] = "";
+  }
+  if (valrx[3] == PressCutB) { // controllo se mi è arrivato il taglio del blu
+    ntagliblu = ntagliblu + 1;
+    if (ntagliblu == 1) {
       digitalWrite( luceblu, HIGH);
-      
+    }
+    if (ntagliblu > 1) {
+      lampeggianteblu = 1;
     }
   }
+  TxDatastr = "";
+}
 
+if (FlagState == 1) { //If state was change on previous code
 
-  if (TxDatastr.indexOf(StartRace) != -1 ) {
-    decodecomma(TxDatastr , valrx );
-    if (valrx[2] == PressCutV) { // controllo se mi è arrivato il taglio del verde
-      ntagliverde = ntagliverde + 1;
-      if (ntagliverde == 1) {
-        digitalWrite( luceverde, HIGH);
-      }
-      if (ntagliverde > 1) {
-        lampeggianteverde = 1;
-      }
-    }
-    if (valrx[1] == PressCutR) { // controllo se mi è arrivato il taglio del rosso
+  digitalWrite( luceblu, LOW);
+  digitalWrite( lucerosso, LOW);
+  digitalWrite( luceverde, LOW);
+  ntaglirosso = 0;
+  ntagliblu = 0;
+  ntagliverde = 0;
+  lampeggianterosso = 0;
+  lampeggianteverde = 0;
+  lampeggianteblu = 0;
+  TxDatastr = "";
+  FlagState = 0;
+}
 
-      ntaglirosso = ntaglirosso + 1;
-      if (ntaglirosso == 1) {
-        digitalWrite( lucerosso, HIGH);
+//codici per il lampeggio
+if (lampeggianterosso == 1) {
+  if (onrosso == 0 && millis() - lampmillisrosso >= 500) {
+    lampmillisrosso = millis();
+    onrosso = 1;
+    digitalWrite( lucerosso, HIGH);
 
-      }
-      if (ntaglirosso > 1) {
-        lampeggianterosso = 1;
-        Serial.println("ci entro?");
-      }
-      valrx[1] = "";
-    }
-    if (valrx[3] == PressCutB) { // controllo se mi è arrivato il taglio del blu
-      ntagliblu = ntagliblu + 1;
-      if (ntagliblu == 1) {
-        digitalWrite( luceblu, HIGH);
-      }
-      if (ntagliblu > 1) {
-        lampeggianteblu = 1;
-      }
-    }
-    TxDatastr = "";
   }
-
-  if (FlagState == 1) { //If state was change on previous code
-
-    digitalWrite( luceblu, LOW);
+  if (onrosso == 1 && millis() - lampmillisrosso >= 500 ) {
     digitalWrite( lucerosso, LOW);
+    onrosso = 0;
+    lampmillisrosso = millis();
+
+  }
+}
+
+if (lampeggianteverde == 1) {
+  if (onverde == 0 && millis() - lampmillisverde >= 500) {
+    lampmillisverde = millis();
+    onverde = 1;
+    digitalWrite( luceverde, HIGH);
+
+  }
+  if (onverde == 1 && millis() - lampmillisverde >= 500 ) {
     digitalWrite( luceverde, LOW);
-    ntaglirosso = 0;
-    ntagliblu = 0;
-    ntagliverde = 0;
-    lampeggianterosso = 0;
-    lampeggianteverde = 0;
-    lampeggianteblu = 0;
-    TxDatastr = "";
-    FlagState = 0;
+    onverde = 0;
+    lampmillisverde = millis();
+
   }
+}
+if (lampeggianteblu == 1) {
+  if (onblu == 0 && millis() - lampmillisblu >= 500) {
+    lampmillisblu = millis();
+    onblu = 1;
+    digitalWrite( luceblu, HIGH);
 
-  //codici per il lampeggio
-  if (lampeggianterosso == 1) {
-    if (onrosso == 0 && millis() - lampmillisrosso >= 500) {
-      lampmillisrosso = millis();
-      onrosso = 1;
-      digitalWrite( lucerosso, HIGH);
-
-    }
-    if (onrosso == 1 && millis() - lampmillisrosso >= 500 ) {
-      digitalWrite( lucerosso, LOW);
-      onrosso = 0;
-      lampmillisrosso = millis();
-
-    }
   }
+  if (onblu == 1 && millis() - lampmillisblu >= 500 ) {
+    digitalWrite( luceblu, LOW);
+    onblu = 0;
+    lampmillisblu = millis();
 
-  if (lampeggianteverde == 1) {
-    if (onverde == 0 && millis() - lampmillisverde >= 500) {
-      lampmillisverde = millis();
-      onverde = 1;
-      digitalWrite( luceverde, HIGH);
-
-    }
-    if (onverde == 1 && millis() - lampmillisverde >= 500 ) {
-      digitalWrite( luceverde, LOW);
-      onverde = 0;
-      lampmillisverde = millis();
-
-    }
   }
-  if (lampeggianteblu == 1) {
-    if (onblu == 0 && millis() - lampmillisblu >= 500) {
-      lampmillisblu = millis();
-      onblu = 1;
-      digitalWrite( luceblu, HIGH);
-
-    }
-    if (onblu == 1 && millis() - lampmillisblu >= 500 ) {
-      digitalWrite( luceblu, LOW);
-      onblu = 0;
-      lampmillisblu = millis();
-
-    }
-  }
-  // fine codici per il lampeggio
+}
+// fine codici per il lampeggio
 }
 
 

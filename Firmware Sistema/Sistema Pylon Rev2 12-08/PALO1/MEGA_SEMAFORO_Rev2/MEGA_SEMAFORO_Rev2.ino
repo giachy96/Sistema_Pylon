@@ -31,6 +31,9 @@ String Startup = "1000";
 String end10lapB = "5534";
 String end10lapV = "5524";
 String end10lapR = "5514";
+String DoubleCutR = "4015";
+String DoubleCutV = "4025";
+String DoubleCutB = "4035";
 String State = Startup;
 String OldState = Startup;
 unsigned long Delaysend = 200;
@@ -134,8 +137,10 @@ void loop() {
     //   newData1 = false;
     // }
     if (str.indexOf(end10lapB) == -1 || str.indexOf(end10lapV) == -1) {
-      Serial1.print(str);  //Send to receiver 1 State
-      //Serial.println(State);
+      if (str.indexOf(DoubleCutB) == -1 || str.indexOf(DoubleCutV) == -1) {
+        Serial1.print(str);  //Send to receiver 1 State
+        //Serial.println(State);
+      }
     }
     // RecStr2();
     // if (newData2 == true) {  //(Serial2.available()>0){
@@ -144,7 +149,9 @@ void loop() {
     //   newData2 = false;
     // }
     if (str.indexOf(end10lapB) == -1 || str.indexOf(end10lapR) == -1) {
-      Serial2.print(str);
+      if (str.indexOf(DoubleCutB) == -1 || str.indexOf(DoubleCutR) == -1) {
+        Serial2.print(str);
+      }
     }
     // RecStr3();
     // if (newData3 == true) {   //(Serial3.available()>0){
@@ -153,7 +160,9 @@ void loop() {
     //   newData3 == false;
     // }
     if (str.indexOf(end10lapR) == -1 || str.indexOf(end10lapV) == -1) {
-      Serial3.print(str);
+      if (str.indexOf(DoubleCutR) == -1 || str.indexOf(DoubleCutV) == -1) {
+        Serial3.print(str);
+      }
     }
     FlagState = 0;  //Reset condition for send State to the rx
   }
