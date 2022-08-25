@@ -297,6 +297,13 @@ void loop() {
     String Rxs6;
     Rxs6 = receivedChars6;
 
+    if (Rxs6.indexOf("850") != -1) {  // ho ricevuto lo show dalla centrale
+      Serial2.println("<850>");
+      Serial3.println("<850>");
+      Serial4.println("<850>");
+      Serial5.println("<850>");
+    }
+
     if (Rxs6.indexOf("2000") != -1) {  // ho ricevuto lo show dalla centrale
       codicecentrale = 2000;
     }

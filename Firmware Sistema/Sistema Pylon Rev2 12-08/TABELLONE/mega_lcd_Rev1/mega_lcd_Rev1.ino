@@ -116,6 +116,7 @@ void loop() {
   if (digitalRead(pulsanteIndietro) == LOW && currentMillis - oldPress >= intervalPress) {  // se pigio il pulsante indietro
     ResponseStatus rs = e22ttl.sendFixedMessage(Key, Add, Chan, "700");
     oldPress = millis();
+
   }
   if (digitalRead(pulsanteAvanti) == LOW && currentMillis - oldPress >= intervalPress) {  // se pigio il pulsante indietro
     ResponseStatus rs = e22ttl.sendFixedMessage(Key, Add, Chan, "800");
@@ -140,6 +141,7 @@ void loop() {
     RxData = "";
   }
   if (RxData.indexOf("750") != -1 || RxData.indexOf("850") != -1) {  // se ricevo dalla centrale una striga CONTENTE AVANTI o INDIETRO
+    Serial1.println("<850>");
     Staterx = RxData;
     end10lapblu = 0;
     end10lapverde = 0;
@@ -147,6 +149,9 @@ void loop() {
     doppiotaglioverde = 0;
     doppiotagliorosso = 0;
     doppiotaglioblu = 0;
+    timeoutblu = 0;
+    timeoutverde = 0;
+    timeoutrosso = 0;
     splitCommaSeparated(RxData);
     // Serial.println(nome_rosso);
     // Serial.println(cognome_rosso);
