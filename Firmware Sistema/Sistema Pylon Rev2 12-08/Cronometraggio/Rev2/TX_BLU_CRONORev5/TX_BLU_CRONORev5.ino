@@ -162,7 +162,7 @@ void loop() {
       msg.concat(",");
       msg.concat(bu);
       ResponseStatus rs = e22ttl.sendFixedMessage(Key, Add, Chan, msg);
-      draw(7, u8x8);
+      draw(8, u8x8);
       tempo_base = 0;
       tempo_totale = 0;
       memset(tempo_parziale, 0, sizeof(tempo_parziale));

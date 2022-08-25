@@ -112,13 +112,16 @@ void draw(int cases, LiquidCrystal_I2C lcd) {
 
       lcd.clear();
       lcd.setCursor(3, 0);
-      lcd.print("FINE GARA INVIO DEI DATI AL PC ");
+      lcd.print("FINE GARA");
+      lcd.setCursor(0, 1);
+      lcd.print("INVIO DEI DATI AL PC");
       //lcd.setCursor(0, 1);
       // lcd.print("Arresto della gara!");
       vout = tensionebatt(pinbatt);
       lcd.setCursor(3, 3);
       lcd.print("V.Batt.");
       lcd.print(vout);
+      break;
 
     case 5:
       // STOP
