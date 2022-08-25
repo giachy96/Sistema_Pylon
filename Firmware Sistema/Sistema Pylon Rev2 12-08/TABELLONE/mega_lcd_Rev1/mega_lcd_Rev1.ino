@@ -343,19 +343,19 @@ void loop() {
 
     if (Rxs.indexOf("4015") != -1 || Rxs.indexOf("4025") != -1 || Rxs.indexOf("4035") != -1) {  // se ricevo dal teensy il DOPPIO TAGLIO
       if (Rxs.indexOf("4015") != -1) {  // se doppiotaglio rosso
-        draw(5, 2, 2);
         sirenaflag = 1;
         doppiotagliorosso = 1;
+        end10laprosso = 1;
       }
       if (Rxs.indexOf("4025") != -1) {  // se doppiotaglio verde
-        draw(2, 5, 2);
         sirenaflag = 1;
         doppiotaglioblu = 1;
+        end10lapblu = 1;
       }
       if (Rxs.indexOf("4035") != -1) { // se doppiotaglio blu
-        draw(2, 2, 5);
         sirenaflag = 1;
         doppiotaglioverde = 1;
+        end10lapverde = 1;
 
       }
     }

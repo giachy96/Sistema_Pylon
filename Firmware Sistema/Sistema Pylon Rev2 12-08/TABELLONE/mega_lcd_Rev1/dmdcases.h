@@ -100,7 +100,7 @@ void drawsubRosso(int cases) {
         dmd.selectFont(Arial_Black_16);
         dmd.drawString(2, 33, cut1 );
         dmd.drawString(15, 33, arraytaglirosso[trovato]);
-      } else {
+      } else { // tagli > 1
         String cut2 = "";
         for (int i = 0; i < 10; i++) {
           if (arraytaglirosso[i].indexOf("P1") != -1  ) {
@@ -108,15 +108,16 @@ void drawsubRosso(int cases) {
             itoa(i + 1, lapbuf, 10); //(integer, yourBuffer, base)
             cut2.concat(lapbuf);
             cut2.concat(".");
-            cut2.concat(arraytaglirosso[i]);
+            cut2.concat("P1");
             cut2.concat(" ");
+
           }
           if (arraytaglirosso[i].indexOf("P2") != -1  ) {
             char lapbuf[2];
             itoa(i + 1, lapbuf, 10); //(integer, yourBuffer, base)
             cut2.concat(lapbuf);
             cut2.concat(".");
-            cut2.concat(arraytaglirosso[i]);
+            cut2.concat("P2");
             cut2.concat(" ");
           }
           if (arraytaglirosso[i].indexOf("P3") != -1  ) {
@@ -124,7 +125,7 @@ void drawsubRosso(int cases) {
             itoa(i + 1, lapbuf, 10); //(integer, yourBuffer, base)
             cut2.concat(lapbuf);
             cut2.concat(".");
-            cut2.concat(arraytaglirosso[i]);
+            cut2.concat("P3");
             cut2.concat(" ");
           }
         }
@@ -207,7 +208,7 @@ void drawsubVerde(int cases) {
             itoa(i + 1, lapbuf, 10); //(integer, yourBuffer, base)
             cut2.concat(lapbuf);
             cut2.concat(".");
-            cut2.concat(arraytagliverde[i]);
+            cut2.concat("P1");
             cut2.concat(" ");
           }
           if (arraytagliverde[i].indexOf("P2") != -1  ) {
@@ -215,7 +216,7 @@ void drawsubVerde(int cases) {
             itoa(i + 1, lapbuf, 10); //(integer, yourBuffer, base)
             cut2.concat(lapbuf);
             cut2.concat(".");
-            cut2.concat(arraytagliverde[i]);
+            cut2.concat("P2");
             cut2.concat(" ");
           }
           if (arraytagliverde[i].indexOf("P3") != -1  ) {
@@ -223,7 +224,7 @@ void drawsubVerde(int cases) {
             itoa(i + 1, lapbuf, 10); //(integer, yourBuffer, base)
             cut2.concat(lapbuf);
             cut2.concat(".");
-            cut2.concat(arraytagliverde[i]);
+            cut2.concat("P3");
             cut2.concat(" ");
           }
         }
@@ -308,7 +309,7 @@ void drawsubBlu(int cases) {
             itoa(i + 1, lapbuf, 10); //(integer, yourBuffer, base)
             cut2.concat(lapbuf);
             cut2.concat(".");
-            cut2.concat(arraytagliblu[i]);
+            cut2.concat("P1");
             cut2.concat(" ");
           }
           if (arraytagliblu[i].indexOf("P2") != -1  ) {
@@ -316,7 +317,7 @@ void drawsubBlu(int cases) {
             itoa(i + 1, lapbuf, 10); //(integer, yourBuffer, base)
             cut2.concat(lapbuf);
             cut2.concat(".");
-            cut2.concat(arraytagliblu[i]);
+            cut2.concat("P2");
             cut2.concat(" ");
           }
           if (arraytagliblu[i].indexOf("P3") != -1  ) {
@@ -324,7 +325,7 @@ void drawsubBlu(int cases) {
             itoa(i + 1, lapbuf, 10); //(integer, yourBuffer, base)
             cut2.concat(lapbuf);
             cut2.concat(".");
-            cut2.concat(arraytagliblu[i]);
+            cut2.concat("P3");
             cut2.concat(" ");
           }
         }

@@ -34,6 +34,9 @@ String end10lapR = "5514";
 String DoubleCutR = "4015";
 String DoubleCutV = "4025";
 String DoubleCutB = "4035";
+String StopTimeR = "6514";
+String StopTimeV = "6524";
+String StopTimeB = "6534";
 String State = Startup;
 String OldState = Startup;
 unsigned long Delaysend = 200;
@@ -60,7 +63,7 @@ void setup() {
 }
 void loop() {
   Currentmillisx = millis();                  // Assign millis value to Currentmillisx for if statements
-  if (State == Show || State == StartRace) {  //Delay time for receive serial data, if necessary...
+  if (State == Show || State == StartRace || State == DoubleCutR || State == DoubleCutV || State == DoubleCutB || State ==  StopTimeR || State == StopTimeV || State == StopTimeB ) { //Delay time for receive serial data, if necessary...
     RecStr1();
     if (newData1 == true) {  //(Serial1.available()>0){
       //Serial.println("C'è qualcosa in seriale");
@@ -73,7 +76,7 @@ void loop() {
 
 
   Currentmillisx = millis();
-  if (State == Show || State == StartRace) {
+  if (State == Show || State == StartRace || State == DoubleCutR || State == DoubleCutV || State == DoubleCutB || State ==  StopTimeR || State == StopTimeV || State == StopTimeB ) {
     RecStr2();
     if (newData2 == true) {  //(Serial2.available()>0){
       //Serial.println("C'è qualcosa in seriale");
@@ -85,7 +88,7 @@ void loop() {
 
 
   Currentmillisx = millis();
-  if (State == Show || State == StartRace) {
+  if (State == Show || State == StartRace || State == DoubleCutR || State == DoubleCutV || State == DoubleCutB || State ==  StopTimeR || State == StopTimeV || State == StopTimeB ) {
     RecStr3();
     if (newData3 == true) {  //(Serial3.available()>0){
       //Serial.println("C'è qualcosa in seriale");
@@ -99,7 +102,7 @@ void loop() {
 
 
   Currentmilliss = millis();                                                                // millis assignments for send delay control
-  if ((Currentmilliss - Timesend) >= Delaysend && (State == Show || State == StartRace)) {  //If the last receive is older than Delaysend, and state is race or show
+  if ((Currentmilliss - Timesend) >= Delaysend && (State == Show || State == StartRace || State == DoubleCutR || State == DoubleCutV || State == DoubleCutB || State ==  StopTimeR || State == StopTimeV || State == StopTimeB /)) {  //If the last receive is older than Delaysend, and state is race or show
     if (Dateserial1 != "0" || Dateserial2 != "0" || Dateserial3 != "0") {                   //If some button was pressed
       Dateserial = State;
       Dateserial.concat(",");
