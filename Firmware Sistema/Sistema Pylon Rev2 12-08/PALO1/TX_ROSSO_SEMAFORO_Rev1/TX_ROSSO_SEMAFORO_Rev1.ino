@@ -31,7 +31,7 @@ unsigned long previousMillis = 0;        // will store last time voltage was upd
 unsigned long currentMillis = 0;
 unsigned long CurrentPress = 0;
 unsigned long Lastpress = 0;
-unsigned long LastBuzzer=0;
+unsigned long LastBuzzer = 0;
 int changeState = 0;
 
 // Inizio configurazione Telecomando
@@ -50,6 +50,7 @@ String PressCut = "3111";
 String StartRace = "3001";
 String end10lap = "5514";
 String DoubleCut = "4015";
+String StopTime = "6514";
 int ntagli = 0;
 int Key = 0;
 int Add = 0;
@@ -133,10 +134,18 @@ void loop() {
       ntagli = 0;
 
     }
-     if ( changeState == 1 && State == DoubleCut) { // Casistica per display, se siamo in End, metti la schermata 6 e aggiorna ogni 5 sec, o aggiorna quando il flag changestate  è attivo
+    if ( changeState == 1 && State == DoubleCut) { // Casistica per display, se siamo in End, metti la schermata 6 e aggiorna ogni 5 sec, o aggiorna quando il flag changestate  è attivo
       previousMillis = currentMillis;
       draw(7, u8x8);
       Serial.println("Case7");//debug
+      changeState = 0;
+      ntagli = 0;
+
+    }
+    if ( changeState == 1 && State == StopTime) { // Casistica per display, se siamo in End, metti la schermata 6 e aggiorna ogni 5 sec, o aggiorna quando il flag changestate  è attivo
+      previousMillis = currentMillis;
+      draw(8, u8x8);
+      Serial.println("Case8");//debug
       changeState = 0;
       ntagli = 0;
 
@@ -148,9 +157,9 @@ void loop() {
       Serial.println("Nuovo stato");//debug
       Serial.println(State);//debug
       changeState = 1; //attivo il flag di cambiostato per i display
-       if (millis()-LastBuzzer>1000){
+      if (millis() - LastBuzzer > 1000) {
         tone(buzzer, 1000, 200);
-        LastBuzzer=millis();
+        LastBuzzer = millis();
       }
       Serial.println("flag");//debug
       Serial.println(changeState);//debug

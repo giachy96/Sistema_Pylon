@@ -50,6 +50,7 @@ String PressRace = "3122";
 String PressCut = "3121";
 String end10lap = "5524";
 String DoubleCut = "4025";
+String StopTime = "6524";
 int ntagli = 0;
 int Key = 0;
 int Add = 0;
@@ -133,6 +134,14 @@ void loop() {
       previousMillis = currentMillis;
       draw(7, u8x8);
       Serial.println("Case7");  //debug
+      changeState = 0;
+      ntagli = 0;
+    }
+    
+    if (changeState == 1 && State == StopTime) {  // Casistica per display, se siamo in End, metti la schermata 6 e aggiorna ogni 5 sec, o aggiorna quando il flag changestate  è attivo
+      previousMillis = currentMillis;
+      draw(8, u8x8);
+      Serial.println("Case8");  //debug
       changeState = 0;
       ntagli = 0;
     }

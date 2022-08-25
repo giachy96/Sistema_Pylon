@@ -38,6 +38,8 @@ String PressShow2 = "2230";
 String PressShow3 = "2330";
 String PressCut2 = "3231";
 String PressCut3 = "3331";
+String DoubleCut = "4035";
+String StopTime = "6534";
 String State = Startup;
 unsigned long Delaysend = 200;
 unsigned long DelayState = 350;
@@ -98,15 +100,20 @@ void loop() {
     Serial.println(State);
     FirstStateSend = millis();
     DoubleState = 1;
-    digitalWrite( PinLight2, LOW);
-    digitalWrite( PinLight3, LOW);
-    ntagliP2 = 0;
-    ntagliP3 = 0;
-    lampeggianteP2 = 0;
-    lampeggianteP3 = 0;
+    if (State.indexOf(DoubleCut) == -1  ) { //se NON ricevo lo stato di doppio taglio
+      if (State.indexOf(StopTime) == -1 ) { //se NON ricevo lo stato di StopTIME
+        digitalWrite( PinLight2, LOW);
+        digitalWrite( PinLight3, LOW);
+        ntagliP2 = 0;
+        ntagliP3 = 0;
+        lampeggianteP2 = 0;
+        lampeggianteP3 = 0;
+        Serial.println("PINS LOW");
+      }
+    }
     TxDatastr = "";
     FlagState = 0;
-    Serial.println("PINS LOW");
+
   }
 
 

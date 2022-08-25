@@ -49,6 +49,7 @@ String RaceCut="3331";
 String StartRace = "3001";
 String end10lap = "5534";
 String DoubleCut = "4035";
+String StopTime = "6534";
 int ntagli = 0;
 byte Key=0;
 byte Add=0;
@@ -135,6 +136,13 @@ void loop() {
       previousMillis = currentMillis;
       draw(7, u8x8);
       Serial.println("Case7");//debug
+      changeState = 0;
+      ntagli = 0;
+    }
+           if ( changeState == 1 && State ==  StopTime) { // Casistica per display, se siamo in End, metti la schermata 6 e aggiorna ogni 5 sec, o aggiorna quando il flag changestate  è attivo
+      previousMillis = currentMillis;
+      draw(8, u8x8);
+      Serial.println("Case8");//debug
       changeState = 0;
       ntagli = 0;
     }
