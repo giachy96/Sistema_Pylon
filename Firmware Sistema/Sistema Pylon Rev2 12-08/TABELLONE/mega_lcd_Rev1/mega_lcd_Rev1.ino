@@ -1,4 +1,3 @@
-
 #include "exceldecode.h"
 #include "codedecode.h"
 #include "dmdcases.h"
@@ -116,7 +115,6 @@ void loop() {
   if (digitalRead(pulsanteIndietro) == LOW && currentMillis - oldPress >= intervalPress) {  // se pigio il pulsante indietro
     ResponseStatus rs = e22ttl.sendFixedMessage(Key, Add, Chan, "700");
     oldPress = millis();
-
   }
   if (digitalRead(pulsanteAvanti) == LOW && currentMillis - oldPress >= intervalPress) {  // se pigio il pulsante indietro
     ResponseStatus rs = e22ttl.sendFixedMessage(Key, Add, Chan, "800");
@@ -185,7 +183,7 @@ void loop() {
       timeoutverde = 0;
       timeoutrosso = 0;
       draw(6, 6, 6);  // display STOP
-      if (Staterx  != "6000") {
+      if (Staterx != "6000") {
         ResponseStatus rs = e22ttl.sendFixedMessage(Key, Add, Chan, "6000");
       }
       flagcount = false;
@@ -219,9 +217,6 @@ void loop() {
       memset(temporosso, 0, sizeof(temporosso));
       memset(tempoverde, 0, sizeof(tempoverde));
       memset(tempoblu, 0, sizeof(tempoblu));
-
-
-
     }
     if (Rxs.indexOf("SHOW") != -1 && updatescreen == 0) {  // se riveco SHOW dal TEENSY
       end10lapblu = 0;
@@ -301,62 +296,64 @@ void loop() {
       if (codestringone.indexOf("5514") != -1) {
         end10laprosso = 1;
         tempototrosso = arraytempirosso[11];
-
+        displayend10lap(end10laprosso, end10lapverde, end10lapblu);
       }
       if (codestringone.indexOf("5524") != -1) {
         end10lapverde = 1;
         tempototverde = arraytempiverde[11];
-
+        displayend10lap(end10laprosso, end10lapverde, end10lapblu);
       }
       if (codestringone.indexOf("5534") != -1) {
         end10lapblu = 1;
         tempototblu = arraytempiblu[11];
+        displayend10lap(end10laprosso, end10lapverde, end10lapblu);
       }
       ResponseStatus rs = e22ttl.sendFixedMessage(Key, Add, Chan, Rxs);
-
     }
 
 
     if (Rxs.indexOf("6534") != -1 || Rxs.indexOf("6524") != -1 || Rxs.indexOf("6514") != -1) {  // se ricevo dal teensy i codici di TIMEOUT
       if (Rxs.indexOf("6514") != -1) {
+        sirenaflag = 1;
         end10laprosso = 1;
         tempototrosso = "200";
         timeoutrosso = 1;
-
       }
       if (Rxs.indexOf("6524") != -1) {
+        sirenaflag = 1;
         end10lapverde = 1;
         tempototverde = "200";
         timeoutverde = 1;
-
       }
       if (Rxs.indexOf("6534") != -1) {
+        sirenaflag = 1;
         end10lapblu = 1;
         tempototblu = "200";
         timeoutblu = 1;
       }
       ResponseStatus rs = e22ttl.sendFixedMessage(Key, Add, Chan, Rxs);
-
     }
 
 
 
     if (Rxs.indexOf("4015") != -1 || Rxs.indexOf("4025") != -1 || Rxs.indexOf("4035") != -1) {  // se ricevo dal teensy il DOPPIO TAGLIO
-      if (Rxs.indexOf("4015") != -1) {  // se doppiotaglio rosso
+      if (Rxs.indexOf("4015") != -1) {                                                          // se doppiotaglio rosso
         sirenaflag = 1;
         doppiotagliorosso = 1;
+        tempototrosso= "200";
         end10laprosso = 1;
       }
-      if (Rxs.indexOf("4025") != -1) {  // se doppiotaglio verde
+      if (Rxs.indexOf("4035") != -1) {  // se doppiotaglio blu
         sirenaflag = 1;
         doppiotaglioblu = 1;
+        tempototblu = "200";
         end10lapblu = 1;
       }
-      if (Rxs.indexOf("4035") != -1) { // se doppiotaglio blu
+      if (Rxs.indexOf("4025") != -1) {  // se doppiotaglio verde
+        tempototverde = "200";
         sirenaflag = 1;
         doppiotaglioverde = 1;
         end10lapverde = 1;
-
       }
     }
 
@@ -366,7 +363,7 @@ void loop() {
 
   // GESTIONE DEL DISPLAY A FINE 10 GIRI
 
-  displayend10lap (end10laprosso, end10lapverde , end10lapblu );
+  displayend10lap(end10laprosso, end10lapverde, end10lapblu);
 
 
   // GESTIONE DEL CONTO ALLA ROVESCIA
