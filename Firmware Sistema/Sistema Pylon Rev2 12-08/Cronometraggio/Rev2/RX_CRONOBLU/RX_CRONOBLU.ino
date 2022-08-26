@@ -42,12 +42,12 @@ void loop() {
     Serial.println("Ricevo dal lora");
     Serial.println(TxData);
 
-    if (TxData != "0" && (State == "2000"|| State == "3000" || State == "3533" )) { //Condition for sent to mega press
+    if (TxData != "0" && (State == "2000"|| State == "3000"|| State == "3533" )) { //Condition for sent to mega press
       if (AltSerial.available() > 0) { // If mega will sent state to sem_rx
         recvWithStartEndMarkers( RecCh );
         State = RecCh;
       }
-      if (State == "2000" || State == "3000" || State == "3533" ) { //if nothing has change from previous if-statements
+      if (State == "2000" || State == "3000" || State == "3533") { //if nothing has change from previous if-statements
         
         String pack  = "<";
         pack.concat(TxData);

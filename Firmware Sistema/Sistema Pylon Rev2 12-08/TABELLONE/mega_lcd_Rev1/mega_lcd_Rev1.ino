@@ -150,6 +150,9 @@ void loop() {
     timeoutblu = 0;
     timeoutverde = 0;
     timeoutrosso = 0;
+    showcroverde = false;
+    showcrorosso = false;
+    showcroblu = false;
     splitCommaSeparated(RxData);
     // Serial.println(nome_rosso);
     // Serial.println(cognome_rosso);
@@ -182,6 +185,9 @@ void loop() {
       timeoutblu = 0;
       timeoutverde = 0;
       timeoutrosso = 0;
+      showcroverde = false;
+      showcrorosso = false;
+      showcroblu = false;
       draw(6, 6, 6);  // display STOP
       if (Staterx != "6000") {
         ResponseStatus rs = e22ttl.sendFixedMessage(Key, Add, Chan, "6000");
@@ -202,6 +208,9 @@ void loop() {
       timeoutblu = 0;
       timeoutverde = 0;
       timeoutrosso = 0;
+      showcroverde = false;
+      showcrorosso = false;
+      showcroblu = false;
       flagcount = true;
       updatescreen = 1;
       if (Staterx != "3000") {
@@ -296,19 +305,16 @@ void loop() {
       if (codestringone.indexOf("5514") != -1) {
         end10laprosso = 1;
         tempototrosso = arraytempirosso[11];
-        displayend10lap(end10laprosso, end10lapverde, end10lapblu);
       }
       if (codestringone.indexOf("5524") != -1) {
         end10lapverde = 1;
         tempototverde = arraytempiverde[11];
-        displayend10lap(end10laprosso, end10lapverde, end10lapblu);
       }
       if (codestringone.indexOf("5534") != -1) {
         end10lapblu = 1;
         tempototblu = arraytempiblu[11];
-        displayend10lap(end10laprosso, end10lapverde, end10lapblu);
       }
-      ResponseStatus rs = e22ttl.sendFixedMessage(Key, Add, Chan, Rxs);
+      displayend10lap(end10laprosso, end10lapverde, end10lapblu);
     }
 
 
@@ -340,7 +346,7 @@ void loop() {
       if (Rxs.indexOf("4015") != -1) {                                                          // se doppiotaglio rosso
         sirenaflag = 1;
         doppiotagliorosso = 1;
-        tempototrosso= "200";
+        tempototrosso = "200";
         end10laprosso = 1;
       }
       if (Rxs.indexOf("4035") != -1) {  // se doppiotaglio blu

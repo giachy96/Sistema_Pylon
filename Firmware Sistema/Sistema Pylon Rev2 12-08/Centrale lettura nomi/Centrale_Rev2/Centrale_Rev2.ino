@@ -67,8 +67,7 @@ LoRa_E22 e22ttl(&Serial2);  // Arduino RX --> e22 TX - Arduino TX --> e22 RX
 
 void setup() {
   Serial.begin(9600);            // imposta la comunicazione seriale
-  Serial3.begin(9600);           // Initialize HwSerial per la Stampanate
-  printer.begin();               // Init printer (same regardless of serial type)
+  Serial3.begin(19200);           // Initialize HwSerial per la Stampanate
   pinMode(buzzer, OUTPUT);       // imposta come input il pin 10
   pinMode(pstop, INPUT_PULLUP);  // imposta come input il pin 11
   pinMode(pgo, INPUT_PULLUP);    // imposta come input il pin 12
@@ -85,6 +84,8 @@ void setup() {
   digitalWrite(buzzer, HIGH);
   delay(500);
   digitalWrite(buzzer, LOW);
+
+    
 }
 
 void loop() {
@@ -179,7 +180,6 @@ void loop() {
 
   if (digitalRead(r_print) == LOW && doublePress == 0) {  // ristampa tempi
     stampatotali("Q500", 2, 1, "Pippo", "Pluto", "Paperino");
-    tone(buzzer, 3000, 200);
     doublePress = 1;
     oldPress = millis();
   }

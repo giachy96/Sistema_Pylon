@@ -1,4 +1,4 @@
-#include "Adafruit_Thermal.h"
+//#include "Adafruit_Thermal.h"
 //#include "SoftwareSerial.h"
 
 //#define TX_PIN 5// Arduino transmit  YELLOW WIRE  labeled RX on Stampanate
@@ -13,101 +13,94 @@ extern String arraytagliverde[10];
 extern String arraytempiblu[11];
 extern String arraytagliblu[10];
 
-Adafruit_Thermal printer(&Serial3,5);      // Or Serial2, Serial3, etc.
+//Adafruit_Thermal Serial3(&Serial3,5);      // Or Serial2, Serial3, etc.
 
 
-void provstampa() {
-  printer.setSize('M');        // Set type size, accepts 'S', 'M', 'L'
-  printer.print(F("GARA "));
-
-  printer.feed(1);
-  printer.print(F("MANCHE N :"));
-
-  printer.print(F("ROUND N :"));
-
-
-}
 void stampatotali (String gara , int manche_rx , int round_rx, String nome_rosso , String nome_verde  , String nome_blu ) {
-  printer.setSize('M');        // Set type size, accepts 'S', 'M', 'L'
-  printer.print(F("GARA "));
-  printer.println(gara);
-  printer.feed(1);
-  printer.print(F("MANCHE N :"));
-  printer.println(manche_rx);
-  printer.print(F("ROUND N :"));
-  printer.println(round_rx);
 
-  printer.feed(1);
-  printer.setSize('S');
-  printer.println(F("Pilota ROSSO "));
-  printer.print(F("NOME:"));
-  printer.setSize('M');
-  printer.print(nome_rosso);
-  printer.feed(1);
-  printer.setSize('S');
+  Serial3.print(F("GARA "));
+  Serial3.println(gara);
+  Serial3.println(" ");
+  Serial3.print("MANCHE N :");
+  Serial3.println(manche_rx);
+  Serial3.print("ROUND N :");
+  Serial3.println(round_rx);
+
+  Serial3.println(" ");
+  Serial3.println("Pilota ROSSO ");
+  Serial3.print("NOME:");
+  Serial3.print(nome_rosso);
+  Serial3.println(" ");
   for (int y = 0 ; y < 10; y++) {
-    printer.print("LAP N: ");
-    printer.print(y + 1);
-    printer.print("  Tempo: ");
-    printer.print(arraytempirosso[y]);
-    printer.print("s     ");
-    printer.println("[]");
+    Serial3.print("LAP N: ");
+    Serial3.print(y + 1);
+    Serial3.print("  Tempo: ");
+    Serial3.print(arraytempirosso[y]);
+    Serial3.print("s     ");
+    Serial3.println("[]");
   }
-  printer.print(F("Tempo Totale: "));
-  printer.print(arraytempirosso[10]);
-  printer.print(F("s"));
-  printer.println(F(" "));
-  printer.print("Numero Tagli: ");
+  Serial3.print("Tempo Totale: ");
+  Serial3.print(arraytempirosso[10]);
+  Serial3.print("s");
+  Serial3.println(" ");
+  Serial3.print("Numero Tagli: ");
+  Serial3.println(" ");
+  Serial3.print("PUNTEGGIO: ");
 
 
 
 
-  printer.feed(2);
-  printer.setSize('S');
-  printer.println(F("Pilota VERDE "));
-  printer.print(F("NOME:"));
-  printer.setSize('M');
-  printer.print(nome_verde);
-  printer.feed(1);
-  printer.setSize('S');
+  Serial3.println(" ");
+  Serial3.println(" ");
+  Serial3.println("Pilota VERDE ");
+  Serial3.print("NOME:");
+  Serial3.print(nome_verde);
+  Serial3.println(" ");
   for (int y = 0 ; y < 10; y++) {
-    printer.print("LAP N: ");
-    printer.print(y + 1);
-    printer.print("  Tempo: ");
-    printer.print(arraytempiverde[y]);
-    printer.print("s     ");
-    printer.println("[]");
+    Serial3.print("LAP N: ");
+    Serial3.print(y + 1);
+    Serial3.print("  Tempo: ");
+    Serial3.print(arraytempiverde[y]);
+    Serial3.print("s     ");
+    Serial3.println("[]");
   }
-  printer.print(F("Tempo Totale: "));
-  printer.print(arraytempiverde[10]);
-  printer.print(F("s"));
-  printer.println(F(" "));
-  printer.print("Numero Tagli: ");
+  Serial3.print("Tempo Totale: ");
+  Serial3.print(arraytempiverde[10]);
+  Serial3.print(F("s"));
+  Serial3.println(" ");
+  Serial3.print("Numero Tagli: ");
+  Serial3.println(" ");
+  Serial3.print("PUNTEGGIO: ");
 
 
-  printer.feed(2);
-  printer.setSize('S');
-  printer.println(F("Pilota BLU "));
-  printer.print(F("NOME:"));
-  printer.setSize('M');
-  printer.print(nome_blu);
-  printer.feed(1);
-  printer.setSize('S');
+  Serial3.println(" ");
+  Serial3.println(" ");
+  Serial3.println("Pilota BLU ");
+  Serial3.print("NOME:");
+  Serial3.print(nome_blu);
+  Serial3.println(" ");
   for (int y = 0 ; y < 10; y++) {
-    printer.print("LAP N: ");
-    printer.print(y + 1);
-    printer.print("  Tempo: ");
-    printer.print(arraytempiblu[y]);
-    printer.print("s     ");
-    printer.println("[]");
+    Serial3.print("LAP N: ");
+    Serial3.print(y + 1);
+    Serial3.print("  Tempo: ");
+    Serial3.print(arraytempiblu[y]);
+    Serial3.print("s     ");
+    Serial3.println("[]");
   }
-  printer.print(F("Tempo Totale: "));
-  printer.print(arraytempiblu[10]);
-  printer.print(F("s"));
-  printer.println(F(" "));
-  printer.print("Numero Tagli: ");
+  Serial3.print("Tempo Totale: ");
+  Serial3.print(arraytempiblu[10]);
+  Serial3.print("s");
+  Serial3.println(" ");
+  Serial3.print("Numero Tagli: ");
+  Serial3.println(" ");
+  Serial3.print("PUNTEGGIO: ");
 
-  printer.feed(3);
+  Serial3.println(" ");
+  Serial3.println(" ");
+  Serial3.println(" ");
+  Serial3.println(" ");
+  Serial3.println(" ");
+  Serial3.println(" ");
 
 
 }

@@ -20,16 +20,15 @@ unsigned long currentMillis;
 unsigned long oldMillis;
 unsigned long pressbutton = 1200;
 
+
 String cnc;
-String tempiverde[11];
-String tempirosso[11];
-String tempiblu[11];
+String tempiverde[12];
+String tempirosso[12];
+String tempiblu[12];
 int end10lap_rosso = 0;
 int end10lap_verde = 0;
 int end10lap_blu = 0;
-String stringoneblu ;
-String stringoneverde ;
-String stringonerosso ;
+
 
 String values[5];
 
@@ -38,29 +37,36 @@ int ngiri_rosso = 0;
 int ngiri_verde = 0;
 int ntagliP1_rosso = 0;
 int ntaglitot_rosso = 0;
-int arrayP1_rosso[10];
+int arrayP1_rosso[11];
 int ntagliP2_rosso = 0;
-int arrayP2_rosso[10];
+int arrayP2_rosso[11];
 int ntagliP3_rosso = 0;
-int arrayP3_rosso[10];
+int arrayP3_rosso[11];
 int ntagliP1_blu = 0;
 int ntaglitot_blu = 0;
-int arrayP1_blu[10];
+int arrayP1_blu[11];
 int ntagliP2_blu = 0;
-int arrayP2_blu[10];
+int arrayP2_blu[11];
 int ntagliP3_blu = 0;
-int arrayP3_blu[10];
+int arrayP3_blu[11];
 int ntagliP1_verde = 0;
 int ntaglitot_verde = 0;
-int arrayP1_verde[10];
+int arrayP1_verde[11];
 int ntagliP2_verde = 0;
-int arrayP2_verde[10];
+int arrayP2_verde[11];
 int ntagliP3_verde = 0;
-int arrayP3_verde[10];
+int arrayP3_verde[11];
+
+String stringoneverde  ;
+String stringoneblu  ;
+String stringonerosso  ;
+
+
 int pStop = 38;
 int pGo = 39;
 int pShow = 40;
 int codicecentrale = 0;
+
 
 
 void setup() {
@@ -142,6 +148,9 @@ void loop() {
       ntaglitot_verde = 0;
       ntaglitot_rosso = 0;
       codicecentrale = 0;
+      stringoneverde = ""  ;
+      stringoneblu = "" ;
+      stringonerosso = "" ;
     }
     if (digitalRead(pShow) == LOW || codicecentrale == 2000) {
       Serial.println("<SHOW>");
@@ -179,6 +188,9 @@ void loop() {
       ntaglitot_verde = 0;
       ntaglitot_rosso = 0;
       codicecentrale = 0;
+      stringoneverde = ""  ;
+      stringoneblu = "" ;
+      stringonerosso = "" ;
     }
   }
 
@@ -186,6 +198,7 @@ void loop() {
   if (newData8 == true) {
     String Rxs8;
     Rxs8 = receivedChars8;
+    Serial.println( Rxs8);
     if (Rxs8.indexOf("4514") != -1 || Rxs8.indexOf("5514") != -1 || Rxs8.indexOf("2510") != -1 || Rxs8.indexOf("6514") != -1) {
       String pack8 = "<";
       pack8.concat(receivedChars8);
@@ -211,7 +224,9 @@ void loop() {
         tempirosso[11] = values[2];
         Serial3.print("<5514>");
         Serial5.print("<5514>");
+        stringonerosso = "<5514,";
         end10lap_rosso = 1;
+        Serial.println("10giri_rosso");
       }
       if (Rxs8.indexOf("6514") != -1) {  // timeout rosso
         ntaglitot_rosso = 10;
@@ -224,12 +239,13 @@ void loop() {
   if (newData1 == true) {
     String Rxs1;
     Rxs1 = receivedChars1;
+    Serial.println( Rxs1);
     if (Rxs1.indexOf("4534") != -1 || Rxs1.indexOf("5534") != -1 || Rxs1.indexOf("2530") != -1 || Rxs1.indexOf("6534") != -1) {
       String pack1 = "<";
       pack1.concat(receivedChars1);
       pack1.concat(">");
 
-      if (Rxs1.indexOf("2530") != -1) {  // show rosso
+      if (Rxs1.indexOf("2530") != -1) {  // show blu
         Serial6.print(pack1);
       }
 
@@ -241,13 +257,17 @@ void loop() {
         ntagliP1_blu = 0;
         ntagliP2_blu = 0;
         ntagliP3_blu = 0;
+        Serial.println("ngiri_blu");
+        Serial.println(ngiri_blu);
       }
       if (Rxs1.indexOf("5534") != -1) {  // fine 10 giri blu
         decodecomma(Rxs1, values);
         tempiblu[11] = values[2];
         Serial3.print("<5534>");
         Serial2.print("<5534>");
+        stringoneblu = "<5534,";
         end10lap_blu = 1;
+        Serial.println("10giri_blu");
       }
       if (Rxs1.indexOf("6534") != -1) {  // timeout blu
         ntaglitot_blu = 10;
@@ -260,6 +280,7 @@ void loop() {
   if (newData7 == true) {
     String Rxs7;
     Rxs7 = receivedChars7;
+    Serial.println( Rxs7);
     if (Rxs7.indexOf("4524") != -1 || Rxs7.indexOf("5524") != -1 || Rxs7.indexOf("2520") != -1 || Rxs7.indexOf("6524") != -1) {
       String pack7 = "<";
       pack7.concat(receivedChars7);
@@ -277,13 +298,17 @@ void loop() {
         ntagliP1_verde = 0;
         ntagliP2_verde = 0;
         ntagliP3_verde = 0;
+        Serial.println("ngiri_verde");
+        Serial.println(ngiri_verde);
       }
       if (Rxs7.indexOf("5524") != -1) {  //fine 10 giri verde
         decodecomma(Rxs7, values);
         tempiverde[11] = values[2];
         Serial3.print("<5524>");
         Serial4.print("<5524>");
+        stringoneverde = "<5524,";
         end10lap_verde = 1;
+        Serial.println("10giri_verde");
       }
       if (Rxs7.indexOf("6524") != -1) {  // timeout verde
         ntaglitot_verde = 10;
@@ -445,7 +470,7 @@ void loop() {
     stringoneverde = "<5524,";
   }
 
-  if (ntaglitot_blu > 1 && ntaglitot_blu < 10) {  // ha fatto due tagli il rosso
+  if (ntaglitot_blu > 1 && ntaglitot_blu < 10) {  // ha fatto due tagli il blu
     // Serial6.println("<4035>");
     Serial3.println("<4035>");
     Serial1.println("<4035>");
@@ -499,12 +524,14 @@ void loop() {
     }
     stringonerosso.concat(tempirosso[11]);
     stringonerosso.concat(">");
-    end10lap_rosso = 0;
     Serial6.println(stringonerosso);
+    Serial.println("Mando lo stringone rosso alla centrale");
+    Serial.println(stringonerosso);
+    end10lap_rosso = 0;
+
   }
 
   if (end10lap_verde == 1) {  // creo la stringa finale per il verde
-
 
 
     for (int i = 1; i <= 10; i++) {
@@ -523,13 +550,15 @@ void loop() {
     }
     stringoneverde.concat(tempiverde[11]);
     stringoneverde.concat(">");
-    end10lap_verde = 0;
     Serial6.println(stringoneverde);
+    Serial.println("Mando lo stringone verde alla centrale");
+    Serial.println(stringoneverde);
+    end10lap_verde = 0;
+
   }
 
 
   if (end10lap_blu == 1) {  // creo la stringa finale per il blu
-
 
 
     for (int i = 1; i <= 10; i++) {
@@ -548,9 +577,12 @@ void loop() {
     }
     stringoneblu.concat(tempiblu[11]);
     stringoneblu.concat(">");
-    end10lap_blu = 0;
     Serial6.println(stringoneblu);
+    Serial.println("Mando lo stringone blu alla centrale");
+    Serial.println(stringoneblu);
+    end10lap_blu = 0;
   }
+
 
   // fine codice delle stringhe finali
 }
