@@ -105,9 +105,9 @@ void loop() {
     doublePress = 0;
   }
 
-  if (tensionebatt(pinbatt) < 9.5) {  // allarme tensione batteria
-    tone(buzzer, 5000, 500);
-  }
+//  if (tensionebatt(pinbatt) < 9.5) {  // allarme tensione batteria
+//    tone(buzzer, 5000, 500);
+//  }
   if (currentMillis - previousMillis >= interval) { // intervallo lettura batteria
     // save the last time you read
     previousMillis = currentMillis;
