@@ -132,8 +132,8 @@ void loop() {
   }
 
   if ( RxData == "700") { // ho ricevuto il comando INDIETRO
-    tone(buzzer, 2000, 200);
-    draw(11, lcd);
+//    tone(buzzer, 2000, 200);
+//    draw(11, lcd);
     if (statusPC == true) {
       Serial.println("700,0,0,0,0,0,0,0,0,0");
     } else {
@@ -144,8 +144,8 @@ void loop() {
     RxData = "";
   }
   if ( RxData == "800") { // ho ricevuto il comando AVANTI
-    tone(buzzer, 4000, 200);
-    draw(1, lcd);
+//    tone(buzzer, 4000, 200);
+//    draw(1, lcd);
     if (statusPC == true) {
       Serial.println("800,0,0,0,0,0,0,0,0,0");
     } else {
@@ -159,6 +159,21 @@ void loop() {
 
   if ((digitalRead(pshow) == LOW && doublePress == 0 ) || RxData == "2000") { // caso show
     tone(buzzer, 4000, 200);
+    memset( arraytempirosso, 0, sizeof(arraytempirosso));
+    memset( arraytaglirosso, 0, sizeof(arraytaglirosso));
+    memset( arraytempiverde, 0, sizeof(arraytempiverde));
+    memset( arraytagliverde, 0, sizeof(arraytagliverde));
+    memset( arraytempiblu, 0, sizeof(arraytempiblu));
+    memset( arraytagliblu, 0, sizeof(arraytagliblu));
+    datiblu = 0;
+    datirosso = 0;
+    dativerde = 0;
+    stringonerosso  = "";
+    stringoneverde = "";
+    stringoneblu = "";
+    punteggiorosso = "";
+    punteggioverde = "";
+    punteggioblu = "";
     doublePress = 1;
     oldPress = millis();
     if (RxData != "2000") {
@@ -170,6 +185,21 @@ void loop() {
 
   if ((digitalRead(pgo) == LOW && doublePress == 0  ) || RxData == "3000") { // caos go
     tone(buzzer, 4500, 200);
+    memset( arraytempirosso, 0, sizeof(arraytempirosso));
+    memset( arraytaglirosso, 0, sizeof(arraytaglirosso));
+    memset( arraytempiverde, 0, sizeof(arraytempiverde));
+    memset( arraytagliverde, 0, sizeof(arraytagliverde));
+    memset( arraytempiblu, 0, sizeof(arraytempiblu));
+    memset( arraytagliblu, 0, sizeof(arraytagliblu));
+    datiblu = 0;
+    datirosso = 0;
+    dativerde = 0;
+    stringonerosso  = "";
+    stringoneverde = "";
+    stringoneblu = "";
+    punteggiorosso = "";
+    punteggioverde = "";
+    punteggioblu = "";
     //Serial.println("800,0,0,0,0,0,0,0,0,0");
     if (RxData != "3000") {
       ResponseStatus rs = e22ttl.sendFixedMessage(Key, Add, Chan, "3000");
@@ -211,9 +241,9 @@ void loop() {
       if (onecut > 0) {
         float calc10;
         calc10 =  arraytempirosso[11].toFloat();
-        calc10= calc10*1.10;
+        calc10 = calc10 * 1.10;
         punteggiorosso = String(calc10, 3);
-  
+
 
       } else {
         punteggiorosso =  arraytempirosso[11];
@@ -224,15 +254,45 @@ void loop() {
 
     if (RxData.indexOf("5524") != -1) {
       decodestringone(RxData, 2);
+      int onecut = 0;
+      for (int i = 0; i < 11; i++) {
+        if (arraytagliverde[i].indexOf("P") != -1) {
+          onecut++;
+        }
+      }
+      if (onecut > 0) {
+        float calc10;
+        calc10 =  arraytempiverde[11].toFloat();
+        calc10 = calc10 * 1.10;
+        punteggioverde = String(calc10, 3);
+
+
+      } else {
+        punteggioverde =  arraytempiverde[11];
+      }
       stringoneverde = RxData;
       dativerde = 1;
-      punteggioverde =  arraytempiverde[11];
     }
     if (RxData.indexOf("5534") != -1) {
       decodestringone(RxData, 3);
+      int onecut = 0;
+      for (int i = 0; i < 11; i++) {
+        if (arraytagliblu[i].indexOf("P") != -1) {
+          onecut++;
+        }
+      }
+      if (onecut > 0) {
+        float calc10;
+        calc10 =  arraytempiblu[11].toFloat();
+        calc10 = calc10 * 1.10;
+        punteggioblu = String(calc10, 3);
+
+
+      } else {
+        punteggioblu =  arraytempiblu[11];
+      }
       stringoneblu = RxData;
       datiblu = 1;
-      punteggioblu =  arraytempiblu[11];
     }
     RxData = "";
   }
@@ -334,6 +394,14 @@ void loop() {
     stringanomi.concat(nome_blu);
     stringanomi.concat(",");
     stringanomi.concat(cognome_blu);
+    if (code_rx == 850) {
+      tone(buzzer, 4000, 200);
+      draw(1, lcd);
+    }
+    if (code_rx == 750) {
+      tone(buzzer, 4000, 200);
+      draw(11, lcd);
+    }
 
     ResponseStatus rs = e22ttl.sendFixedMessage(Key, Add, Chan, stringanomi);
 

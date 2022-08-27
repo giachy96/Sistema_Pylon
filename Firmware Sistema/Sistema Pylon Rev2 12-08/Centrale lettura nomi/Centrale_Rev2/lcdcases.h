@@ -4,6 +4,9 @@ float out_max = 15.6;
 float out_min = 0.2;
 float in_max = 4.85;
 float in_min = 0.0;
+extern int round_rx;
+extern int manche_rx;
+extern String gara ;
 
 // per la mappatura della tensione batteria in un range
 float fmap(float x, float out_max, float out_min, float in_max, float in_min) {
@@ -95,10 +98,15 @@ void draw(int cases, LiquidCrystal_I2C lcd) {
 
     case 3:
       lcd.clear();
-      lcd.setCursor(3, 0);
+      lcd.setCursor(2, 0);
       lcd.print("START GARA ");
+      lcd.print(gara);
       lcd.setCursor(0, 1);
-      lcd.print("MANCHE   ROUND");
+      lcd.print("MANCHE ");
+      lcd.print(manche_rx);
+      lcd.setCursor(0, 2);
+      lcd.print("ROUND ");
+      lcd.print(round_rx);
       vout = tensionebatt(pinbatt);
       lcd.setCursor(3, 3);
       lcd.print("V.Batt.");

@@ -12,4 +12,4 @@ Arresta il colore e mette 200
 
 11) se il tizio fa 2 tagli al palo 1 non li vede, ci sta qualche problema sull' arry dei tagli 
 12) forse sarebbe da inibire 1 solo taglio fino alla fine del giro 
-
+13) forse ho sbagliato perche il timeout doveva partire dal teensy per essere più sicura la cosa

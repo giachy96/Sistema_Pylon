@@ -91,7 +91,7 @@ void drawsubRosso(int cases) {
       } else if (ntaglitotrosso == 1) {
         int trovato;
         for (int i = 0; i < 10; i++) {
-          if (arraytaglirosso[i].indexOf("P3") != -1 || arraytaglirosso[i].indexOf("P1") != -1 || arraytaglirosso[i].indexOf("P3") != -1 ) {
+          if (arraytaglirosso[i].indexOf("P2") != -1 || arraytaglirosso[i].indexOf("P1") != -1 || arraytaglirosso[i].indexOf("P3") != -1 ) {
             trovato = i;
           }
         }
@@ -191,7 +191,7 @@ void drawsubVerde(int cases) {
       } else if (ntaglitotverde == 1) {
         int trovato;
         for (int i = 0; i < 10; i++) {
-          if (arraytagliverde[i].indexOf("P3") != -1 || arraytagliverde[i].indexOf("P1") != -1 || arraytagliverde[i].indexOf("P3") != -1 ) {
+          if (arraytagliverde[i].indexOf("P2") != -1 || arraytagliverde[i].indexOf("P1") != -1 || arraytagliverde[i].indexOf("P3") != -1 ) {
             trovato = i;
           }
         }
@@ -292,7 +292,7 @@ void drawsubBlu(int cases) {
       } else if (ntaglitotblu == 1) {
         int trovato;
         for (int i = 0; i < 10; i++) {
-          if (arraytagliblu[i].indexOf("P3") != -1 || arraytagliblu[i].indexOf("P1") != -1 || arraytagliblu[i].indexOf("P3") != -1 ) {
+          if (arraytagliblu[i].indexOf("P2") != -1 || arraytagliblu[i].indexOf("P1") != -1 || arraytagliblu[i].indexOf("P3") != -1 ) {
             trovato = i;
           }
         }
