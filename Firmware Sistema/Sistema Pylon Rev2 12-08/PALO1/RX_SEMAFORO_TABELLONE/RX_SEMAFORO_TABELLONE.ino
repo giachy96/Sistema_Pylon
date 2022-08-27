@@ -76,12 +76,14 @@ void loop() {
     digitalWrite( luceverde, LOW);
     TxDatastr = "";
     if (State.indexOf("850") == -1) {
-    ResponseStatus rs = e22ttl.sendFixedMessage(0, 1, 10, RecCh);
+      ResponseStatus rs = e22ttl.sendFixedMessage(0, 1, 10, RecCh);
     }
     newData = false;
-    if (State.indexOf(DoubleCutR) == -1 || State.indexOf(DoubleCutB) == -1 || State.indexOf(DoubleCutV) == -1 ) { //se NON ricevo lo stato di doppio taglio
-      if (State.indexOf(StopTimeR) == -1 || State.indexOf(StopTimeV) == -1 || State.indexOf(StopTimeB) == -1 ) { //se NON ricevo lo stato di StopTIME
-        FlagState = 1;
+    if (State.indexOf(DoubleCutR) == -1 && State.indexOf(DoubleCutB) == -1 &&  State.indexOf(DoubleCutV) == -1 ) { //se NON ricevo lo stato di doppio taglio
+      if (State.indexOf(StopTimeR) == -1 && State.indexOf(StopTimeV) == -1 && State.indexOf(StopTimeB) == -1 ) { //se NON ricevo lo stato di StopTIME
+        if (State.indexOf(end10lapB) == -1 && State.indexOf(end10lapR) == -1 && State.indexOf(end10lapV) == -1 ) { //se NON ricevo lo stato di end10lap
+          FlagState = 1;
+        }
       }
     }
     Serial.println("Ricevo dalla seriale e mando immediataente");

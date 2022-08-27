@@ -27,6 +27,7 @@ int FlagState = 0;
 String Race = "3000";
 String StartRace = "3001";
 String Show = "2000";
+String Stop = "6000";
 String Startup = "1000";
 String end10lapB = "5534";
 String end10lapV = "5524";
@@ -50,9 +51,9 @@ boolean newData2 = false;
 boolean newData3 = false;
 
 void setup() {
-  Serial1.begin(9600);  // Serial Rosso
+  Serial1.begin(9600);  // Serial Verde
   delay(300);
-  Serial2.begin(9600);  // Serial Verde
+  Serial2.begin(9600);  // Serial Rosso
   delay(300);
   Serial3.begin(9600);  // Serial Blu
   delay(300);
@@ -102,7 +103,7 @@ void loop() {
 
 
   Currentmilliss = millis();                                                                // millis assignments for send delay control
-  if ((Currentmilliss - Timesend) >= Delaysend && (State == Show || State == StartRace || State == DoubleCutR || State == DoubleCutV || State == DoubleCutB || State ==  StopTimeR || State == StopTimeV || State == StopTimeB /)) {  //If the last receive is older than Delaysend, and state is race or show
+  if ((Currentmilliss - Timesend) >= Delaysend && (State == Show || State == StartRace || State == DoubleCutR || State == DoubleCutV || State == DoubleCutB || State ==  StopTimeR || State == StopTimeV || State == StopTimeB  )) { //If the last receive is older than Delaysend, and state is race or show
     if (Dateserial1 != "0" || Dateserial2 != "0" || Dateserial3 != "0") {                   //If some button was pressed
       Dateserial = State;
       Dateserial.concat(",");
@@ -139,35 +140,38 @@ void loop() {
     //   Serial.println(RecCh1);
     //   newData1 = false;
     // }
-    if (str.indexOf(end10lapB) == -1 || str.indexOf(end10lapV) == -1) {
-      if (str.indexOf(DoubleCutB) == -1 || str.indexOf(DoubleCutV) == -1) {
-        Serial1.print(str);  //Send to receiver 1 State
-        //Serial.println(State);
-      }
+    if (State.indexOf(end10lapB) == -1 && State.indexOf(end10lapR) == -1  && State.indexOf(DoubleCutB) == -1  && State.indexOf(DoubleCutR) == -1   && State.indexOf(StopTimeR) == -1  && State.indexOf(StopTimeB) == -1  ) {
+      Serial1.print(str);  //Send to receiver 1 State
+      Serial.println("Mando alla Rx Verde");
+      Serial.println(State);
     }
+
+
     // RecStr2();
     // if (newData2 == true) {  //(Serial2.available()>0){
     //   Dateserial2p = RecCh2;  //Assign incoming data from Serial1 to Dateserial1
     //   Serial.println(RecCh2);
     //   newData2 = false;
     // }
-    if (str.indexOf(end10lapB) == -1 || str.indexOf(end10lapR) == -1) {
-      if (str.indexOf(DoubleCutB) == -1 || str.indexOf(DoubleCutR) == -1) {
-        Serial2.print(str);
-      }
+        if (State.indexOf(end10lapB) == -1 && State.indexOf(end10lapV) == -1  && State.indexOf(DoubleCutB) == -1  && State.indexOf(DoubleCutV) == -1   && State.indexOf(StopTimeV) == -1  && State.indexOf(StopTimeB) == -1  ) {
+      Serial2.print(str);
+      Serial.println("Mando alla Rx Rossa");
+      Serial.println(State);
     }
+
+
     // RecStr3();
     // if (newData3 == true) {   //(Serial3.available()>0){
     //   Dateserial3p = RecCh3;  //Assign incoming data from Serial1 to Dateserial1
     //   Serial.println(RecCh3);
     //   newData3 == false;
     // }
-    if (str.indexOf(end10lapR) == -1 || str.indexOf(end10lapV) == -1) {
-      if (str.indexOf(DoubleCutR) == -1 || str.indexOf(DoubleCutV) == -1) {
-        Serial3.print(str);
-      }
+        if (State.indexOf(end10lapV) == -1 && State.indexOf(end10lapR) == -1  && State.indexOf(DoubleCutV) == -1  && State.indexOf(DoubleCutR) == -1   && State.indexOf(StopTimeR) == -1  && State.indexOf(StopTimeV) == -1  ) {
+      Serial3.print(str);
+      Serial.println("Mando alla Rx BLU");
+      Serial.println(State);
+      FlagState = 0;  //Reset condition for send State to the rx
     }
-    FlagState = 0;  //Reset condition for send State to the rx
   }
 }
 
