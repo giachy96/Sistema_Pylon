@@ -32,18 +32,21 @@ long oldcheckPC = 0;
 long interval = 3000;  // refresh schermo
 long intervalPress = 1000;  // refresh schermo
 int doublePress = 0;
-String arraytempirosso[11];
-String arraytaglirosso[10];
-String arraytempiverde[11];
-String arraytagliverde[10];
-String arraytempiblu[11];
-String arraytagliblu[10];
+String arraytempirosso[12];
+String arraytaglirosso[11];
+String arraytempiverde[12];
+String arraytagliverde[11];
+String arraytempiblu[12];
+String arraytagliblu[11];
 int datiblu = 0;
 int datirosso = 0;
 int dativerde = 0;
 String stringonerosso ;
 String stringoneverde ;
 String stringoneblu ;
+String punteggiorosso;
+String punteggioverde;
+String punteggioblu;
 
 extern int code_rx;
 extern String gara ;
@@ -54,7 +57,7 @@ extern String cognome_rosso;
 extern String nome_verde;
 extern String cognome_verde;
 extern String nome_blu;
-extern String cognnome_blu;
+extern String cognome_blu;
 extern bool newDataPC;
 
 String RxData = "";
@@ -85,7 +88,7 @@ void setup() {
   delay(500);
   digitalWrite(buzzer, LOW);
 
-    
+
 }
 
 void loop() {
@@ -97,6 +100,15 @@ void loop() {
       statusPC = true;
     } else {
       digitalWrite(ledstatusPC, LOW);
+      gara = "" ;
+      manche_rx = 0 ;
+      round_rx = 0 ;
+      nome_rosso = "";
+      cognome_rosso = "";
+      nome_verde = "";
+      cognome_verde = "";
+      nome_blu = "";
+      cognome_blu = "";
       statusPC = false;
     }
     oldcheckPC = millis();
@@ -106,9 +118,9 @@ void loop() {
     doublePress = 0;
   }
 
-//  if (tensionebatt(pinbatt) < 9.5) {  // allarme tensione batteria
-//    tone(buzzer, 5000, 500);
-//  }
+  //  if (tensionebatt(pinbatt) < 9.5) {  // allarme tensione batteria
+  //    tone(buzzer, 5000, 500);
+  //  }
   if (currentMillis - previousMillis >= interval) { // intervallo lettura batteria
     // save the last time you read
     previousMillis = currentMillis;
@@ -123,7 +135,7 @@ void loop() {
     tone(buzzer, 2000, 200);
     draw(11, lcd);
     if (statusPC == true) {
-     Serial.println("700,0,0,0,0,0,0,0,0,0");
+      Serial.println("700,0,0,0,0,0,0,0,0,0");
     } else {
       ResponseStatus rs = e22ttl.sendFixedMessage(Key, Add, Chan, "750, ,0,0, ,NO PC, ,NO PC, ,NO PC");
     }
@@ -135,9 +147,9 @@ void loop() {
     tone(buzzer, 4000, 200);
     draw(1, lcd);
     if (statusPC == true) {
-         Serial.println("800,0,0,0,0,0,0,0,0,0");
+      Serial.println("800,0,0,0,0,0,0,0,0,0");
     } else {
-    ResponseStatus rs = e22ttl.sendFixedMessage(Key, Add, Chan, "850, ,0,0, ,NO PC, ,NO PC, ,NO PC");
+      ResponseStatus rs = e22ttl.sendFixedMessage(Key, Add, Chan, "850, ,0,0, ,NO PC, ,NO PC, ,NO PC");
     }
 
     doublePress = 1;
@@ -179,38 +191,103 @@ void loop() {
   }
 
   if (digitalRead(r_print) == LOW && doublePress == 0) {  // ristampa tempi
-    stampatotali("Q500", 2, 1, "Pippo", "Pluto", "Paperino");
+    stampatotali( gara, manche_rx, round_rx, nome_rosso, cognome_rosso, nome_verde, cognome_verde, nome_blu, cognome_blu);
     doublePress = 1;
     oldPress = millis();
   }
 
 
   if (RxData.indexOf("5514") != -1 || RxData.indexOf("5534") != -1 || RxData.indexOf("5524") != -1) {  // se ricevo fine 10 giri
-    draw(4, lcd);
-    tone(buzzer, 3000, 200);
+    //   draw(4, lcd);
+    // tone(buzzer, 3000, 200);
     if (RxData.indexOf("5514") != -1) {
       decodestringone(RxData, 1);
+      int onecut = 0;
+      for (int i = 0; i < 11; i++) {
+        if (arraytaglirosso[i].indexOf("P") != -1) {
+          onecut++;
+        }
+      }
+      if (onecut > 0) {
+        float calc10;
+        calc10 =  arraytempirosso[11].toFloat();
+        calc10= calc10*1.10;
+        punteggiorosso = String(calc10, 3);
+  
+
+      } else {
+        punteggiorosso =  arraytempirosso[11];
+      }
       stringonerosso = RxData;
       datirosso = 1;
     }
+
     if (RxData.indexOf("5524") != -1) {
       decodestringone(RxData, 2);
       stringoneverde = RxData;
       dativerde = 1;
+      punteggioverde =  arraytempiverde[11];
     }
     if (RxData.indexOf("5534") != -1) {
       decodestringone(RxData, 3);
       stringoneblu = RxData;
-      dativerde = 1;
+      datiblu = 1;
+      punteggioblu =  arraytempiblu[11];
     }
     RxData = "";
   }
 
+  if (RxData.indexOf("4015") != -1 || RxData.indexOf("4025") != -1 || RxData.indexOf("4035") != -1) {  // se ricevo DOPPIO TAGLIO
+    draw(4, lcd);
+    tone(buzzer, 3000, 200);
+    if (RxData.indexOf("4015") != -1) {
+      decodestringone(RxData, 1);
+      stringonerosso = RxData;
+      datirosso = 1;
+      punteggiorosso = "200";
+    }
+    if (RxData.indexOf("4025") != -1) {
+      decodestringone(RxData, 2);
+      stringoneverde = RxData;
+      dativerde = 1;
+      punteggioverde = "200";
+    }
+    if (RxData.indexOf("4035") != -1) {
+      decodestringone(RxData, 3);
+      stringoneblu = RxData;
+      datiblu = 1;
+      punteggioblu = "200";
+    }
+    RxData = "";
+  }
+  if (RxData.indexOf("6514") != -1 || RxData.indexOf("6524") != -1 || RxData.indexOf("6534") != -1) {  // se ricevo TIMEOUT
+    draw(4, lcd);
+    tone(buzzer, 3000, 200);
+    if (RxData.indexOf("6514") != -1) {
+      decodestringone(RxData, 1);
+      stringonerosso = RxData;
+      datirosso = 1;
+      punteggiorosso = "200";
+    }
+    if (RxData.indexOf("6524") != -1) {
+      decodestringone(RxData, 2);
+      stringoneverde = RxData;
+      dativerde = 1;
+      punteggioverde = "200";
+    }
+    if (RxData.indexOf("6534") != -1) {
+      decodestringone(RxData, 3);
+      stringoneblu = RxData;
+      datiblu = 1;
+      punteggioblu = "200";
+    }
+    RxData = "";
+  }
   if ( dativerde == 1 &&  datirosso == 1 &&  datiblu == 1 ) { // una volta che ho ricevuto tutto stampo e mando al PC
-    stampatotali("Q500", 2, 1, "Pippo", "Pluto", "Paperino");
-    datirosso = 1;
-    dativerde = 1;
-    datiblu = 1;
+    stampatotali( gara, manche_rx, round_rx, nome_rosso, cognome_rosso, nome_verde, cognome_verde, nome_blu, cognome_blu);
+    datirosso = 0;
+    dativerde = 0;
+    datiblu = 0;
     Serial.println( stringonerosso);
     Serial.println( stringoneverde);
     Serial.println( stringoneblu);
@@ -237,7 +314,7 @@ void loop() {
 
   if (newDataPC == true) {
 
-    String stringanomi ="";
+    String stringanomi = "";
     stringanomi.concat(String(code_rx));
     stringanomi.concat(",");
     stringanomi.concat(gara);
@@ -255,11 +332,11 @@ void loop() {
     stringanomi.concat(cognome_verde);
     stringanomi.concat(",");
     stringanomi.concat(nome_blu);
-     stringanomi.concat(",");
+    stringanomi.concat(",");
     stringanomi.concat(cognome_blu);
 
     ResponseStatus rs = e22ttl.sendFixedMessage(Key, Add, Chan, stringanomi);
-    
+
     newDataPC = false;
   }
 
@@ -268,6 +345,7 @@ void loop() {
     // read the  message
     ResponseContainer rc = e22ttl.receiveMessage();
     RxData = rc.data;
+    Serial.println(RxData);
 
   }
 }

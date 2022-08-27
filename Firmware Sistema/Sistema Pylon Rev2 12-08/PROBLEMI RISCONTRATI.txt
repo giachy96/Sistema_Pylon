@@ -9,8 +9,7 @@ Una alla botte ho implementato il doppio taglio con arresto immediato del colore
 Anche il timestop dove passati 30 secondi senza che il crono ha avuto una pressione
 Arresta il colore e mette 200
 
-9) con i doppio taglio deve arrestrarsi tutto il relativo colore sennò si inchioda mezzo mondo
 
 11) se il tizio fa 2 tagli al palo 1 non li vede, ci sta qualche problema sull' arry dei tagli 
 12) forse sarebbe da inibire 1 solo taglio fino alla fine del giro 
-13) se la fine 10 giri dei crono arrivano insieme si inchiodano.. da capire se è solo il display o tutto
+

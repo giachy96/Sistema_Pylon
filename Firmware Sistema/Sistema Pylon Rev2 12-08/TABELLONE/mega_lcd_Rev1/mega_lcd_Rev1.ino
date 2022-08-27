@@ -30,6 +30,9 @@ unsigned long intervalstandby = 5000;
 unsigned long milliscountdown;
 unsigned long sirenamillis;
 unsigned long startsirena;
+unsigned long  lastsend;
+unsigned long intervalsend = 300;
+
 int sec;
 int sirena = 2;
 int pulsanteAvanti = 11;
@@ -71,6 +74,15 @@ extern String nome_blu;
 extern String cognome_blu;
 String Staterx;
 String RxData;
+String stringonerosso;
+String stringoneblu;
+String stringoneverde;
+int sendcentraleverde = 0;
+int sendcentralerosso = 0;
+int sendcentraleblu = 0;
+int count_send = 0;
+
+
 byte Key = 0;
 byte Add = 1;
 byte Chan = 5;
@@ -101,6 +113,42 @@ void setup() {
 void loop() {
   currentMillis = millis();
   recvWithStartEndMarkers(Serial1, receivedChars1);
+
+  // se ho tutti i 3 stringoni li mando alla centrale con 200 ms di intervallo
+  if ( sendcentraleverde == 1 &&  sendcentralerosso == 1 &&  sendcentraleblu == 1) {
+
+    if ((currentMillis - lastsend) >= intervalsend) {
+
+      switch (count_send) {
+        case 0:
+          e22ttl.sendFixedMessage(Key, Add, Chan, stringonerosso);
+          count_send++;
+          Serial.println("mando lo stringone rosso");
+          lastsend = millis();
+          break;
+        case 1:
+          e22ttl.sendFixedMessage(Key, Add, Chan, stringoneverde);
+          count_send++;
+          Serial.println("mando lo stringone verde");
+          lastsend = millis();
+          break;
+        case 2:
+          e22ttl.sendFixedMessage(Key, Add, Chan, stringoneblu);
+          count_send++;
+          Serial.println("mando lo stringone blu");
+          lastsend = millis();
+          break;
+        case 3:
+        count_send = 0;
+        sendcentraleverde = 0;
+        sendcentralerosso = 0;
+        sendcentraleblu = 0;
+          break;
+        default:
+          break;
+      }
+    }
+  }
 
 
   //INIZO PARTE RICEZIONE DAL LORA
@@ -153,6 +201,13 @@ void loop() {
     showcroverde = false;
     showcrorosso = false;
     showcroblu = false;
+    stringonerosso = "";
+    stringoneblu = "";
+    stringoneverde = "";
+    sendcentraleverde = 0;
+    sendcentralerosso = 0;
+    sendcentraleblu = 0;
+    count_send = 0;
     splitCommaSeparated(RxData);
     // Serial.println(nome_rosso);
     // Serial.println(cognome_rosso);
@@ -188,6 +243,13 @@ void loop() {
       showcroverde = false;
       showcrorosso = false;
       showcroblu = false;
+      stringonerosso = "";
+      stringoneblu = "";
+      stringoneverde = "";
+      sendcentraleverde = 0;
+      sendcentralerosso = 0;
+      sendcentraleblu = 0;
+      count_send = 0;
       draw(6, 6, 6);  // display STOP
       if (Staterx != "6000") {
         ResponseStatus rs = e22ttl.sendFixedMessage(Key, Add, Chan, "6000");
@@ -212,6 +274,13 @@ void loop() {
       showcrorosso = false;
       showcroblu = false;
       flagcount = true;
+      stringonerosso = "";
+      stringoneblu = "";
+      stringoneverde = "";
+      sendcentraleverde = 0;
+      sendcentralerosso = 0;
+      sendcentraleblu = 0;
+      count_send = 0;
       updatescreen = 1;
       if (Staterx != "3000") {
         ResponseStatus rs = e22ttl.sendFixedMessage(Key, Add, Chan, "3000");
@@ -254,6 +323,13 @@ void loop() {
       showcroverde = false;
       showcrorosso = false;
       showcroblu = false;
+      stringonerosso = "";
+      stringoneblu = "";
+      stringoneverde = "";
+      sendcentraleverde = 0;
+      sendcentralerosso = 0;
+      sendcentraleblu = 0;
+      count_send = 0;
       updatescreen = 1;
       Staterx = "";
       flagcount = false;
@@ -305,14 +381,20 @@ void loop() {
       if (codestringone.indexOf("5514") != -1) {
         end10laprosso = 1;
         tempototrosso = arraytempirosso[11];
+        sendcentralerosso = 1;
+        stringonerosso = Rxs;
       }
       if (codestringone.indexOf("5524") != -1) {
         end10lapverde = 1;
         tempototverde = arraytempiverde[11];
+        sendcentraleverde = 1;
+        stringoneverde = Rxs;
       }
       if (codestringone.indexOf("5534") != -1) {
         end10lapblu = 1;
         tempototblu = arraytempiblu[11];
+        sendcentraleblu = 1;
+        stringoneblu = Rxs;
       }
       displayend10lap(end10laprosso, end10lapverde, end10lapblu);
     }
@@ -322,44 +404,50 @@ void loop() {
       if (Rxs.indexOf("6514") != -1) {
         sirenaflag = 1;
         end10laprosso = 1;
-        tempototrosso = "200";
         timeoutrosso = 1;
+        sendcentralerosso = 1;
+        stringonerosso = Rxs;
       }
       if (Rxs.indexOf("6524") != -1) {
         sirenaflag = 1;
         end10lapverde = 1;
-        tempototverde = "200";
         timeoutverde = 1;
+        sendcentraleverde = 1;
+        stringoneverde = Rxs;
       }
       if (Rxs.indexOf("6534") != -1) {
         sirenaflag = 1;
         end10lapblu = 1;
-        tempototblu = "200";
         timeoutblu = 1;
+        sendcentraleblu = 1;
+        stringoneblu = Rxs;
       }
-      ResponseStatus rs = e22ttl.sendFixedMessage(Key, Add, Chan, Rxs);
     }
 
 
 
     if (Rxs.indexOf("4015") != -1 || Rxs.indexOf("4025") != -1 || Rxs.indexOf("4035") != -1) {  // se ricevo dal teensy il DOPPIO TAGLIO
+      codestringone = decodestringone(Rxs);
       if (Rxs.indexOf("4015") != -1) {                                                          // se doppiotaglio rosso
         sirenaflag = 1;
         doppiotagliorosso = 1;
-        tempototrosso = "200";
         end10laprosso = 1;
+        sendcentralerosso = 1;
+        stringonerosso = Rxs;
       }
       if (Rxs.indexOf("4035") != -1) {  // se doppiotaglio blu
         sirenaflag = 1;
         doppiotaglioblu = 1;
-        tempototblu = "200";
         end10lapblu = 1;
+        sendcentraleblu = 1;
+        stringoneblu = Rxs;
       }
       if (Rxs.indexOf("4025") != -1) {  // se doppiotaglio verde
-        tempototverde = "200";
         sirenaflag = 1;
         doppiotaglioverde = 1;
         end10lapverde = 1;
+        sendcentraleverde = 1;
+        stringoneverde = Rxs;
       }
     }
 

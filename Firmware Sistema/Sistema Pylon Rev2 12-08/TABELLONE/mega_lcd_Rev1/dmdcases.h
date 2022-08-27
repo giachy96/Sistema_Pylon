@@ -357,14 +357,14 @@ void draw(int casoRosso, int casoVerde, int casoBlu) {
   cVerde = casoVerde;
   cBlu = casoBlu;
   dmd.clearScreen();
-
-  if (doppiotaglioverde == 1 && casoVerde != 4 ) {
+  
+  if (doppiotaglioverde == 1 && casoVerde != 4  ) { 
     cVerde = 5;
   }
-  if (doppiotagliorosso == 1 && casoRosso != 4) {
+  if (doppiotagliorosso == 1 && casoRosso != 4 ) { 
     cRosso = 5;
   }
-  if (doppiotaglioblu == 1 && casoBlu != 4) {
+  if (doppiotaglioblu == 1 && casoBlu != 4 ) { 
     cBlu = 5;
   }
   if (timeoutverde == 1  ) {

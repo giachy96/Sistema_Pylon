@@ -126,21 +126,24 @@ void loop() {
       ntagliP1_rosso = 0;
       memset(arrayP1_rosso, 0, sizeof(arrayP1_rosso));
       ntagliP2_rosso = 0;
-      memset(arrayP2_rosso, 0, sizeof(arrayP1_rosso));
+      memset(arrayP2_rosso, 0, sizeof(arrayP2_rosso));
       ntagliP3_rosso = 0;
-      memset(arrayP3_rosso, 0, sizeof(arrayP1_rosso));
+      memset(arrayP3_rosso, 0, sizeof(arrayP3_rosso));
       ntagliP1_blu = 0;
-      memset(arrayP1_blu, 0, sizeof(arrayP1_rosso));
+      memset(arrayP1_blu, 0, sizeof(arrayP1_blu));
       ntagliP2_blu = 0;
-      memset(arrayP2_blu, 0, sizeof(arrayP1_rosso));
+      memset(arrayP2_blu, 0, sizeof(arrayP2_blu));
       ntagliP3_blu = 0;
-      memset(arrayP3_blu, 0, sizeof(arrayP1_rosso));
+      memset(arrayP3_blu, 0, sizeof(arrayP3_blu));
       ntagliP1_verde = 0;
-      memset(arrayP1_verde, 0, sizeof(arrayP1_rosso));
+      memset(arrayP1_verde, 0, sizeof(arrayP1_verde));
       ntagliP2_verde = 0;
-      memset(arrayP2_verde, 0, sizeof(arrayP1_rosso));
+      memset(arrayP2_verde, 0, sizeof(arrayP2_verde));
       ntagliP3_verde = 0;
-      memset(arrayP3_verde, 0, sizeof(arrayP1_rosso));
+      memset(arrayP3_verde, 0, sizeof(arrayP3_verde));
+       memset(tempiverde, 0, sizeof(tempiverde));
+       memset(tempiblu, 0, sizeof(tempiblu));
+       memset(tempirosso, 0, sizeof(tempirosso));
       ngiri_blu = 0;
       ngiri_rosso = 0;
       ngiri_verde = 0;
@@ -163,24 +166,27 @@ void loop() {
       Serial4.print("<2000>");
       Serial2.print("<2000>");
       oldMillis = millis();
-      ntagliP1_rosso = 0;
+        ntagliP1_rosso = 0;
       memset(arrayP1_rosso, 0, sizeof(arrayP1_rosso));
       ntagliP2_rosso = 0;
-      memset(arrayP2_rosso, 0, sizeof(arrayP1_rosso));
+      memset(arrayP2_rosso, 0, sizeof(arrayP2_rosso));
       ntagliP3_rosso = 0;
-      memset(arrayP3_rosso, 0, sizeof(arrayP1_rosso));
+      memset(arrayP3_rosso, 0, sizeof(arrayP3_rosso));
       ntagliP1_blu = 0;
-      memset(arrayP1_blu, 0, sizeof(arrayP1_rosso));
+      memset(arrayP1_blu, 0, sizeof(arrayP1_blu));
       ntagliP2_blu = 0;
-      memset(arrayP2_blu, 0, sizeof(arrayP1_rosso));
+      memset(arrayP2_blu, 0, sizeof(arrayP2_blu));
       ntagliP3_blu = 0;
-      memset(arrayP3_blu, 0, sizeof(arrayP1_rosso));
+      memset(arrayP3_blu, 0, sizeof(arrayP3_blu));
       ntagliP1_verde = 0;
-      memset(arrayP1_verde, 0, sizeof(arrayP1_rosso));
+      memset(arrayP1_verde, 0, sizeof(arrayP1_verde));
       ntagliP2_verde = 0;
-      memset(arrayP2_verde, 0, sizeof(arrayP1_rosso));
+      memset(arrayP2_verde, 0, sizeof(arrayP2_verde));
       ntagliP3_verde = 0;
-      memset(arrayP3_verde, 0, sizeof(arrayP1_rosso));
+      memset(arrayP3_verde, 0, sizeof(arrayP3_verde));
+       memset(tempiverde, 0, sizeof(tempiverde));
+       memset(tempiblu, 0, sizeof(tempiblu));
+       memset(tempirosso, 0, sizeof(tempirosso));
       ngiri_blu = 0;
       ngiri_rosso = 0;
       ngiri_verde = 0;
@@ -458,7 +464,7 @@ void loop() {
     Serial8.println("<4015>");
     ntaglitot_rosso = 0;
     end10lap_rosso = 1;
-    stringonerosso = "<5514,";
+    stringonerosso = "<4015,";
   }
   if (ntaglitot_verde > 1 && ntaglitot_verde < 10) {  // ha fatto due tagli il verde
     // Serial6.println("<4025>");
@@ -467,7 +473,7 @@ void loop() {
     Serial4.println("<4025>");
     ntaglitot_verde = 0;
     end10lap_verde = 1;
-    stringoneverde = "<5524,";
+    stringoneverde = "<4025,";
   }
 
   if (ntaglitot_blu > 1 && ntaglitot_blu < 10) {  // ha fatto due tagli il blu
@@ -477,7 +483,7 @@ void loop() {
     Serial2.println("<4035>");
     ntaglitot_blu = 0;
     end10lap_blu = 1;
-    stringoneblu = "<5534,";
+    stringoneblu = "<4035,";
   }
   if ( ntaglitot_blu == 10) {  // ATTENZIONE PER PULIZA SI è riustao il ntagli blu per il TIMEOUT!
     // Serial6.println("<6534>");  // timeout blu

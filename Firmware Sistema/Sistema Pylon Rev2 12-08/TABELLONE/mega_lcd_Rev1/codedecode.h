@@ -40,7 +40,7 @@ String decodestringone (String strx) {
   String code ;
   decodecomma (strx , arraytmp);
   //caso rosso
-  if (arraytmp[0] == "5514") {
+  if (arraytmp[0] == "5514" || arraytmp[0] == "4015") {
     ntaglitotrosso = 0;
     for (int i = 1 ; i < 12; i++) {
       String tmp = arraytmp[i];
@@ -69,7 +69,7 @@ String decodestringone (String strx) {
   }
 
   //caso verde
-  if (arraytmp[0] == "5524") {
+  if (arraytmp[0] == "5524" || arraytmp[0] == "4025") {
     ntaglitotverde = 0;
     for (int i = 1 ; i < 12; i++) {
       String tmp = arraytmp[i];
@@ -97,7 +97,7 @@ String decodestringone (String strx) {
     code = "5524";
   }
   //caso blu
-  if (arraytmp[0] == "5534") {
+  if (arraytmp[0] == "5534" || arraytmp[0] == "4035") {
     ntaglitotblu = 0;
     for (int i = 1 ; i < 12; i++) {
       String tmp = arraytmp[i];
