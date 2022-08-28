@@ -53,7 +53,7 @@ String End = "5000";
 String Stop = "6000";
 String Startup = "1000";
 String State = Startup;          //Startup state
-unsigned long interval = 10000;  // constants won't change:
+unsigned long interval = 30000;  // constants won't change:
 unsigned long Delaypress = 2000;
 unsigned long DelayStop = 30000;
 String PressShow = "2510";
@@ -100,14 +100,13 @@ void loop() {
 
 
 
-    if ((((currentMillis - previousMillis) >= interval) || changeState == 1) && State == Startup) {  // Casistica per display, se non siamo in Show, Race o End, metti la schermata 0 e aggiorna ogni 5 sec, o aggiorna quando il flag changestate  è attivo
+    if (((currentMillis - previousMillis) >= interval)  && (State == Startup || State == end10lap || State == Stop || State == DoubleCut ||  State == StopTime )) {
       previousMillis = currentMillis;
       Serial.println("Case0");  //debug
       draw(0, u8x8);
       changeState = 0;
     }
     if (changeState == 1 && State == Show) {  // Casistica per display, se siamo in Show, metti la schermata 1
-      previousMillis = currentMillis;
       Serial.println("Case1");  //debug
       draw(1, u8x8);
       tempo_base = 0;
@@ -121,7 +120,6 @@ void loop() {
       changeState = 0;
     }
     if (changeState == 1 && State == StartRace ) {  // Casistica per display, se siamo in StartRace
-      previousMillis = currentMillis;
       Serial.println("Case2.1");  //debug
       tempo_base = millis();
       lapcounter = lapcounter + 1;
@@ -173,14 +171,13 @@ void loop() {
       changeState = 0;
       tone(buzzer, 2000, 200);
       lapcounter = -1;
-      State = "";
+      State = StopTime;
 
       Serial.println("fuori tempo max");  //debug
 
     }
 // FINE PARTE DA NON SPOSTARE
     if (changeState == 1 && State == Race) {  // Casistica per display, se siamo in Race, metti la schermata 2
-      previousMillis = currentMillis;
       Serial.println("Case2");  //debug
       draw(2, u8x8);
       tempo_base = 0;
@@ -206,7 +203,6 @@ void loop() {
       ultimo_tempo = 0;
       ultimo_inviato = 0;
       lapcounter = -1;
-      State = "";
       Serial.println("Case5");  //debug
       changeState = 0;
     }
@@ -215,7 +211,6 @@ void loop() {
       draw(7, u8x8);
       tone(buzzer, 2000, 200);
       lapcounter = -1;
-      State = "";
       Serial.println("Case7");  //debug
       changeState = 0;
     }
@@ -236,8 +231,6 @@ void loop() {
       Serial.println("ricevopressione");
       ResponseStatus rs = e22ttl.sendFixedMessage(Key, Add, Chan, PressShow);  // invio il codice di show
       tone(buzzer, 2000, 200);
-      Serial.println("invio");                         //debug
-      Serial.println(currentMillis - previousMillis);  //debug
     }
     CurrentPress = millis();
     if (digitalRead(pulsante) == LOW && (CurrentPress - Lastpress) >= Delaypress && State == StartRace && lapcounter < 10) {  //se il pulsante del semaforo è premuto, sono in race e la sicurezza sulle pressioni ripetute è passata
@@ -273,7 +266,7 @@ void loop() {
       msg.concat(",");
       msg.concat(bu);
       ResponseStatus rs = e22ttl.sendFixedMessage(Key, Add, Chan, msg);
-      State = "";
+      State = end10lap;
       draw(4, u8x8);
       lapcounter = -1;
       previousMillis = millis();
