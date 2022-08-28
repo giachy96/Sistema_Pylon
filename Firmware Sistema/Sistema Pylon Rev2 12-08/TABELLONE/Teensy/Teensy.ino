@@ -384,15 +384,15 @@ void loop() {
       ntaglitot_rosso++;
       arrayP1_rosso[ngiri_rosso - 1] = ntagliP1_rosso;
     }
-    if (Rxs3.indexOf("3121") != -1) {  // tagli palo 1 rosso
+    if (Rxs3.indexOf("3121") != -1) {  // tagli palo 1 verde
       ntagliP1_verde++;
       ntaglitot_verde++;
       arrayP1_verde[ngiri_verde - 1] = ntagliP1_verde;
     }
-    if (Rxs3.indexOf("3131") != -1) {  // tagli palo 1 rosso
+    if (Rxs3.indexOf("3131") != -1) {  // tagli palo 1 blu
       ntagliP1_blu++;
       ntaglitot_blu++;
-      arrayP1_verde[ngiri_blu - 1] = ntagliP1_blu;
+      arrayP1_blu[ngiri_blu - 1] = ntagliP1_blu;
     }
     newData3 = false;
   }
