@@ -33,7 +33,7 @@ String StartRace = "3001";
 String Show = "2000";
 String Startup = "1000";
 String Stop = "6000";
-String end10lapB = "5514";
+String end10lap = "5514";
 String PressShow2 = "2210";
 String PressShow3 = "2310";
 String PressCut2 = "3211";
@@ -95,7 +95,7 @@ void loop() {
   CurrentMillis = millis();
 
   if ((FlagState == 1) && ((CurrentMillis - Timesend) > Delaysend)) { //If statements who control that state was change and
-      if (State.indexOf("850") == -1) {
+    if (State.indexOf("850") == -1) {
       ResponseStatus rc = e22ttl.sendBroadcastFixedMessage(Chan, State);
       Serial.println("Mando Stato aggiornato");
       Serial.println(State);
@@ -104,13 +104,15 @@ void loop() {
     }
     if (State.indexOf(DoubleCut) == -1  ) { //se NON ricevo lo stato di doppio taglio
       if (State.indexOf(StopTime) == -1 ) { //se NON ricevo lo stato di StopTIME
-        digitalWrite( PinLight2, LOW);
-        digitalWrite( PinLight3, LOW);
-        ntagliP2 = 0;
-        ntagliP3 = 0;
-        lampeggianteP2 = 0;
-        lampeggianteP3 = 0;
-        Serial.println("PINS LOW");
+        if (State.indexOf(end10lap) == -1 ) { //se NON ricevo lo stato di end10lap
+          digitalWrite( PinLight2, LOW);
+          digitalWrite( PinLight3, LOW);
+          ntagliP2 = 0;
+          ntagliP3 = 0;
+          lampeggianteP2 = 0;
+          lampeggianteP3 = 0;
+          Serial.println("PINS LOW");
+        }
       }
     }
     TxDatastr = "";

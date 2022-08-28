@@ -33,7 +33,7 @@ String StartRace = "3001";
 String Show = "2000";
 String Startup = "1000";
 String Stop = "6000";
-String end10lapB = "5534";
+String end10lap = "5534";
 String PressShow2 = "2230";
 String PressShow3 = "2330";
 String PressCut2 = "3231";
@@ -105,13 +105,15 @@ void loop() {
 
     if (State.indexOf(DoubleCut) == -1  ) { //se NON ricevo lo stato di doppio taglio
       if (State.indexOf(StopTime) == -1 ) { //se NON ricevo lo stato di StopTIME
-        digitalWrite( PinLight2, LOW);
-        digitalWrite( PinLight3, LOW);
-        ntagliP2 = 0;
-        ntagliP3 = 0;
-        lampeggianteP2 = 0;
-        lampeggianteP3 = 0;
-        Serial.println("PINS LOW");
+        if (State.indexOf(end10lap) == -1 ) { //se NON ricevo lo stato di end10lap
+          digitalWrite( PinLight2, LOW);
+          digitalWrite( PinLight3, LOW);
+          ntagliP2 = 0;
+          ntagliP3 = 0;
+          lampeggianteP2 = 0;
+          lampeggianteP3 = 0;
+          Serial.println("PINS LOW");
+        }
       }
     }
     TxDatastr = "";
