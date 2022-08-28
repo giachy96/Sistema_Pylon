@@ -39,15 +39,15 @@ String Race = "3000";
 String Show = "2000";
 String End = "5000";
 String Stop = "6000";
-String StartRace = "3001";
 String Startup = "1000";
 String State = Startup;          //Startup state
-unsigned long interval = 10000;  // constants won't change:
+unsigned long interval = 30000;  // constants won't change:
 unsigned long Delaypress = 2500;
 unsigned long Delaysend = 200;
 String PressShow = "2120";
 String PressRace = "3122";
 String PressCut = "3121";
+String StartRace = "3001";
 String end10lap = "5524";
 String DoubleCut = "4025";
 String StopTime = "6524";
@@ -88,7 +88,7 @@ void loop() {
       digitalWrite(buzzer, HIGH);
     }
     currentMillis = millis();
-    if ((((currentMillis - previousMillis) >= interval) || changeState == 1) && State == Startup) {  // Casistica per display, se non siamo in Show, Race o End, metti la schermata 0 e aggiorna ogni 5 sec, o aggiorna quando il flag changestate  è attivo
+    if (((currentMillis - previousMillis) >= interval)  && (State == Startup || State == end10lap || State == Stop || State == DoubleCut ||  State == StopTime )) {  // Casistica per display, se non siamo in Show, Race o End, metti la schermata 0 e aggiorna ogni 5 sec, o aggiorna quando il flag changestate  è attivo
       previousMillis = currentMillis;
       Serial.println("Case0");  //debug
       draw(0, u8x8);
@@ -120,6 +120,7 @@ void loop() {
       draw(6, u8x8);
       Serial.println("Case6");  //debug
       changeState = 0;
+      previousMillis = currentMillis;
     }
 
     if (changeState == 1 && State == Stop) {  // Casistica per display, se siamo in End, metti la schermata 6 e aggiorna ogni 5 sec, o aggiorna quando il flag changestate  è attivo
@@ -128,22 +129,23 @@ void loop() {
       Serial.println("Case5");  //debug
       changeState = 0;
       ntagli = 0;
+      previousMillis = currentMillis;
     }
-
     if (changeState == 1 && State == DoubleCut) {  // Casistica per display, se siamo in End, metti la schermata 6 e aggiorna ogni 5 sec, o aggiorna quando il flag changestate  è attivo
       previousMillis = currentMillis;
       draw(7, u8x8);
       Serial.println("Case7");  //debug
       changeState = 0;
       ntagli = 0;
+      previousMillis = currentMillis;
     }
-    
     if (changeState == 1 && State == StopTime) {  // Casistica per display, se siamo in End, metti la schermata 6 e aggiorna ogni 5 sec, o aggiorna quando il flag changestate  è attivo
       previousMillis = currentMillis;
       draw(8, u8x8);
       Serial.println("Case8");  //debug
       changeState = 0;
       ntagli = 0;
+      previousMillis = currentMillis;
     }
     if (e22ttl.available() > 1) {                      //se il lora riceve qualcosa
       Serial.println("ricevo qualcosa");               //debug

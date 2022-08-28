@@ -59,7 +59,7 @@ unsigned long Phase=0;
 unsigned long WindowTransm=150;
 unsigned long Delaypress=2500;
 unsigned long DelaySend=200;
-unsigned long interval = 10000;
+unsigned long interval = 30000;
 //Fine Configurazioni Telecomando
 
 void setup() {
@@ -93,7 +93,7 @@ void loop() {
       digitalWrite(buzzer , HIGH);
     }
     currentMillis = millis();
-    if ((((currentMillis - previousMillis)>=interval) || changeState==1) && State==Startup) { // Casistica per display, se non siamo in Show, Race o End, metti la schermata 0 e aggiorna ogni 5 sec, o aggiorna quando il flag changestate  è attivo
+  if (((currentMillis - previousMillis) >= interval)  && (State == Startup || State == end10lap || State == Stop || State == DoubleCut ||  State == StopTime )) {  
       previousMillis = currentMillis;
       Serial.println("Case0");
       draw(0, u8x8);
@@ -124,11 +124,13 @@ void loop() {
       draw(6, u8x8);
       Serial.println("Case6");
       changeState=0;
+      previousMillis = currentMillis;
     }
     if ( changeState == 1 && State == Stop) { // Casistica per display, se siamo in End, metti la schermata 6 e aggiorna ogni 5 sec, o aggiorna quando il flag changestate  è attivo
       previousMillis = currentMillis;
       draw(5, u8x8);
       Serial.println("Case5");//debug
+      previousMillis = currentMillis;
       changeState = 0;
        ntagli = 0;
     }
@@ -136,6 +138,7 @@ void loop() {
       previousMillis = currentMillis;
       draw(7, u8x8);
       Serial.println("Case7");//debug
+      previousMillis = currentMillis;
       changeState = 0;
       ntagli = 0;
     }
@@ -143,6 +146,7 @@ void loop() {
       previousMillis = currentMillis;
       draw(8, u8x8);
       Serial.println("Case7");//debug
+      previousMillis = currentMillis;
       changeState = 0;
       ntagli = 0;
     }
