@@ -118,9 +118,9 @@ void loop() {
     doublePress = 0;
   }
 
-  //  if (tensionebatt(pinbatt) < 9.5) {  // allarme tensione batteria
-  //    tone(buzzer, 5000, 500);
-  //  }
+  if (tensionebatt(pinbatt) < 10.2) {  // allarme tensione batteria
+    tone(buzzer, 5000, 500);
+  }
   if (currentMillis - previousMillis >= interval) { // intervallo lettura batteria
     // save the last time you read
     previousMillis = currentMillis;
@@ -132,8 +132,8 @@ void loop() {
   }
 
   if ( RxData == "700") { // ho ricevuto il comando INDIETRO
-//    tone(buzzer, 2000, 200);
-//    draw(11, lcd);
+    //    tone(buzzer, 2000, 200);
+    //    draw(11, lcd);
     if (statusPC == true) {
       Serial.println("700,0,0,0,0,0,0,0,0,0");
     } else {
@@ -144,8 +144,8 @@ void loop() {
     RxData = "";
   }
   if ( RxData == "800") { // ho ricevuto il comando AVANTI
-//    tone(buzzer, 4000, 200);
-//    draw(1, lcd);
+    //    tone(buzzer, 4000, 200);
+    //    draw(1, lcd);
     if (statusPC == true) {
       Serial.println("800,0,0,0,0,0,0,0,0,0");
     } else {
@@ -221,7 +221,10 @@ void loop() {
   }
 
   if (digitalRead(r_print) == LOW && doublePress == 0) {  // ristampa tempi
-    stampatotali( gara, manche_rx, round_rx, nome_rosso, cognome_rosso, nome_verde, cognome_verde, nome_blu, cognome_blu);
+    //stampatotali( gara, manche_rx, round_rx, nome_rosso, cognome_rosso, nome_verde, cognome_verde, nome_blu, cognome_blu);
+    Serial.println( "5514,6.980,4.627,4.884,6.519,5.190,2.843,4.102,3.836,3.900,3.376,46.257");
+    Serial.println("5524,7.340,9.214,2.436,2.000,2.826,4.739,3.434,4.293,3.687,3.890,43.859");
+    Serial.println( "5534,3.989,3.151,3.421,11.382,2.861,5.162,2.001,2.387,3.398,3.991,41.743");
     doublePress = 1;
     oldPress = millis();
   }
@@ -413,7 +416,7 @@ void loop() {
     // read the  message
     ResponseContainer rc = e22ttl.receiveMessage();
     RxData = rc.data;
-    Serial.println(RxData);
+    //Serial.println(RxData);
 
   }
 }

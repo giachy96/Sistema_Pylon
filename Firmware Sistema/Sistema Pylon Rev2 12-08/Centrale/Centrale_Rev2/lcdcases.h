@@ -1,7 +1,7 @@
 extern int pinbatt;  // This is a declaration
 float vout;
-float out_max = 15.6;
-float out_min = 0.2;
+float out_max = 16.9;
+float out_min = 1;
 float in_max = 4.85;
 float in_min = 0.0;
 extern int round_rx;

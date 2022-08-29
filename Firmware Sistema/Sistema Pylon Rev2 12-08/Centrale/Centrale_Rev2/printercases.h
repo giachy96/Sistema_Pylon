@@ -49,11 +49,11 @@ void stampatotali (String gara , int manche_rx , int round_rx, String nome_rosso
   for (int y = 1 ; y < 11; y++) {
     Serial3.print("LAP N: ");
     Serial3.print(y);
-    Serial3.print("  Tempo: ");
+    Serial3.print(" T: ");
     Serial3.print(arraytempirosso[y]);
     Serial3.print("s     ");
     Serial3.print("[");
-    Serial3.print(arraytaglirosso[y-1]);
+    Serial3.print(arraytaglirosso[y - 1]);
     Serial3.println("]");
   }
   Serial3.write(0x1B); // grassetto oFF
@@ -93,11 +93,11 @@ void stampatotali (String gara , int manche_rx , int round_rx, String nome_rosso
   for (int y = 1 ; y < 11; y++) {
     Serial3.print("LAP N: ");
     Serial3.print(y);
-    Serial3.print("  Tempo: ");
+    Serial3.print(" T: ");
     Serial3.print(arraytempiverde[y]);
     Serial3.print("s     ");
     Serial3.print("[");
-    Serial3.print(arraytagliverde[y-1]);
+    Serial3.print(arraytagliverde[y - 1]);
     Serial3.println("]");
   }
   Serial3.write(0x1B); // grassetto oFF
@@ -133,11 +133,11 @@ void stampatotali (String gara , int manche_rx , int round_rx, String nome_rosso
   for (int y = 1 ; y < 11; y++) {
     Serial3.print("LAP N: ");
     Serial3.print(y);
-    Serial3.print("  Tempo: ");
+    Serial3.print(" T: ");
     Serial3.print(arraytempiblu[y]);
     Serial3.print("s     ");
     Serial3.print("[");
-    Serial3.print(arraytagliblu[y-1]);
+    Serial3.print(arraytagliblu[y - 1]);
     Serial3.println("]");
   }
   Serial3.write(0x1B); // grassetto oFF
