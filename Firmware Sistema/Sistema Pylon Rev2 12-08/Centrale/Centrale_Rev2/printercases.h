@@ -22,7 +22,7 @@ void stampatotali (String gara , int manche_rx , int round_rx, String nome_rosso
   Serial3.write(0x21);
   Serial3.write(0x01); // fine
 
-  Serial3.print("GARA ");
+  Serial3.print("RACE ");
   Serial3.println(gara);
   Serial3.print("MANCHE N :");
   if (manche_rx != 0) {
@@ -34,8 +34,8 @@ void stampatotali (String gara , int manche_rx , int round_rx, String nome_rosso
     Serial3.print(round_rx);
   }
   Serial3.println("");
-  Serial3.println("Pilota ROSSO ");
-  Serial3.print("NOME:");
+  Serial3.println("Pilot RED ");
+  Serial3.print("NAME:");
   Serial3.print(nome_rosso);
   Serial3.print(" ");
   Serial3.print(cognome_rosso);
@@ -62,11 +62,11 @@ void stampatotali (String gara , int manche_rx , int round_rx, String nome_rosso
   Serial3.write(0x1D); //altezza grande ON
   Serial3.write(0x21);
   Serial3.write(0x01); // fine
-  Serial3.print("Tempo Totale: ");
+  Serial3.print("Total Time: ");
   Serial3.print(arraytempirosso[11]);
   Serial3.print("s");
   Serial3.println(" ");
-  Serial3.print("PUNTEGGIO: ");
+  Serial3.print("SCORE: ");
   Serial3.print(punteggiorosso);
 
 
@@ -77,8 +77,8 @@ void stampatotali (String gara , int manche_rx , int round_rx, String nome_rosso
 
 
 
-  Serial3.println("Pilota VERDE ");
-  Serial3.print("NOME:");
+  Serial3.println("Pilot GREEN ");
+  Serial3.print("NAME:");
   Serial3.print(nome_verde);
   Serial3.print(" ");
   Serial3.print(cognome_verde);
@@ -106,11 +106,11 @@ void stampatotali (String gara , int manche_rx , int round_rx, String nome_rosso
   Serial3.write(0x1D); //altezza grande ON
   Serial3.write(0x21);
   Serial3.write(0x01); // fine
-  Serial3.print("Tempo Totale: ");
+  Serial3.print("Total Time: ");
   Serial3.print(arraytempiverde[11]);
   Serial3.print(F("s"));
   Serial3.println(" ");
-  Serial3.print("PUNTEGGIO: ");
+  Serial3.print("SCORE: ");
   Serial3.print(punteggioverde);
 
 
@@ -118,8 +118,8 @@ void stampatotali (String gara , int manche_rx , int round_rx, String nome_rosso
   Serial3.println(" ");
 
 
-  Serial3.println("Pilota BLU ");
-  Serial3.print("NOME:");
+  Serial3.println("Pilot BLUE ");
+  Serial3.print("NAME:");
   Serial3.print(nome_blu);
   Serial3.print(" ");
   Serial3.print(cognome_blu);
@@ -146,11 +146,11 @@ void stampatotali (String gara , int manche_rx , int round_rx, String nome_rosso
   Serial3.write(0x1D); //altezza grande ON
   Serial3.write(0x21);
   Serial3.write(0x01); // fine
-  Serial3.print("Tempo Totale: ");
+  Serial3.print("Total Time: ");
   Serial3.print(arraytempiblu[11]);
   Serial3.print("s");
   Serial3.println(" ");
-  Serial3.print("PUNTEGGIO: ");
+  Serial3.print("SCORE: ");
   Serial3.print(punteggioblu);
   Serial3.println(" ");
   Serial3.write(0x1D); //altezza grande OFF

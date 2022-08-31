@@ -221,10 +221,7 @@ void loop() {
   }
 
   if (digitalRead(r_print) == LOW && doublePress == 0) {  // ristampa tempi
-    //stampatotali( gara, manche_rx, round_rx, nome_rosso, cognome_rosso, nome_verde, cognome_verde, nome_blu, cognome_blu);
-    Serial.println( "5514,6.980,4.627,4.884,6.519,5.190,2.843,4.102,3.836,3.900,3.376,46.257");
-    Serial.println("5524,7.340,9.214,2.436,2.000,2.826,4.739,3.434,4.293,3.687,3.890,43.859");
-    Serial.println( "5534,3.989,3.151,3.421,11.382,2.861,5.162,2.001,2.387,3.398,3.991,41.743");
+    stampatotali( gara, manche_rx, round_rx, nome_rosso, cognome_rosso, nome_verde, cognome_verde, nome_blu, cognome_blu);
     doublePress = 1;
     oldPress = millis();
   }
