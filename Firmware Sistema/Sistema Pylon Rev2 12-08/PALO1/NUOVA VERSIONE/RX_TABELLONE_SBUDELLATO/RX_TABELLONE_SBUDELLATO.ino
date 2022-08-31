@@ -5,6 +5,7 @@ AltSoftSerial SwSerial;
 LoRa_E22 e22ttl(2, 3); // Arduino RX --> e22 TX - Arduino TX --> e22 RX
 
 //Inizio configurazione
+String Avanti = "850";
 String Race = "3000";
 String StartRace = "3001";
 String Show = "2000";
@@ -79,7 +80,7 @@ void loop() {
     State = RecCh;
     Serial.println(State);
     ResponseStatus rs = e22ttl.sendFixedMessage(Key, Add, Chan, State);
-    if (State == Show || State == Race ||  State == Stop ) {
+    if (State == Show || State == Race ||  State == Stop ||  State == Avanti ) {
       digitalWrite(lucerosso, LOW);
       digitalWrite(luceverde, LOW);
       digitalWrite(luceblu, LOW);

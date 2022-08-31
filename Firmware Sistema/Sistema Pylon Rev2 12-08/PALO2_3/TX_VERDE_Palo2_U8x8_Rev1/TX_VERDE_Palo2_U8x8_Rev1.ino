@@ -57,7 +57,7 @@ byte Chan=50;
 unsigned long Freq=500;
 unsigned long Phase=0;
 unsigned long WindowTransm=150;
-unsigned long Delaypress=2500;
+unsigned long Delaypress=3500;
 unsigned long DelaySend=200;
 unsigned long interval = 30000;
 //Fine Configurazioni Telecomando
