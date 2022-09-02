@@ -7,7 +7,6 @@ unsigned long Timeserial3 = 0;
 unsigned long Timesend = 0;
 unsigned long Currentmilliss = 0;
 unsigned long Currentmillisx = 0;
-unsigned long DelayLight = 2000;
 unsigned long Delayserialx = 0;
 
 String Dateserial1 = "";
@@ -18,7 +17,6 @@ const byte numChars = 32;
 char RecCh1[numChars];
 char RecCh2[numChars];
 char RecCh3[numChars];
-int FlagState = 0;
 
 //Inizio Configurazione Mega
 String Race = "3000";
@@ -65,7 +63,6 @@ void loop() {
     }
   }
 
-
   Currentmillisx = millis();
   if (State == Show || State == StartRace) {
     RecStr2();
@@ -77,7 +74,6 @@ void loop() {
     }
   }
 
-
   Currentmillisx = millis();
   if (State == Show || State == StartRace) {
     RecStr3();
@@ -88,9 +84,6 @@ void loop() {
       newData3 = false;
     }
   }
-
-
-
 
   Currentmilliss = millis();                                                                // millis assignments for send delay control
   if ((Currentmilliss - Timesend) >= Delaysend && (State == Show || State == StartRace)) {  //If the last receive is older than Delaysend, and state is race or show
@@ -107,37 +100,34 @@ void loop() {
       Dateserial1 = "";                                                         //Reset condition for received press button
       Dateserial2 = "";
       Dateserial3 = "";
+      Dateserial = "";
     }
   }
   if (e22ttl.available() > 1) {                      //If there's something incoming from lora
     ResponseContainer rc = e22ttl.receiveMessage();  //Receive message
-    if (rc.status.code != 1) {                       // Is something goes wrong
-      rc.status.getResponseDescription();            //Get error response
-    } else {
-      State = rc.data;          // if there isn't any error assign the incoming data to State
-      Serial.println(rc.data);  //debug
-      String str = "<";
-      str.concat(State);
-      str.concat(">");
-      Serial.println("Cambio stato");
-      if (str.indexOf(end10lapB) == -1 || str.indexOf(end10lapV) == -1) {
-        Serial1.print(str);  //Send to receiver 1 State
-      }
-      if (str.indexOf(end10lapB) == -1 || str.indexOf(end10lapR) == -1) {
-        Serial2.print(str);
-      }
-      if (str.indexOf(end10lapR) == -1 || str.indexOf(end10lapV) == -1) {
-        Serial3.print(str);
-      }
+    State = rc.data;                                 // if there isn't any error assign the incoming data to State
+    Serial.println(rc.data);                         //debug
+    String str = "<";
+    str.concat(State);
+    str.concat(">");
+    Serial.println("Cambio stato");
+    if (str.indexOf(end10lapB) == -1 || str.indexOf(end10lapV) == -1) {
+      Serial1.print(str);  //Send to receiver 1 State
+    }
+    if (str.indexOf(end10lapB) == -1 || str.indexOf(end10lapR) == -1) {
+      Serial2.print(str);
+    }
+    if (str.indexOf(end10lapR) == -1 || str.indexOf(end10lapV) == -1) {
+      Serial3.print(str);
     }
     Timesend = millis();  // millis assigment for last data receive
   }
-  if (Serial.available() > 0) {        // DEBUG
-    Serial.println("Ricezione Dato");  //debug
-    State = Serial.readString();       // DEBUG
-    Timesend = millis();               // DEBUG
-    Serial.println(State);             //debug
-  }
+  // if (Serial.available() > 0) {        // DEBUG
+  //   Serial.println("Ricezione Dato");  //debug
+  //   State = Serial.readString();       // DEBUG
+  //   Timesend = millis();               // DEBUG
+  //   Serial.println(State);             //debug
+  // }
 }
 
 
