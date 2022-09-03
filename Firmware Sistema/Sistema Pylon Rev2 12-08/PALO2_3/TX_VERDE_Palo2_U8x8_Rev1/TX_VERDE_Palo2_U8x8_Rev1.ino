@@ -89,7 +89,7 @@ void loop() {
 
   while (bootup >= 2) {
     float voltage = readvoltage(pinbatt);
-    if (voltage < 2.9) {
+    if (voltage < 3.2) {
       digitalWrite(buzzer , HIGH);
     }
     currentMillis = millis();
