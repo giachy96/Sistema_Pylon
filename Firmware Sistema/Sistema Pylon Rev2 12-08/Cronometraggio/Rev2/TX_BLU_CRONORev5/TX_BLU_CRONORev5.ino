@@ -78,6 +78,7 @@ void setup() {
   u8x8.setPowerSave(0);
   Serial.println("start");  //debug
   Serial.println(State);    //debug
+  tone(buzzer, 1000, 200);
 }
 
 void loop() {
@@ -141,7 +142,7 @@ void loop() {
       Serial.println("Dentro lo Start RAce");
       Serial.println(Lastpress);
     }
-// NON SPOSTARE ASSOLUTAMENTE QUESTA PARTE ALTRIMENTI NON FUNZIONA NON SI SA PERCHé
+    // NON SPOSTARE ASSOLUTAMENTE QUESTA PARTE ALTRIMENTI NON FUNZIONA NON SI SA PERCHé
     CurrentPress = millis();
     if ((CurrentPress - Lastpress) >= DelayStop && State == StartRace && lapcounter < 10 ) { //se sono passati DelayStop secondi è non ho avuto pressioni
       Serial.println("Differenza millis");  //debug
@@ -176,7 +177,7 @@ void loop() {
       Serial.println("fuori tempo max");  //debug
 
     }
-// FINE PARTE DA NON SPOSTARE
+    // FINE PARTE DA NON SPOSTARE
     if (changeState == 1 && State == Race) {  // Casistica per display, se siamo in Race, metti la schermata 2
       Serial.println("Case2");  //debug
       draw(2, u8x8);

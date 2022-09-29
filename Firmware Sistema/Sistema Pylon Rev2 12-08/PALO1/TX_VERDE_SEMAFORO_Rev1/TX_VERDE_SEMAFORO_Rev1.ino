@@ -69,6 +69,7 @@ void setup() {
   u8x8.setPowerSave(0);
   Serial.println("start");  //debug
   Serial.println(State);    //debug
+  tone(buzzer, 1000, 200);
 }
 
 void loop() {
