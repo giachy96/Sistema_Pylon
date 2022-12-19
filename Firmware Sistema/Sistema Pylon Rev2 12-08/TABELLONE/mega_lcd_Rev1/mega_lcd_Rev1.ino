@@ -139,10 +139,10 @@ void loop() {
           lastsend = millis();
           break;
         case 3:
-        count_send = 0;
-        sendcentraleverde = 0;
-        sendcentralerosso = 0;
-        sendcentraleblu = 0;
+          count_send = 0;
+          sendcentraleverde = 0;
+          sendcentralerosso = 0;
+          sendcentraleblu = 0;
           break;
         default:
           break;
@@ -306,6 +306,9 @@ void loop() {
       timeoutblu = 0;
       timeoutverde = 0;
       timeoutrosso = 0;
+      showcroverde = false;
+      showcrorosso = false;
+      showcroblu = false;
       memset(arraytempirosso, 0, sizeof(arraytempirosso));
       memset(arraytaglirosso, 0, sizeof(arraytaglirosso));
       memset(arraytempiverde, 0, sizeof(arraytempiverde));
@@ -319,10 +322,6 @@ void loop() {
         ResponseStatus rs = e22ttl.sendFixedMessage(Key, Add, Chan, "2000");
       }
       draw(1, 1, 1);  // display show
-
-      showcroverde = false;
-      showcrorosso = false;
-      showcroblu = false;
       stringonerosso = "";
       stringoneblu = "";
       stringoneverde = "";
