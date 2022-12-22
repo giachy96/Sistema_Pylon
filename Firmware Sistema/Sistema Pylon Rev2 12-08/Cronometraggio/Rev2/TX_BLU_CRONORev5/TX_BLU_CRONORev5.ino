@@ -86,7 +86,7 @@ void loop() {
   currentMillis = millis();
 
   while (bootup < 2) {
-    previousMillis = currentMillis;
+    //previousMillis = currentMillis; debug 23-12-2022
     Serial.println("Bootup Case");  //debug
     draw(0, u8x8);
     bootup++;
@@ -108,6 +108,7 @@ void loop() {
       changeState = 0;
     }
     if (changeState == 1 && State == Show) {  // Casistica per display, se siamo in Show, metti la schermata 1
+      previousMillis = currentMillis; //debug 23-12-2022
       Serial.println("Case1");  //debug
       draw(1, u8x8);
       tempo_base = 0;
@@ -121,6 +122,7 @@ void loop() {
       changeState = 0;
     }
     if (changeState == 1 && State == StartRace ) {  // Casistica per display, se siamo in StartRace
+      previousMillis = currentMillis; //debug 23-12-2022
       Serial.println("Case2.1");  //debug
       tempo_base = millis();
       lapcounter = lapcounter + 1;
@@ -179,6 +181,7 @@ void loop() {
     }
     // FINE PARTE DA NON SPOSTARE
     if (changeState == 1 && State == Race) {  // Casistica per display, se siamo in Race, metti la schermata 2
+      previousMillis = currentMillis; //debug 23-12-2022
       Serial.println("Case2");  //debug
       draw(2, u8x8);
       tempo_base = 0;
