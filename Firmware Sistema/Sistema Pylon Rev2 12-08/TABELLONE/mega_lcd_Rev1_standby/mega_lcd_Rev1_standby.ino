@@ -48,12 +48,12 @@ String temporosso[5];
 String tempoblu[5];
 String tempoverde[5];
 String values[5];
-String arraytempirosso[11];
-String arraytaglirosso[10];
-String arraytempiverde[11];
-String arraytagliverde[10];
-String arraytempiblu[11];
-String arraytagliblu[10];
+String arraytempirosso[12];
+String arraytaglirosso[11];
+String arraytempiverde[12];
+String arraytagliverde[11];
+String arraytempiblu[12];
+String arraytagliblu[11];
 String tempototrosso;
 String tempototverde;
 String tempototblu;
@@ -151,7 +151,6 @@ void loop() {
     }
   }
 
-
   // STANDBY DELL'LCD
   if (end10laprosso == 1 && end10lapverde == 1 && end10lapblu == 1 ) {
     if (standbylcd == 0) {
@@ -166,7 +165,6 @@ void loop() {
     }
 
   }
-
 
 
   //INIZO PARTE RICEZIONE DAL LORA
@@ -268,6 +266,7 @@ void loop() {
       sendcentralerosso = 0;
       sendcentraleblu = 0;
       count_send = 0;
+      standbylcd = 0;
       draw(6, 6, 6);  // display STOP
       if (Staterx != "6000") {
         ResponseStatus rs = e22ttl.sendFixedMessage(Key, Add, Chan, "6000");
@@ -300,6 +299,7 @@ void loop() {
       sendcentraleblu = 0;
       count_send = 0;
       updatescreen = 1;
+      standbylcd = 0;
       if (Staterx != "3000") {
         ResponseStatus rs = e22ttl.sendFixedMessage(Key, Add, Chan, "3000");
       }
@@ -324,6 +324,9 @@ void loop() {
       timeoutblu = 0;
       timeoutverde = 0;
       timeoutrosso = 0;
+      showcroverde = false;
+      showcrorosso = false;
+      showcroblu = false;
       memset(arraytempirosso, 0, sizeof(arraytempirosso));
       memset(arraytaglirosso, 0, sizeof(arraytaglirosso));
       memset(arraytempiverde, 0, sizeof(arraytempiverde));
@@ -337,10 +340,6 @@ void loop() {
         ResponseStatus rs = e22ttl.sendFixedMessage(Key, Add, Chan, "2000");
       }
       draw(1, 1, 1);  // display show
-
-      showcroverde = false;
-      showcrorosso = false;
-      showcroblu = false;
       stringonerosso = "";
       stringoneblu = "";
       stringoneverde = "";
@@ -348,6 +347,7 @@ void loop() {
       sendcentralerosso = 0;
       sendcentraleblu = 0;
       count_send = 0;
+      standbylcd = 0;
       updatescreen = 1;
       Staterx = "";
       flagcount = false;
