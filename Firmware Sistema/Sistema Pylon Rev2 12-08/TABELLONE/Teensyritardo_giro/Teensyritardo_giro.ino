@@ -1,3 +1,4 @@
+//testato 27/12/2022
 #include "serialmethode.h"
 
 char receivedChars1[numChars];
