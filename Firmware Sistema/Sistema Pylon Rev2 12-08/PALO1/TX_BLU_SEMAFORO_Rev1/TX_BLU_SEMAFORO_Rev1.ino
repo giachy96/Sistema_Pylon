@@ -89,12 +89,7 @@ void loop() {
       digitalWrite(buzzer, HIGH);
     }
     currentMillis = millis();
-    if (((currentMillis - previousMillis) >= interval)  && (State == Startup || State == end10lap || State == Stop || State == DoubleCut ||  State == StopTime )) {  // Casistica per display, se non siamo in Show, Race o End, metti la schermata 0 e aggiorna ogni 5 sec, o aggiorna quando il flag changestate  è attivo
-      previousMillis = currentMillis;
-      Serial.println("Case0");  //debug
-      draw(0, u8x8);
-      changeState = 0;
-    }
+
     if (changeState == 1 && State == Show) {  // Casistica per display, se siamo in Show, metti la schermata 1 e aggiorna ogni 5 sec, o aggiorna quando il flag changestate  è attivo
       previousMillis = currentMillis;
       Serial.println("Case1");  //debug
@@ -147,6 +142,12 @@ void loop() {
       changeState = 0;
       ntagli = 0;
       previousMillis = currentMillis;
+    }
+    if (((currentMillis - previousMillis) >= interval)  && (State == Startup || State == end10lap || State == Stop || State == DoubleCut ||  State == StopTime )) {  // Casistica per display, se non siamo in Show, Race o End, metti la schermata 0 e aggiorna ogni 5 sec, o aggiorna quando il flag changestate  è attivo
+      previousMillis = currentMillis;
+      Serial.println("Case0");  //debug
+      draw(0, u8x8);
+      changeState = 0;
     }
     if (e22ttl.available() > 1) {                      //se il lora riceve qualcosa
       Serial.println("ricevo qualcosa");               //debug
