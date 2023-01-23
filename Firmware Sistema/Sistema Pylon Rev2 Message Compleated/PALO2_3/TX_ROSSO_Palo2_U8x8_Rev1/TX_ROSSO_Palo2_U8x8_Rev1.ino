@@ -153,7 +153,7 @@ void loop() {
     }
     if (e22ttl.available() > 1) {
       Serial.println("ricevo qualcosa");
-      ResponseContainer rc = e22ttl.receiveMessageComplete(false);// Receive message
+      ResponseContainer rc = e22ttl.receiveMessage();// Receive message
       State = rc.data; //Assign incoming data on State variable
       changeState = 1; //attivo il flag changeState=1, lo uso sopra per il primo aggiornamento display
       TimeSend = millis();

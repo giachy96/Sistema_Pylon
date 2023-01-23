@@ -221,7 +221,7 @@ void loop() {
 
     if (e22ttl.available() > 1) {                      //se il lora riceve qualcosa
       Serial.println("ricevo qualcosa");               //debug
-      ResponseContainer rc = e22ttl.receiveMessageComplete(false);  // Receive message
+      ResponseContainer rc = e22ttl.receiveMessage();  // Receive message
       State = rc.data;                                 //Assign incoming data on TxData variable
       Serial.println("Nuovo stato");                   //debug
       Serial.println(State);                           //debug
