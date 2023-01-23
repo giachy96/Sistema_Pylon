@@ -59,7 +59,7 @@ unsigned long Phase = 250;
 unsigned long WindowTransm = 150;
 unsigned long Delaypress = 3500;
 unsigned long DelaySend = 200;
-unsigned long interval = 30000;
+unsigned long interval = 60000;
 //Fine Configurazioni Telecomando
 
 void setup() {
