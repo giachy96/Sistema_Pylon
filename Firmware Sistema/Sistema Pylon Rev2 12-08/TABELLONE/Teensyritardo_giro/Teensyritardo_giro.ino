@@ -437,6 +437,12 @@ void loop() {
       Serial4.print(pack6_t);  //palo2-3 rosso
       Serial2.print(pack6_t);  //palo2-3 rosso
     }
+    if (Rxs6.indexOf("500") != -1) {  // ho ricevuto STANDBY
+      Serial2.println("<500>");
+      Serial3.println("<500>");
+      Serial4.println("<500>");
+      Serial5.println("<500>");
+    }
     newData6 = false;
   }
 

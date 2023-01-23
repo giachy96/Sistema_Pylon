@@ -28,6 +28,7 @@ unsigned long lampmillisP2;
 unsigned long lampmillisP3;
 
 //Inizio Configurazioni Ricevente
+String StandBy = "500";
 String Race = "3000";
 String StartRace = "3001";
 String Show = "2000";
@@ -95,12 +96,14 @@ void loop() {
   CurrentMillis = millis();
 
   if ((FlagState == 1) && ((CurrentMillis - Timesend) > Delaysend)) { //If statements who control that state was change and
-    if (State.indexOf("850") == -1) {
-      ResponseStatus rc = e22ttl.sendBroadcastFixedMessage(Chan, State);
-      Serial.println("Mando Stato aggiornato");
-      Serial.println(State);
-      FirstStateSend = millis();
-      DoubleState = 1;
+    if (State.indexOf("850") == -1) { //se NON ricevo lo stato di avanti/indietro
+      if (State.indexOf("500") == -1) { //se NON ricevo lo stato di Standby
+        ResponseStatus rc = e22ttl.sendBroadcastFixedMessage(Chan, State);
+        Serial.println("Mando Stato aggiornato");
+        Serial.println(State);
+        FirstStateSend = millis();
+        DoubleState = 1;
+      }
     }
 
     if (State.indexOf(DoubleCut) == -1  ) { //se NON ricevo lo stato di doppio taglio

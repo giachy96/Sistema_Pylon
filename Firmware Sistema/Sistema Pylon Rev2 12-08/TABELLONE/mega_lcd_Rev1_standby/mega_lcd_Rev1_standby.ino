@@ -152,7 +152,7 @@ void loop() {
   }
 
   // STANDBY DELL'LCD
-  if (end10laprosso == 1 && end10lapverde == 1 && end10lapblu == 1 ) {
+  if ((end10laprosso == 1 && end10lapverde == 1 && end10lapblu == 1 ) || (Rxs.indexOf("STOP") != -1)) {
     if (standbylcd == 0) {
       standbylcd = millis();
     }
@@ -162,6 +162,8 @@ void loop() {
       end10laprosso = 0;
       end10lapverde = 0;
       end10lapblu = 0;
+      Serial.println("Standby");
+      Serial1.println("<500>");
     }
 
   }

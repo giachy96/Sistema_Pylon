@@ -31,6 +31,7 @@ String DoubleCutB = "4035";
 String StopTimeR = "6514";
 String StopTimeV = "6524";
 String StopTimeB = "6534";
+String StandBy = "500";
 //Fine Configurazione
 
 String TxData = "0";
@@ -80,7 +81,7 @@ void loop() {
     State = RecCh;
     Serial.println(State);
     ResponseStatus rs = e22ttl.sendFixedMessage(Key, Add, Chan, State);
-    if (State == Show || State == Race ||  State == Stop ||  State == Avanti ) {
+    if (State == Show || State == Race ||  State == Stop ||  State == Avanti || State = StandBy ) {
       digitalWrite(lucerosso, LOW);
       digitalWrite(luceverde, LOW);
       digitalWrite(luceblu, LOW);
