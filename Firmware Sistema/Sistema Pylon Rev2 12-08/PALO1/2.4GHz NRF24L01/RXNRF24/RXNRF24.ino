@@ -17,11 +17,16 @@ const byte indirizzo[5] = {0, 0, 0, 0, 0};
 //Creo un'istanza della "radio" passandogli il numero dei pin collegati a CE e CSN del modulo
 RF24 radio(5, 4);
 
+int relay = 10;
+
 
 void setup() {
 
   //Inizializzo la comunicazione seriale per il monitor
   Serial.begin(115200);
+
+
+  pinMode(relay, OUTPUT);
 
   //Aspetto ad andare avanti fin quando non viene aperto il monitor seriale
   while (!Serial) {
@@ -60,6 +65,17 @@ void loop() {
     radio.read(&buff, sizeof(buff));
     //Invio al monitor seriale il valore appena letto
     Serial.println(buff);
+
+    if (buff == 0) {
+      digitalWrite(relay, HIGH);
+      Serial.print("Stato relay : ");
+      Serial.println(buff);
+      delay(1000);
+      digitalWrite(relay, LOW);
+      Serial.print("Stato relay : ");
+      Serial.println(buff);
+
+    }
   }
 
 }
