@@ -15,7 +15,7 @@
 const byte indirizzo[5] = {0, 0, 0, 0, 0};
 
 //Creo un'istanza della "radio" passandogli il numero dei pin collegati a CE e CSN del modulo
-RF24 radio(5, 4);
+RF24 radio(7,8);
 
 int relay = 10;
 
@@ -23,7 +23,7 @@ int relay = 10;
 void setup() {
 
   //Inizializzo la comunicazione seriale per il monitor
-  Serial.begin(115200);
+  Serial.begin(9600);
 
 
   pinMode(relay, OUTPUT);
