@@ -180,7 +180,7 @@ void loop() {
     radio.read( &buff, sizeof(buff) );
     //Invio al monitor seriale il valore appena letto
     String Rx24str = String(buff);
-    Serial.println(str);
+    Serial.println(Rx24str);
     
     if (Rx24str.indexOf("3112") != -1) {  //PressRaceR
       onlightR = 1;
@@ -415,10 +415,11 @@ void recvSerial3() {
   }
 }
 
-void sendStringMessageRF24(String valore ) {
+void sendStringMessageRF24(String valore , int ind ) {
   char charBuf[50];
   valore.toCharArray(charBuf, 50);
   radio.stopListening();  // put radio in TX mode
+  radio.openWritingPipe(indirizzo[ind]);
   //Invio il valore per radio
   radio.write(&charBuf, sizeof(charBuf));
   //radio.write(valore.c_str(), valore.length());
