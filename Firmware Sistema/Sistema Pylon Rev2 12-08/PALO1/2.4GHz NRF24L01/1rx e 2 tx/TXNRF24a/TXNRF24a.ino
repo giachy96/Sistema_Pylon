@@ -90,9 +90,10 @@ void loop() {
 
   if (readPot == 0) {
     valPot = 100;
-    sendMessage(valPot);
+    String str = "HELLO";
+    sendMessage(str);
   }
-  
+
   if (radio.available()) {
     //Creo una variabile di appoggio
     int buff = 0;
@@ -103,11 +104,13 @@ void loop() {
   }
 }
 
-void sendMessage(int valore ) {
-
+void sendStringMessage(String valore ) {
+  char charBuf[50];
+  valore.toCharArray(charBuf, 50);
   radio.stopListening();  // put radio in TX mode
   //Invio il valore per radio
-  radio.write(&valore, sizeof(valore));
+  radio.write(&charBuf, sizeof(charBuf));
+  //radio.write(valore.c_str(), valore.length());
   radio.startListening();  // put radio in RX mode
 
 }

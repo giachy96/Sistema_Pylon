@@ -66,11 +66,12 @@ void loop() {
   //Se ci sono dati in ricezione sulla radio
   if (radio.available()) {
     //Creo una variabile di appoggio
-    int buff = 0;
+    char buff[50]; // this must match dataToSend in the TX
     //Leggo i dati sul buffer e li salvo nella variabile di appoggio
-    radio.read(&buff, sizeof(buff));
+    radio.read( &buff, sizeof(buff) );
     //Invio al monitor seriale il valore appena letto
-    Serial.println(buff);
+    String str = String(buff);
+    Serial.println(str);
 
 
     //    if (buff == 0) {

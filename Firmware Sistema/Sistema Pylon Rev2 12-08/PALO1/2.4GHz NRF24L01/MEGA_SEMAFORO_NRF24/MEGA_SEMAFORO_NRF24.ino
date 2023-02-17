@@ -173,32 +173,35 @@ void loop() {
 
 
   if (radio.available()) {  // se ricevo qualcosa da 2.4GHz
+
     //Creo una variabile di appoggio
-    String buff = "";
+    char buff[50]; // this must match dataToSend in the TX
     //Leggo i dati sul buffer e li salvo nella variabile di appoggio
-    radio.read(&buff, sizeof(buff));
+    radio.read( &buff, sizeof(buff) );
     //Invio al monitor seriale il valore appena letto
-    Serial.println(buff);
-    if (buff == "3112") {  //PressRaceR
+    String Rx24str = String(buff);
+    Serial.println(str);
+    
+    if (Rx24str.indexOf("3112") != -1) {  //PressRaceR
       onlightR = 1;
     }
-    if (buff == "2110") {  // PressShowR
+    if (Rx24str.indexOf("2110") != -1) {  // PressShowR
       digitalWrite(relayrosso, HIGH);
     }
-    if (buff == "3122") {  //PressRaceV
+    if (Rx24str.indexOf("3122") != -1) {  //PressRaceV
       onlightV = 1;
     }
-    if (buff == "2120") {  // PressShowV
+    if (Rx24str.indexOf("2120") != -1) {  // PressShowV
       digitalWrite(relayverde, HIGH);
     }
-    if (buff == "3132") {  //PressRaceB
+    if (Rx24str.indexOf("3132") != -1) {  //PressRaceB
       onlightB = 1;
     }
-    if (buff == "2130") {  // PressShowB
+    if (Rx24str.indexOf("2130") != -1) {  // PressShowB
       digitalWrite(relayblu, HIGH);
     }
-    ResponseStatus rs = e22ttl.sendFixedMessage(Key, Add, Chan, buff);
-    buff = "";
+    ResponseStatus rs = e22ttl.sendFixedMessage(Key, Add, Chan, Rx24str);
+    Rx24str = "";
   }
 
   if (e22ttl.available() > 1) {                      //If there's something incoming from lora
@@ -216,9 +219,9 @@ void loop() {
       Serial1.println(str);       // verde
       Serial2.println(str);       // rosso
       Serial3.println(str);       // blu
-      sendMessageRF24(State, 1);  // mando all 2.4 rosso
-      sendMessageRF24(State, 3);  // mando all 2.4 verde
-      sendMessageRF24(State, 5);  // mando all 2.4 blu
+      sendStringMessageRF24(State, 1);  // mando all 2.4 rosso
+      sendStringMessageRF24(State, 3);  // mando all 2.4 verde
+      sendStringMessageRF24(State, 5);  // mando all 2.4 blu
       onlightR = 0;
       digitalWrite(relayrosso, LOW);
       onlightV = 0;
@@ -231,21 +234,21 @@ void loop() {
       str.concat(State);
       str.concat(">");
       Serial2.println(str);       // rosso
-      sendMessageRF24(State, 1);  // mando all 2.4 rosso
+      sendStringMessageRF24(State, 1);  // mando all 2.4 rosso
     }
     if (State == end10lapV || State == DoubleCutV || State == StopTimeV) {
       String str = "<";
       str.concat(State);
       str.concat(">");
       Serial1.println(str);       // verde
-      sendMessageRF24(State, 3);  // mando all 2.4 verde
+      sendStringMessageRF24(State, 3);  // mando all 2.4 verde
     }
     if (State == end10lapB || State == DoubleCutB || State == StopTimeB) {
       String str = "<";
       str.concat(State);
       str.concat(">");
       Serial3.println(str);       // blu
-      sendMessageRF24(State, 5);  // mando all 2.4 blu
+      sendStringMessageRF24(State, 5);  // mando all 2.4 blu
     }
     newDatalora = false;
   }
@@ -412,12 +415,13 @@ void recvSerial3() {
   }
 }
 
-void sendMessageRF24(String valore, int ind) {
-
+void sendStringMessageRF24(String valore ) {
+  char charBuf[50];
+  valore.toCharArray(charBuf, 50);
   radio.stopListening();  // put radio in TX mode
-  radio.openWritingPipe(indirizzo[ind]);
-
   //Invio il valore per radio
-  radio.write(&valore, sizeof(valore));
+  radio.write(&charBuf, sizeof(charBuf));
+  //radio.write(valore.c_str(), valore.length());
   radio.startListening();  // put radio in RX mode
+
 }
