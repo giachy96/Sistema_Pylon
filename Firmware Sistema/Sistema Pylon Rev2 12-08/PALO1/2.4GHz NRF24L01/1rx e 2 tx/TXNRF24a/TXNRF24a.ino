@@ -68,7 +68,8 @@ void setup() {
   Serial.println(F("Avvio trasmevitore in rx"));
 
 
-  radio.openReadingPipe(1, indirizzo[1]);
+  radio.openReadingPipe(0, indirizzo[4]);
+
   radio.openWritingPipe(indirizzo[0]);
 
   radio.startListening();  // put radio in RX mode
@@ -90,20 +91,16 @@ void loop() {
   if (readPot == 0) {
     valPot = 100;
     sendMessage(valPot);
-
-    delay(500);
   }
-if (radio.available()) {
+  
+  if (radio.available()) {
     //Creo una variabile di appoggio
     int buff = 0;
     //Leggo i dati sul buffer e li salvo nella variabile di appoggio
     radio.read(&buff, sizeof(buff));
     //Invio al monitor seriale il valore appena letto
     Serial.println(buff);
-}
-
-  //un minimo di respiro trai i cicli del loop
-  delay(10);
+  }
 }
 
 void sendMessage(int valore ) {
