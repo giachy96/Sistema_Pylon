@@ -181,7 +181,7 @@ void loop() {
     //Invio al monitor seriale il valore appena letto
     String Rx24str = String(buff);
     Serial.println(Rx24str);
-    
+
     if (Rx24str.indexOf("3112") != -1) {  //PressRaceR
       onlightR = 1;
     }
@@ -203,6 +203,18 @@ void loop() {
     ResponseStatus rs = e22ttl.sendFixedMessage(Key, Add, Chan, Rx24str);
     Rx24str = "";
   }
+
+
+  // per test a casa senza sistema
+  if (Serial.available()) {
+    String myString;
+    myString = Serial.readString();
+    Serial.println(myString);
+    State =  myString;
+    newDatalora = true;
+  }
+  // fine parte per test da casa
+
 
   if (e22ttl.available() > 1) {                      //If there's something incoming from lora
     ResponseContainer rc = e22ttl.receiveMessage();  //Receive message

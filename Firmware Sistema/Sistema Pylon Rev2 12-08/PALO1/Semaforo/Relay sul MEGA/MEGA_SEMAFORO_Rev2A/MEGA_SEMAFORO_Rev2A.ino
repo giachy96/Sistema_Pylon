@@ -144,6 +144,15 @@ void loop() {
   }
 
 
+  // per test a casa senza sistema
+  if (Serial.available()) {
+    String myString;
+    myString = Serial.readString();
+    Serial.println(myString);
+    State =  myString;
+    newDatalora = true;
+  }
+  // fine parte per test da casa
 
   if (e22ttl.available() > 1) {                      //If there's something incoming from lora
     ResponseContainer rc = e22ttl.receiveMessage();  //Receive message
