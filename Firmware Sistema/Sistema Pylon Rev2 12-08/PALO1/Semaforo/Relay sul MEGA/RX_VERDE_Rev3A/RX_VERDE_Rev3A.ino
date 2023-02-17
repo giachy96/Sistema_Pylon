@@ -63,21 +63,11 @@ void loop() {
 
   if (newDataLora == true) { //(SwSerial.available()>0){  // If mega will sent state to sem_rx
 
-    if (TxData != PressRace) {
       String str = "<";
       str.concat(TxData);
       str.concat(">");
       SwSerial.println(str);
-    }
-
-    if (State == Show && TxData == PressShow ) {
-      digitalWrite(Light, HIGH);
-    }
-    if (State == StartRace && TxData == PressRace ) {
-      onlight = 1;
-    }
-
-
+    
     newDataLora = false;
   }
 

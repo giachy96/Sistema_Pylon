@@ -148,7 +148,7 @@ void loop() {
   if (Serial.available()) {
     String myString;
     myString = Serial.readString();
-    Serial.println(myString);
+   // Serial.println(myString);
     State =  myString;
     newDatalora = true;
   }
