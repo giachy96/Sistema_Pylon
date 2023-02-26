@@ -1,4 +1,4 @@
-/*
+ /*
    LoRa E22
    Write on serial to transfer a message to other device
    https://www.mischianti.org
