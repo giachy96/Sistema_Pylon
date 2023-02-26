@@ -100,9 +100,9 @@ void setup() {
   radio.setPALevel(RF24_PA_LOW);
 
   //Apro un canale in lettura sull'indirizzo specificato
-  radio.openReadingPipe(1, indirizzo[0]);
-  radio.openReadingPipe(2, indirizzo[2]);
-  radio.openReadingPipe(3, indirizzo[4]);
+  radio.openReadingPipe(1, indirizzo[0]); // rosso
+  radio.openReadingPipe(2, indirizzo[2]); // verde
+  radio.openReadingPipe(3, indirizzo[4]); //blu
 
 
   //Metto la radio in ascolto
@@ -171,9 +171,10 @@ void loop() {
     Rxs3 = "";
   }
 
-
-  if (radio.available()) {  // se ricevo qualcosa da 2.4GHz
-
+  uint8_t pipe;
+  if (radio.available(&pipe)) {// se ricevo qualcosa da 2.4GHz
+    Serial.print("ricevo in 2.4 dal pipe : ");
+    Serial.println(pipe);
     //Creo una variabile di appoggio
     char buff[50]; // this must match dataToSend in the TX
     //Leggo i dati sul buffer e li salvo nella variabile di appoggio
@@ -182,25 +183,45 @@ void loop() {
     String Rx24str = String(buff);
     Serial.println(Rx24str);
 
-    if (Rx24str.indexOf("3112") != -1) {  //PressRaceR
-      onlightR = 1;
+    if (pipe == 1 ) { // pipe rosso
+      if (Rx24str.indexOf("3112") != -1) {  //PressRaceR
+        onlightR = 1;
+      }
+      else if (Rx24str.indexOf("2110") != -1) {  // PressShowR
+        digitalWrite(relayrosso, HIGH);
+        Rxs2 = Rx24str;
+      }
+      else {
+        Rxs2 = Rx24str;
+      }
     }
-    if (Rx24str.indexOf("2110") != -1) {  // PressShowR
-      digitalWrite(relayrosso, HIGH);
+
+    if (pipe == 2 ) { // pipe verde
+      if (Rx24str.indexOf("3122") != -1) {  //PressRaceV
+        onlightV = 1;
+      }
+      else if (Rx24str.indexOf("2120") != -1) {  // PressShowV
+        digitalWrite(relayverde, HIGH);
+        Rxs1 = Rx24str;
+      }
+      else {
+        Rxs1 = Rx24str;
+      }
     }
-    if (Rx24str.indexOf("3122") != -1) {  //PressRaceV
-      onlightV = 1;
+
+    if (pipe == 3 ) {
+      if (Rx24str.indexOf("3132") != -1) {  //PressRaceB
+        onlightB = 1;
+      }
+      else if (Rx24str.indexOf("2130") != -1) {  // PressShowB
+        digitalWrite(relayblu, HIGH);
+        Rxs3 = Rx24str;
+      }
+      else {
+        Rxs3 = Rx24str;
+      }
     }
-    if (Rx24str.indexOf("2120") != -1) {  // PressShowV
-      digitalWrite(relayverde, HIGH);
-    }
-    if (Rx24str.indexOf("3132") != -1) {  //PressRaceB
-      onlightB = 1;
-    }
-    if (Rx24str.indexOf("2130") != -1) {  // PressShowB
-      digitalWrite(relayblu, HIGH);
-    }
-    ResponseStatus rs = e22ttl.sendFixedMessage(Key, Add, Chan, Rx24str);
+    
     Rx24str = "";
   }
 
