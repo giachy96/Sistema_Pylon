@@ -1,0 +1,6 @@
+Situazione firmware Palo 2-3
+
+Tx Rosso Palo 2 -> 28-02-2023 -> Fw:TX_ROSSO_Palo2_U8x8_Rev1
+Tx Verde Palo 2 -> 28-02-2023 -> Fw:TX_VERDE_Palo2_U8x8_Rev1
+Tx Blu Palo 2 -> 28-02-2023 -> Fw:TX_BLU_Palo2_U8x8_Rev1
+Tx Rosso Palo 3 -> 28-02-2023 -> Fw:TX_ROSSO_Palo3_U8x8_Rev1
