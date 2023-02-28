@@ -1,0 +1,5 @@
+Ultimo Upload Firmware
+
+Tx Blu Palo1 -> 28-02-2023 -> Fw:TX_BLU_SEMAFORO_Rev1
+Tx  Palo1 -> 28-02-2023 -> Fw:TX__SEMAFORO_Rev1
+Tx  Palo1 -> 28-02-2023 -> Fw:TX__SEMAFORO_Rev1
