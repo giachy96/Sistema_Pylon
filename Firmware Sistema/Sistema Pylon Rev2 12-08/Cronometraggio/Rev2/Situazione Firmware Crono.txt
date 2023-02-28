@@ -1,0 +1,5 @@
+Situazione Firmware
+
+Tx Crono Verde -> 28-02-2023 -> Fw:TX_VERDE_CRONORev5
+Tx Crono Blu -> 28-02-2023 -> Fw:TX_BLU_CRONORev5
+Tx Crono Rosso -> 28-02-2023 -> Fw:TX_Rosso_CRONORev5
