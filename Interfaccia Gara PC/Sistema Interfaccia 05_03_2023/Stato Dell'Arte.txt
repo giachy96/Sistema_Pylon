@@ -1,3 +1,0 @@
-- cambiato da gruppo telegram a canale
-- esportazione classifica su pdf senza finestra explorer
-- esportazione automatica ogni 10 minuti della classifica
