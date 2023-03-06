@@ -1,2 +1,3 @@
 - aggiustata velocità lettura nomi piloti
 - risolto bug classifica. Prima la prima riga per ciasuna categoria rimaneva lo stesso pilota e non lo sistemva secondo i puteggi.
+- impaginazione nuova ordine di volo
