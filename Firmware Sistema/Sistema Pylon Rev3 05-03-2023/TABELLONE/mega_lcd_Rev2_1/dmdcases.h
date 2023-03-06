@@ -402,6 +402,7 @@ void draw(int casoRosso, int casoVerde, int casoBlu) {
     drawsubVerde(7);
     drawsubBlu(7);
     delay(2000);
+    dmd.clearScreen();
   }
 
 
