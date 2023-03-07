@@ -150,7 +150,7 @@ void drawsubRosso(int cases) {
     case 7:
       // Gara
       dmd.selectFont(nomi_font14);
-      dmd.drawString(10, 33, gara);
+      dmd.drawString(20, 33, gara);
       break;
   }
 }
@@ -259,7 +259,7 @@ void drawsubVerde(int cases) {
       // Manche
       dmd.selectFont(nomi_font14);
       dmd.drawString(0, 17, "Manche: ");
-      dmd.drawString(33, 17, String(manche_rx));
+      dmd.drawString(45, 17, String(manche_rx));
       break;
   }
 }
@@ -364,7 +364,7 @@ void drawsubBlu(int cases) {
       // Round
       dmd.selectFont(nomi_font14);
       dmd.drawString(0, 1, "Round: ");
-      dmd.drawString(33, 1, String(round_rx));
+      dmd.drawString(45, 1, String(round_rx));
       break;
   }
 }
@@ -401,7 +401,7 @@ void draw(int casoRosso, int casoVerde, int casoBlu) {
     drawsubRosso(7);
     drawsubVerde(7);
     drawsubBlu(7);
-    delay(2000);
+    delay(4000);
     dmd.clearScreen();
   }
 
