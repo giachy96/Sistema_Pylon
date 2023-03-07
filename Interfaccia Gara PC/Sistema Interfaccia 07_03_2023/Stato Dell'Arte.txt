@@ -1,0 +1,10 @@
+- aggiustata velocità lettura nomi piloti
+- risolto bug classifica. Prima la prima riga per ciasuna categoria rimaneva lo stesso pilota e non lo sistemva secondo i puteggi.
+- impaginazione nuova ordine di volo
+- tolto messaggio di errore se non sono presenti dati per generare la classifica
+
+problemi:
+
+il primo pilota di ogni categoria sull ordine di volo viene ripetuto
+la scalatura del 3 gruppo delle matrici per i piloti è i +1 invece che di +2
+
