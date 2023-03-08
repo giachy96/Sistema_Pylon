@@ -1,0 +1,7 @@
+- risolta la scalatura del 3 gruppo delle matrici per i piloti è i +1 invece che di +2
+
+problemi:
+
+il primo pilota di ogni categoria sull ordine di volo viene ripetuto
+
+
