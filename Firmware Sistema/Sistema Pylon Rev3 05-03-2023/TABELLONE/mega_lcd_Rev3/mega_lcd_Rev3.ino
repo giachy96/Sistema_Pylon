@@ -159,10 +159,14 @@ void loop() {
   }
 
   if (digitalRead(pulsanteIndietro) == LOW && currentMillis - oldPress >= intervalPress) {  // se pigio il pulsante indietro
+    Serial1.println("<6000>"); // pima mando lo stop per fermare tutto
+    delay(2000);
     ResponseStatus rs = e22ttl.sendFixedMessage(Key, Add, Chan, "700");
     oldPress = millis();
   }
-  if (digitalRead(pulsanteAvanti) == LOW && currentMillis - oldPress >= intervalPress) {  // se pigio il pulsante indietro
+  if (digitalRead(pulsanteAvanti) == LOW && currentMillis - oldPress >= intervalPress) {  // se pigio il pulsante Avanti
+    Serial1.println("<6000>"); // pima mando lo stop per fermare tutto
+    delay(2000);
     ResponseStatus rs = e22ttl.sendFixedMessage(Key, Add, Chan, "800");
     oldPress = millis();
   }
