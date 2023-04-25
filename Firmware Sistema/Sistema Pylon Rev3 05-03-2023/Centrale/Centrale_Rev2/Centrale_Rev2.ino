@@ -137,7 +137,7 @@ void loop() {
     if (statusPC == true) {
       Serial.println("700,0,0,0,0,0,0,0,0,0");
     } else {
-      ResponseStatus rs = e22ttl.sendFixedMessage(Key, Add, Chan, "750, ,0,0, ,NO PC, ,NO PC, ,NO PC");
+      ResponseStatus rs = e22ttl.sendFixedMessage(Key, Add, Chan, "750,NO PC ,NO PC ,NO PC, ,NO PC, ,NO PC, ,NO PC");
     }
     doublePress = 1;
     oldPress = millis();
@@ -149,7 +149,7 @@ void loop() {
     if (statusPC == true) {
       Serial.println("800,0,0,0,0,0,0,0,0,0");
     } else {
-      ResponseStatus rs = e22ttl.sendFixedMessage(Key, Add, Chan, "850, ,0,0, ,NO PC, ,NO PC, ,NO PC");
+      ResponseStatus rs = e22ttl.sendFixedMessage(Key, Add, Chan, "850,NO PC ,NO PC,NO PC, ,NO PC, ,NO PC, ,NO PC");
     }
 
     doublePress = 1;
