@@ -1,0 +1,8 @@
+- risolto alla prima generazione dell' ordine di volo non veniva presa la prima riga di ogni cat
+- risolto quando si genera la classifica sul folio gara da problemi
+
+problemi:
+
+
+
+
