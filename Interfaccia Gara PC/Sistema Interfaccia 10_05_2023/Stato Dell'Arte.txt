@@ -1,3 +1,2 @@
-- tolto il messaggio "ordine di volo trovato, sovrascriverlo?".Lo sovrascrive direttmente
-
-
+Aggiornato tutto l'interfaccia e finalmente dovrebbe funzioanre tutto , dal sorteggio alla classifica automatica.
+Da provare tutto con estrema cura. 
