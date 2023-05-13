@@ -23,11 +23,11 @@ extern int ntaglitotrosso;
 extern int ntaglitotverde ;
 extern int ntaglitotblu ;
 extern String tempototrosso;
-extern String arraytaglirosso[11];
+extern String arraytaglirosso[12];
 extern String tempototverde;
-extern String arraytagliverde[11];
+extern String arraytagliverde[12];
 extern String tempototblu;
-extern String arraytagliblu[11];
+extern String arraytagliblu[12];
 extern int timeoutblu ;
 extern int timeoutverde ;
 extern int timeoutrosso ;
@@ -99,7 +99,7 @@ void drawsubRosso(int cases) {
         itoa(trovato + 1, cut1, 10); //(integer, yourBuffer, base)
         dmd.selectFont(Arial_Black_16);
         dmd.drawString(2, 33, cut1 );
-        dmd.drawString(15, 33, arraytaglirosso[trovato]);
+        dmd.drawString(18, 33, arraytaglirosso[trovato]);
       } else { // tagli > 1
         String cut2 = "";
         for (int i = 0; i < 10; i++) {
@@ -205,7 +205,7 @@ void drawsubVerde(int cases) {
         itoa(trovato + 1, cut1, 10); //(integer, yourBuffer, base)
         dmd.selectFont(Arial_Black_16);
         dmd.drawString(2, 17, cut1 );
-        dmd.drawString(15, 17, arraytagliverde[trovato]);
+        dmd.drawString(18, 17, arraytagliverde[trovato]);
       } else {
         String cut2 = "";
         for (int i = 0; i < 10; i++) {
@@ -313,7 +313,7 @@ void drawsubBlu(int cases) {
         itoa(trovato + 1, cut1, 10); //(integer, yourBuffer, base)
         dmd.selectFont(Arial_Black_16);
         dmd.drawString(2, 1, cut1 );
-        dmd.drawString(15, 1, arraytagliblu[trovato]);
+        dmd.drawString(18, 1, arraytagliblu[trovato]);
       } else {
         String cut2 = "";
         for (int i = 0; i < 10; i++) {

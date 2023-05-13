@@ -1,9 +1,9 @@
 extern String arraytempirosso[12];
-extern String arraytaglirosso[11];
+extern String arraytaglirosso[12];
 extern String arraytempiverde[12];
-extern String arraytagliverde[11];
+extern String arraytagliverde[12];
 extern String arraytempiblu[12];
-extern String arraytagliblu[11];
+extern String arraytagliblu[12];
 int ntaglitotrosso = 0;
 int ntaglitotverde = 0;
 int ntaglitotblu = 0;
