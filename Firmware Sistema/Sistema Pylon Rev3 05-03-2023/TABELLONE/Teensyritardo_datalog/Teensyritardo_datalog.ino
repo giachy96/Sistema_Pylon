@@ -1,5 +1,9 @@
 //testato 27/12/2022
 #include "serialmethode.h"
+#include "datalog.h"
+#include <TimeLib.h>
+#include <SD.h>
+#include <SPI.h>
 
 char receivedChars1[numChars];
 char receivedChars2[numChars];
@@ -84,6 +88,8 @@ int pGo = 39;
 int pShow = 40;
 int codicecentrale = 0;
 
+const int chipSelect = BUILTIN_SDCARD;
+String nome_file = "Backup_";
 
 
 void setup() {
@@ -99,6 +105,24 @@ void setup() {
   Serial6.begin(9600);  // centrale
   Serial7.begin(9600);  // cronoverde
   Serial8.begin(9600);  // cronorosso
+
+  // for the log of the manche
+  SD.begin(chipSelect);
+  setSyncProvider(getTeensy3Time);
+  if (timeStatus() != timeSet) {
+    Serial.println("Unable to sync with the RTC");
+  } else {
+    Serial.println("RTC has set the system time");
+  }
+
+  nome_file.concat(day());
+  nome_file.concat("_");
+  nome_file.concat(month());
+  nome_file.concat("_");
+  nome_file.concat(year());
+  nome_file.concat(".txt");
+
+
 }
 
 
@@ -604,10 +628,12 @@ void loop() {
     stringonerosso.concat(">");
     Serial6.println(stringonerosso);
     Serial.println("Mando lo stringone rosso alla centrale");
+    Serial.println("Scrivo su SD lo stringone rosso");
+    scrivisuSD (stringonerosso);
     Serial.println(stringonerosso);
     for (int k = 0; k <= 10; k++) {
-        Serial.print(arrayP2_rosso[k]);
-      }
+      Serial.print(arrayP2_rosso[k]);
+    }
     Serial.println(" ");
     end10lap_rosso = 0;
 
@@ -634,10 +660,12 @@ void loop() {
     stringoneverde.concat(">");
     Serial6.println(stringoneverde);
     Serial.println("Mando lo stringone verde alla centrale");
+    Serial.println("Scrivo su SD lo stringone verde");
+    scrivisuSD (stringoneverde);
     Serial.println(stringoneverde);
     for (int k = 0; k <= 10; k++) {
-        Serial.print(arrayP2_verde[k]);
-      }
+      Serial.print(arrayP2_verde[k]);
+    }
     Serial.println(" ");
     end10lap_verde = 0;
 
@@ -665,6 +693,8 @@ void loop() {
     stringoneblu.concat(">");
     Serial6.println(stringoneblu);
     Serial.println("Mando lo stringone blu alla centrale");
+    Serial.println("Scrivo su SD lo stringone blu");
+    scrivisuSD (stringoneblu);
     Serial.println(stringoneblu);
     end10lap_blu = 0;
   }
@@ -696,4 +726,58 @@ void decodecomma(String str, String tempi[]) {
   }
 
   //return tempi;
+}
+
+void scrivisuSD( String string_to_backup ) {
+
+  // make a string for assembling the data to log:
+  String dataString = hour();
+  dataString += ":";
+  dataString += minute();
+  dataString += ":";
+  dataString += second();
+  dataString += "   ";
+  dataString += string_to_backup;
+
+  // open the file.
+
+  int str_len = nome_file.length() + 1;
+  char nome_file_char[str_len];
+  nome_file.toCharArray(nome_file_char, str_len);
+  File dataFile = SD.open(nome_file_char, FILE_WRITE);
+
+  // if the file is available, write to it:
+  if (dataFile) {
+    dataFile.println(dataString);
+    dataFile.close();
+    // print to the serial port too:
+    Serial.println("Ho scritto su SD");
+  } else {
+    // if the file isn't open, pop up an error:
+    Serial.println("error opening file.txt");
+  }
+
+}
+
+
+time_t getTeensy3Time()
+{
+  return Teensy3Clock.get();
+}
+
+/*  code to process time sync messages from the serial port   */
+#define TIME_HEADER  "T"   // Header tag for serial time sync message
+
+unsigned long processSyncMessage() {
+  unsigned long pctime = 0L;
+  const unsigned long DEFAULT_TIME = 1357041600; // Jan 1 2013
+
+  if (Serial.find(TIME_HEADER)) {
+    pctime = Serial.parseInt();
+    return pctime;
+    if ( pctime < DEFAULT_TIME) { // check the value is a valid time (greater than Jan 1 2013)
+      pctime = 0L; // return 0 to indicate that the time is not valid
+    }
+  }
+  return pctime;
 }
