@@ -23,8 +23,8 @@ void stampatotali (String gara , int manche_rx , int round_rx, String nome_rosso
   Serial3.write(0x01); // fine
 
   Serial3.print("RACE: ");
-  Serial3.print(gara);
-  Serial3.print("  MANCHE N: ");
+  Serial3.println(gara);
+  Serial3.print("MANCHE N: ");
   if (manche_rx != 0) {
     Serial3.print(manche_rx);
   }

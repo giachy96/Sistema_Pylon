@@ -228,8 +228,8 @@ void loop() {
 
 
   if (RxData.indexOf("5514") != -1 || RxData.indexOf("5534") != -1 || RxData.indexOf("5524") != -1) {  // se ricevo fine 10 giri
-    //   draw(4, lcd);
-    // tone(buzzer, 3000, 200);
+     draw(4, lcd);
+     tone(buzzer, 3000, 200);
     if (RxData.indexOf("5514") != -1) {
       decodestringone(RxData, 1);
       int onecut = 0;

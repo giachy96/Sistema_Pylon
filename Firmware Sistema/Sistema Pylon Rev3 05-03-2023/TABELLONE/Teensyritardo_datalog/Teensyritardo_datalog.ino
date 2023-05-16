@@ -276,7 +276,7 @@ void loop() {
   }
 
   if (delaygiro_rosso == 1) {
-    if (millis() - timedelaygiro_rosso > 1000) {
+    if (millis() - timedelaygiro_rosso > 800) {
       ngiri_rosso++;
       ntagliP1_rosso = 0;
       ntagliP2_rosso = 0;
@@ -333,7 +333,7 @@ void loop() {
     newData1 = false;
   }
   if (delaygiro_blu == 1) {
-    if (millis() - timedelaygiro_blu > 1000) {
+    if (millis() - timedelaygiro_blu > 800) {
       ngiri_blu++;
       ntagliP1_blu = 0;
       ntagliP2_blu = 0;
@@ -392,7 +392,7 @@ void loop() {
   }
 
   if (delaygiro_verde == 1) {
-    if (millis() - timedelaygiro_verde > 1000) {
+    if (millis() - timedelaygiro_verde > 800) {
       ngiri_verde++;
       ntagliP1_verde = 0;
       ntagliP2_verde = 0;

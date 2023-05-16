@@ -25,7 +25,7 @@ int updatescreen = 0;
 unsigned long currentMillis;
 unsigned long lastdiplayupdate;
 unsigned long oldPress;
-unsigned long intervalPress = 2000;
+unsigned long intervalPress = 1000;
 unsigned long intervalstandby = 5000;
 unsigned long milliscountdown;
 unsigned long sirenamillis;
@@ -162,14 +162,14 @@ void loop() {
   }
 
   if (digitalRead(pulsanteIndietro) == LOW && currentMillis - oldPress >= intervalPress) {  // se pigio il pulsante indietro
-    Serial1.println("<6000>"); // pima mando lo stop per fermare tutto
-    delay(2000);
+    //Serial1.println("<6000>"); // pima mando lo stop per fermare tutto
+   // delay(1000);
     ResponseStatus rs = e22ttl.sendFixedMessage(Key, Add, Chan, "700");
     oldPress = millis();
   }
   if (digitalRead(pulsanteAvanti) == LOW && currentMillis - oldPress >= intervalPress) {  // se pigio il pulsante Avanti
-    Serial1.println("<6000>"); // pima mando lo stop per fermare tutto
-    delay(2000);
+   // Serial1.println("<6000>"); // pima mando lo stop per fermare tutto
+    //delay(1000);
     ResponseStatus rs = e22ttl.sendFixedMessage(Key, Add, Chan, "800");
     oldPress = millis();
   }
