@@ -5,11 +5,11 @@
 //#define RX_PIN 6// Arduino receive   GREEN WIRE   labeled TX on Stampanate
 
 extern String arraytempirosso[12];
-extern String arraytaglirosso[11];
+extern String arraytaglirosso[12];
 extern String arraytempiverde[12];
-extern String arraytagliverde[11];
+extern String arraytagliverde[12];
 extern String arraytempiblu[12];
-extern String arraytagliblu[11];
+extern String arraytagliblu[12];
 extern String punteggiorosso;
 extern String punteggioverde;
 extern String punteggioblu;
@@ -22,14 +22,14 @@ void stampatotali (String gara , int manche_rx , int round_rx, String nome_rosso
   Serial3.write(0x21);
   Serial3.write(0x01); // fine
 
-  Serial3.print("RACE ");
-  Serial3.println(gara);
-  Serial3.print("MANCHE N :");
+  Serial3.print("RACE: ");
+  Serial3.print(gara);
+  Serial3.print("  MANCHE N: ");
   if (manche_rx != 0) {
     Serial3.print(manche_rx);
   }
-  Serial3.println("");
-  Serial3.print("ROUND N :");
+  Serial3.print("  ");
+  Serial3.print("ROUND N: ");
   if (round_rx != 0) {
     Serial3.print(round_rx);
   }

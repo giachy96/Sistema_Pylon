@@ -4,17 +4,10 @@ extern String arraytempiverde[12];
 extern String arraytagliverde[12];
 extern String arraytempiblu[12];
 extern String arraytagliblu[12];
-char* arr[10];
+int ntaglitotrosso = 0;
+int ntaglitotverde = 0;
+int ntaglitotblu = 0;
 
-
-String conversionecommastr (String colore , long tempo_parziale[]) {
-  String result = colore;
-  for (int j = 0 ; j <= 5; j++) {
-    result.concat(",");
-    result.concat(String(tempo_parziale[j]));
-  }
-  return result;
-}
 
 int decodecomma (String str , String tempi[]) {
   int lungh_str = str.length();
@@ -40,80 +33,96 @@ int decodecomma (String str , String tempi[]) {
   return tempi;
 }
 
+String decodestringone (String strx) {
 
 
-void decodestringone (String strx, int colore) {
   String arraytmp [12];
+  String code ;
   decodecomma (strx , arraytmp);
   //caso rosso
-  if (colore == 1) {
+  if (arraytmp[0] == "5514" || arraytmp[0] == "4015") {
+    ntaglitotrosso = 0;
     for (int i = 1 ; i < 12; i++) {
       String tmp = arraytmp[i];
       if (arraytmp[i].indexOf("-P1") != -1) {
-        arraytaglirosso[i-1].concat("P1")  ;
+        arraytaglirosso[i - 1].concat("P1");
+        ntaglitotrosso++;
         tmp.remove(tmp.indexOf("-P1"), 3);
         arraytempirosso[i] = tmp;
       }
       if (arraytmp[i].indexOf("-P2") != -1) {
-         arraytaglirosso[i-1].concat("P2")  ;
+         arraytaglirosso[i - 1].concat("P2");
+        ntaglitotrosso++;
         tmp.remove(tmp.indexOf("-P2"), 3);
         arraytempirosso[i] = tmp;
       }
       if (arraytmp[i].indexOf("-P3") != -1) {
-         arraytaglirosso[i-1].concat("P3")  ;
+         arraytaglirosso[i - 1].concat("P3");
+        ntaglitotrosso++;
         tmp.remove(tmp.indexOf("-P3"), 3);
         arraytempirosso[i] = tmp;
       }
 
       arraytempirosso[i] = tmp;
     }
+    code = "5514";
   }
 
   //caso verde
-  if (colore == 2) {
+  if (arraytmp[0] == "5524" || arraytmp[0] == "4025") {
+    ntaglitotverde = 0;
     for (int i = 1 ; i < 12; i++) {
       String tmp = arraytmp[i];
       if (arraytmp[i].indexOf("-P1") != -1) {
-         arraytagliverde[i-1].concat("P1")  ;
+         arraytagliverde[i - 1].concat("P1");
+        ntaglitotverde++;
         tmp.remove(tmp.indexOf("-P1"), 3);
         arraytempiverde[i] = tmp;
       }
       if (arraytmp[i].indexOf("-P2") != -1) {
-        arraytagliverde[i-1].concat("P2")  ;
+        arraytagliverde[i - 1].concat("P2");
+        ntaglitotverde++;
         tmp.remove(tmp.indexOf("-P2"), 3);
         arraytempiverde[i] = tmp;
       }
       if (arraytmp[i].indexOf("-P3") != -1) {
-        arraytagliverde[i-1].concat("P3")  ;
+       arraytagliverde[i - 1].concat("P3");
+        ntaglitotverde++;
         tmp.remove(tmp.indexOf("-P3"), 3);
         arraytempiverde[i] = tmp;
       }
 
       arraytempiverde[i] = tmp;
     }
+    code = "5524";
   }
   //caso blu
-  if (colore == 3) {
+  if (arraytmp[0] == "5534" || arraytmp[0] == "4035") {
+    ntaglitotblu = 0;
     for (int i = 1 ; i < 12; i++) {
       String tmp = arraytmp[i];
       if (arraytmp[i].indexOf("-P1") != -1) {
-        arraytagliblu[i-1].concat("P1")  ;
+        arraytagliblu[i - 1].concat("P1");
+        ntaglitotblu++;
         tmp.remove(tmp.indexOf("-P1"), 3);
         arraytempiblu[i] = tmp;
       }
       if (arraytmp[i].indexOf("-P2") != -1) {
-         arraytagliblu[i-1].concat("P2")  ;
+        arraytagliblu[i - 1].concat("P2");
+        ntaglitotblu++;
         tmp.remove(tmp.indexOf("-P2"), 3);
         arraytempiblu[i] = tmp;
       }
       if (arraytmp[i].indexOf("-P3") != -1) {
-         arraytagliblu[i-1].concat("P3")  ;
+        arraytagliblu[i - 1].concat("P3");
+        ntaglitotblu++;
         tmp.remove(tmp.indexOf("-P3"), 3);
         arraytempiblu[i] = tmp;
       }
 
       arraytempiblu[i] = tmp;
     }
+    code = "5534";
   }
   //debug caso rosso
 //  Serial.println("Tempi rosso ");
@@ -132,5 +141,7 @@ void decodestringone (String strx, int colore) {
 //    Serial.print(" ");
 //  }
 //  Serial.println("");
+
+  return code;
 
 }

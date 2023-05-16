@@ -33,11 +33,11 @@ long interval = 3000;  // refresh schermo
 long intervalPress = 1000;  // refresh schermo
 int doublePress = 0;
 String arraytempirosso[12];
-String arraytaglirosso[11];
+String arraytaglirosso[12];
 String arraytempiverde[12];
-String arraytagliverde[11];
+String arraytagliverde[12];
 String arraytempiblu[12];
-String arraytagliblu[11];
+String arraytagliblu[12];
 int datiblu = 0;
 int datirosso = 0;
 int dativerde = 0;

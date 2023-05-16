@@ -1,6 +1,5 @@
 //testato 27/12/2022
 #include "serialmethode.h"
-#include "datalog.h"
 #include <TimeLib.h>
 #include <SD.h>
 #include <SPI.h>
@@ -81,6 +80,7 @@ unsigned long timedelay10giri_blu ;
 String stringoneverde  ;
 String stringoneblu  ;
 String stringonerosso  ;
+unsigned long stringone_delay ;
 
 
 int pStop = 38;
@@ -418,11 +418,12 @@ void loop() {
     String Rxs6;
     Rxs6 = receivedChars6;
 
-    if (Rxs6.indexOf("850") != -1) {  // ho ricevuto lo show dalla centrale
+    if (Rxs6.indexOf("850") != -1) {  // ho ricevuto avanti/indietro dalla centrale
       Serial2.println("<850>");
       Serial3.println("<850>");
       Serial4.println("<850>");
       Serial5.println("<850>");
+      scrivisuSD (Rxs6);
     }
 
     if (Rxs6.indexOf("2000") != -1) {  // ho ricevuto lo show dalla centrale
@@ -608,7 +609,7 @@ void loop() {
 
 
   // codice che crea le stringhe finali per i colori
-  if (end10lap_rosso == 1) {  // creo la stringa finale per il rosso
+  if (end10lap_rosso == 1 &&  ( millis() - stringone_delay  >= 200)) {  // creo la stringa finale per il rosso
 
     for (int i = 1; i <= 10; i++) {
       stringonerosso.concat(tempirosso[i]);
@@ -627,6 +628,7 @@ void loop() {
     stringonerosso.concat(tempirosso[11]);
     stringonerosso.concat(">");
     Serial6.println(stringonerosso);
+    stringone_delay  = millis();
     Serial.println("Mando lo stringone rosso alla centrale");
     Serial.println("Scrivo su SD lo stringone rosso");
     scrivisuSD (stringonerosso);
@@ -639,7 +641,7 @@ void loop() {
 
   }
 
-  if (end10lap_verde == 1) {  // creo la stringa finale per il verde
+  if (end10lap_verde == 1 &&  ( millis() - stringone_delay  >= 200) ) {  // creo la stringa finale per il verde
 
 
     for (int i = 1; i <= 10; i++) {
@@ -659,6 +661,7 @@ void loop() {
     stringoneverde.concat(tempiverde[11]);
     stringoneverde.concat(">");
     Serial6.println(stringoneverde);
+    stringone_delay  = millis();
     Serial.println("Mando lo stringone verde alla centrale");
     Serial.println("Scrivo su SD lo stringone verde");
     scrivisuSD (stringoneverde);
@@ -672,7 +675,7 @@ void loop() {
   }
 
 
-  if (end10lap_blu == 1) {  // creo la stringa finale per il blu
+  if (end10lap_blu == 1 &&  ( millis() - stringone_delay  >= 200)) {  // creo la stringa finale per il blu
 
 
     for (int i = 1; i <= 10; i++) {
@@ -692,6 +695,7 @@ void loop() {
     stringoneblu.concat(tempiblu[11]);
     stringoneblu.concat(">");
     Serial6.println(stringoneblu);
+    stringone_delay  = millis();
     Serial.println("Mando lo stringone blu alla centrale");
     Serial.println("Scrivo su SD lo stringone blu");
     scrivisuSD (stringoneblu);
@@ -701,7 +705,7 @@ void loop() {
 
 
   // fine codice delle stringhe finali
-}
+} // FINE LOOP
 
 
 void decodecomma(String str, String tempi[]) {
