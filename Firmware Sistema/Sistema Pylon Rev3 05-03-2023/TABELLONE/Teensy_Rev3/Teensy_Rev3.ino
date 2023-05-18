@@ -4,6 +4,7 @@
 #include <SD.h>
 #include <SPI.h>
 
+
 char receivedChars1[numChars];
 char receivedChars2[numChars];
 char receivedChars3[numChars];

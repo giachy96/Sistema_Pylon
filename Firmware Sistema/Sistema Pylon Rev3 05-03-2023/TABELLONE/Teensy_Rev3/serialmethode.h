@@ -6,7 +6,7 @@ extern boolean newData5;
 extern boolean newData6;
 extern boolean newData7;
 extern boolean newData8;
-extern  const byte numChars = 32;
+const byte numChars = 100;
 extern  char receivedChars1[numChars];
 extern char receivedChars2[numChars];
 extern char receivedChars3[numChars];
