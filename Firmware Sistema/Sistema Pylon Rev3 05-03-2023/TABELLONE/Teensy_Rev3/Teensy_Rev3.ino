@@ -423,10 +423,10 @@ void loop() {
     Rxs6 = receivedChars6;
 
     if (Rxs6.indexOf("850") != -1) {  // ho ricevuto avanti/indietro dalla centrale
-      Serial2.println("<850>");
-      Serial3.println("<850>");
-      Serial4.println("<850>");
-      Serial5.println("<850>");
+      //Serial2.println("<850>");
+      //  Serial3.println("<850>");
+      // Serial4.println("<850>");
+      // Serial5.println("<850>");
       scrivisuSD (Rxs6);
     }
 
