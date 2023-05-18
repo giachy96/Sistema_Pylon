@@ -213,6 +213,7 @@ void loop() {
     showcroverde = false;
     showcrorosso = false;
     showcroblu = false;
+    inib_pulsante = false;
     stringonerosso = "";
     stringoneblu = "";
     stringoneverde = "";
