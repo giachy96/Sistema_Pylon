@@ -397,13 +397,13 @@ void draw(int casoRosso, int casoVerde, int casoBlu) {
     cBlu = 5;
   }
 
-  if (casoRosso == 0 && casoVerde == 0 &&   casoBlu == 0 ) {
-    drawsubRosso(7);
-    drawsubVerde(7);
-    drawsubBlu(7);
-    delay(4000);
-    dmd.clearScreen();
-  }
+//  if (casoRosso == 0 && casoVerde == 0 &&   casoBlu == 0 ) {
+//    drawsubRosso(7);
+//    drawsubVerde(7);
+//    drawsubBlu(7);
+//    delay(4000);
+//    dmd.clearScreen();
+//  }
 
 
 
