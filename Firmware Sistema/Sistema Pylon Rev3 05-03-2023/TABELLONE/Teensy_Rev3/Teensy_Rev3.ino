@@ -182,9 +182,11 @@ void loop() {
       memset(arrayP2_verde, 0, sizeof(arrayP2_verde));
       ntagliP3_verde = 0;
       memset(arrayP3_verde, 0, sizeof(arrayP3_verde));
-      memset(tempiverde, 0, sizeof(tempiverde));
-      memset(tempiblu, 0, sizeof(tempiblu));
-      memset(tempirosso, 0, sizeof(tempirosso));
+      for ( int k = 0;  k < 12 ; k++) {
+        tempiverde[k] = "";
+        tempiblu[k] = "";
+        tempirosso[k] = "";
+      }
       ngiri_blu = 0;
       ngiri_rosso = 0;
       ngiri_verde = 0;
@@ -225,9 +227,11 @@ void loop() {
       memset(arrayP2_verde, 0, sizeof(arrayP2_verde));
       ntagliP3_verde = 0;
       memset(arrayP3_verde, 0, sizeof(arrayP3_verde));
-      memset(tempiverde, 0, sizeof(tempiverde));
-      memset(tempiblu, 0, sizeof(tempiblu));
-      memset(tempirosso, 0, sizeof(tempirosso));
+      for ( int k = 0;  k < 12 ; k++) {
+        tempiverde[k] = "";
+        tempiblu[k] = "";
+        tempirosso[k] = "";
+      }
       ngiri_blu = 0;
       ngiri_rosso = 0;
       ngiri_verde = 0;
@@ -714,18 +718,17 @@ void decodecomma(String str, String tempi[]) {
   str.toCharArray(buff, lungh_str + 1);
   //Serial.println(parseData(buff));
   int i = 0;
-  char* p;
   //Serial.println("Example of splitting a string into tokens: ");
   // Serial.print("The input string is: '");
   // Serial.print(buff);
   // Serial.println("'");
 
-  p = strtok(buff, "{,}");  //2nd argument is a char[] of delimiters
-  while (p != '\0') {       //not equal to NULL
+  char* p = strtok(buff, ",");  //2nd argument is a char[] of delimiters
+  while (p != NULL ) {       //not equal to NULL
     //Serial.println(p);
     tempi[i] = p;
 
-    p = strtok('\0', "{,}");  //expects NULL for string on subsequent calls
+    p = strtok(NULL, ",");  //expects NULL for string on subsequent calls
     i++;
   }
 
