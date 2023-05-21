@@ -97,7 +97,7 @@ void setup() {
      Che corrispondono a: -18dBm, -12dBm,-6dBM, e 0dBm
   */
   //Setto la potenza della radio a LOW
-  radio.setPALevel(RF24_PA_LOW);
+  radio.setPALevel(RF24_PA_MAX);
 
   //Apro un canale in lettura sull'indirizzo specificato
   radio.openReadingPipe(1, indirizzo[0]); // rosso
