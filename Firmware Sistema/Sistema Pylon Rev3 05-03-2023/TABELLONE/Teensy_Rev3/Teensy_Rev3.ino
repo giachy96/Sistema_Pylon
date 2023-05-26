@@ -281,7 +281,7 @@ void loop() {
   }
 
   if (delaygiro_rosso == 1) {
-    if (millis() - timedelaygiro_rosso > 800) {
+    if (millis() - timedelaygiro_rosso > 300) {
       ngiri_rosso++;
       ntagliP1_rosso = 0;
       ntagliP2_rosso = 0;
@@ -292,7 +292,7 @@ void loop() {
     }
   }
   if (delay10giri_rosso == 1) {
-    if (millis() - timedelay10giri_rosso > 1000) {
+    if (millis() - timedelay10giri_rosso > 600) {
       Serial3.print("<5514>");
       Serial5.print("<5514>");
       stringonerosso = "<5514,";
@@ -338,7 +338,7 @@ void loop() {
     newData1 = false;
   }
   if (delaygiro_blu == 1) {
-    if (millis() - timedelaygiro_blu > 800) {
+    if (millis() - timedelaygiro_blu > 300) {
       ngiri_blu++;
       ntagliP1_blu = 0;
       ntagliP2_blu = 0;
@@ -349,7 +349,7 @@ void loop() {
     }
   }
   if (delay10giri_blu == 1) {
-    if (millis() - timedelay10giri_blu > 1000) {
+    if (millis() - timedelay10giri_blu > 600) {
       Serial3.print("<5534>");
       Serial2.print("<5534>");
       stringoneblu = "<5534,";
@@ -397,7 +397,7 @@ void loop() {
   }
 
   if (delaygiro_verde == 1) {
-    if (millis() - timedelaygiro_verde > 800) {
+    if (millis() - timedelaygiro_verde > 300) {
       ngiri_verde++;
       ntagliP1_verde = 0;
       ntagliP2_verde = 0;
@@ -408,7 +408,7 @@ void loop() {
     }
   }
   if (delay10giri_verde == 1) {
-    if (millis() - timedelay10giri_verde > 1000) {
+    if (millis() - timedelay10giri_verde > 600) {
       Serial3.print("<5524>");
       Serial4.print("<5524>");
       stringoneverde = "<5524,";
@@ -424,10 +424,11 @@ void loop() {
     Rxs6 = receivedChars6;
 
     if (Rxs6.indexOf("850") != -1) {  // ho ricevuto avanti/indietro dalla centrale
-      //Serial2.println("<850>");
-      //  Serial3.println("<850>");
-      // Serial4.println("<850>");
-      // Serial5.println("<850>");
+      //per resettare le luci dei pali
+      Serial2.println("<850>");
+      Serial3.println("<850>");
+      Serial4.println("<850>");
+      Serial5.println("<850>");
       scrivisuSD (Rxs6);
     }
 

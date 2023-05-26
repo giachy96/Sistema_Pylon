@@ -80,7 +80,13 @@ void loop() {
   if (newData == true) {
     State = RecCh;
     Serial.println(State);
+
+     if ( State != Avanti  ) {
+      
     ResponseStatus rs = e22ttl.sendFixedMessage(Key, Add, Chan, State);
+    
+     }
+    
     if (State == Show || State == Race ||  State == Stop ||  State == Avanti || State == StandBy ) {
       digitalWrite(lucerosso, LOW);
       digitalWrite(luceverde, LOW);
