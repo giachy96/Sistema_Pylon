@@ -250,7 +250,7 @@ void loop() {
 
   if (newDatalora == true) {
     Serial.println(State);
-    if (State != end10lapB && State != end10lapR && State != end10lapV && State != DoubleCutR && State != DoubleCutB && State != DoubleCutV && State != StopTimeR && State != StopTimeV && State != StopTimeB) {
+    if (State != end10lapB && State != end10lapR && State != end10lapV && State != DoubleCutR && State != DoubleCutB && State != DoubleCutV && State != StopTimeR && State != StopTimeV && State != StopTimeB && State != Race) {
       String str = "<";
       str.concat(State);
       str.concat(">");
@@ -260,21 +260,29 @@ void loop() {
       sendStringMessageRF24(State, 1);  // mando all 2.4 rosso
       sendStringMessageRF24(State, 3);  // mando all 2.4 verde
       sendStringMessageRF24(State, 5);  // mando all 2.4 blu
-      onlightR = 0;
-      digitalWrite(relayrosso, LOW);
-      onlightV = 0;
-      digitalWrite(relayverde, LOW);
-      onlightB = 0;
-      digitalWrite(relayblu, LOW);
-      if (State==Race) {
+      if (State == Race) {
+        onlightR = 0;
+        onRstart = 1;
         digitalWrite(relayrosso, HIGH);
+        onlightV = 0;
+        onVstart = 1;
         digitalWrite(relayverde, HIGH);
+        onlightB = 0;
+        onBstart = 1;
         digitalWrite(relayblu, HIGH);
-       timeonlightstart=millis();
-       onRstart=1;
-       onVstart=1;
-       onBstart=1;
+        timeonlightstart=millis();
       }
+      else {
+        onlightR = 0;
+        onRstart = 0;
+        digitalWrite(relayrosso, LOW);
+        onlightV = 0;
+        onVstart = 0;
+        digitalWrite(relayverde, LOW);
+        onlightB = 0;
+        onBstart = 0;
+        digitalWrite(relayblu, LOW);
+        }
     }
     if (State == end10lapR || State == DoubleCutR || State == StopTimeR) {
       String str = "<";
