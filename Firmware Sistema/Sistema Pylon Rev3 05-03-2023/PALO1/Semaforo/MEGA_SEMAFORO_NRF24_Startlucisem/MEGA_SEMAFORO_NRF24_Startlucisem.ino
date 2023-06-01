@@ -250,7 +250,7 @@ void loop() {
 
   if (newDatalora == true) {
     Serial.println(State);
-    if (State != end10lapB && State != end10lapR && State != end10lapV && State != DoubleCutR && State != DoubleCutB && State != DoubleCutV && State != StopTimeR && State != StopTimeV && State != StopTimeB && State != Race) {
+    if (State != end10lapB && State != end10lapR && State != end10lapV && State != DoubleCutR && State != DoubleCutB && State != DoubleCutV && State != StopTimeR && State != StopTimeV && State != StopTimeB ) {
       String str = "<";
       str.concat(State);
       str.concat(">");
@@ -271,6 +271,11 @@ void loop() {
         onBstart = 1;
         digitalWrite(relayblu, HIGH);
         timeonlightstart=millis();
+      }
+      else if (State == StartRace) {
+        onlightR = 0;
+        onlightV = 0;
+        onlightB = 0;
       }
       else {
         onlightR = 0;
