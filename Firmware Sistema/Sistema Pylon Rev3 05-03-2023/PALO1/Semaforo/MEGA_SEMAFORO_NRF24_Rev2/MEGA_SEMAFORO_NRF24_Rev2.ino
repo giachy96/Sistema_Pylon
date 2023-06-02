@@ -74,7 +74,7 @@ int onV;
 unsigned long timeonlightB;
 int onlightB;
 int onB;
-unsigned long DelayLightstart = 60000;
+unsigned long DelayLightstart = 61600;
 unsigned long timeonlightstart;
 int onRstart;
 int onVstart;
@@ -352,7 +352,7 @@ void loop() {
     }
   }
 
-  if (onVstart==1 && (millis()-timeonlightstart)>(DelayLightstart+1000)){
+  if (onVstart==1 && (millis()-timeonlightstart)>(DelayLightstart+1100)){
     digitalWrite(relayverde, LOW);
     onVstart=0;
   }
@@ -372,7 +372,7 @@ void loop() {
       }
     }
   }
-    if (onBstart==1 && (millis()-timeonlightstart)>(DelayLightstart+2000)){
+    if (onBstart==1 && (millis()-timeonlightstart)>(DelayLightstart+2100)){
     digitalWrite(relayblu, LOW);
     onBstart=0;
   }

@@ -76,7 +76,18 @@ void stampatotali (String gara , int manche_rx , int round_rx, String nome_rosso
   Serial3.println(" ");
 
 
-
+ Serial3.print("RACE: ");
+  Serial3.println(gara);
+  Serial3.print("MANCHE N: ");
+  if (manche_rx != 0) {
+    Serial3.print(manche_rx);
+  }
+  Serial3.print("  ");
+  Serial3.print("ROUND N: ");
+  if (round_rx != 0) {
+    Serial3.print(round_rx);
+  }
+  Serial3.println("");
   Serial3.println("Pilot GREEN ");
   Serial3.print("NAME:");
   Serial3.print(nome_verde);
@@ -117,7 +128,18 @@ void stampatotali (String gara , int manche_rx , int round_rx, String nome_rosso
   Serial3.println(" ");
   Serial3.println(" ");
 
-
+ Serial3.print("RACE: ");
+  Serial3.println(gara);
+  Serial3.print("MANCHE N: ");
+  if (manche_rx != 0) {
+    Serial3.print(manche_rx);
+  }
+  Serial3.print("  ");
+  Serial3.print("ROUND N: ");
+  if (round_rx != 0) {
+    Serial3.print(round_rx);
+  }
+  Serial3.println("");
   Serial3.println("Pilot BLUE ");
   Serial3.print("NAME:");
   Serial3.print(nome_blu);
@@ -163,7 +185,7 @@ void stampatotali (String gara , int manche_rx , int round_rx, String nome_rosso
   Serial3.println(" ");
   Serial3.println(" ");
   Serial3.println(" ");
-  Serial3.println(" ");
+
 
 
 }
