@@ -1,0 +1,12 @@
+Tabellone:
+
+4 giro taglio P2/P3 su 2 telecomand (verde e blu), manda in blocco il sistema . Perde alcuni giri .... teeensy?
+allungare tempo visualizzazione cronometri a chiusura 10 giri
+implementare scheda sd su cronometri
+cambaire pila 
+verficare che dopo circa 10 giri non vada in blocco
+FW di test/debiug con tempo alla rovescia ridotto
+
+
+Interfaccia Gara PC:
+per fare la divisione FAI servono anche piloti non FAI, se ci sono solo FAI va in blocco
