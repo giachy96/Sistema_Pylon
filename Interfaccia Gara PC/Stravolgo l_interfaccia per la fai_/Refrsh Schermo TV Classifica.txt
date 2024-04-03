@@ -1,0 +1,8 @@
+per la TV per la classifica ecco cosa si fa:
+
+- chromecast su tv
+si collega come secondo schermo al pc
+si apre il link drive della classifica 
+ESTENSIONE CHROME che aggiorna automaticamnete la pagina ogni X secondi
+telgram web su un altra scheda
+così in 4 passi abbiamo sistemato la tv
