@@ -53,18 +53,18 @@ String End = "5000";
 String Stop = "6000";
 String Startup = "1000";
 String State = Startup;          //Startup state
-unsigned long interval = 60000;  // constants won't change:
+unsigned long interval = 300000;  // constants won't change:
 unsigned long Delaypress = 2000;
 unsigned long DelayStop = 30000;
-String PressShow = "2520";
-String PressTime = "4524";
-String StartRace = "3523";
-String end10lap = "5524";
-String DoubleCut = "4025";
-String StopTime = "6524";
+String PressShow = "2510";
+String PressTime = "4514";
+String StartRace = "3513";
+String end10lap = "5514";
+String DoubleCut = "4015";
+String StopTime = "6514";
 int Key = 0;
 int Add = 0;
-int Chan = 35;
+int Chan = 30;
 //Fine configurazione Telecomando
 
 void setup() {
@@ -101,7 +101,7 @@ void loop() {
 
 
 
-    if (((currentMillis - previousMillis) >= interval)  && (State == Startup || State == Stop )) {
+    if (((currentMillis - previousMillis) >= interval)  && (State == Startup || State == end10lap || State == Stop || State == DoubleCut ||  State == StopTime )) {
       previousMillis = currentMillis;
       Serial.println("Case0");  //debug
       draw(0, u8x8);
