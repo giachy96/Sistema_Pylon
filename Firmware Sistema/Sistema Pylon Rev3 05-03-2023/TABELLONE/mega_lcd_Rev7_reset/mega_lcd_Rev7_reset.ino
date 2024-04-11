@@ -93,6 +93,7 @@ int count_send = 0;
 // Variabili reset
 int gocount=0;
 int stopflag=0;
+int timerst=0;
 // Fine variabili Reset
 
 byte Key = 0;
@@ -218,7 +219,7 @@ void loop() {
     digitalWrite(sirena, HIGH);
     RxData = "";
     stopflag=0; // Tolgo il flag per il reset
-    gocount=gocount+1;  //Ogni volta che ricevo Go incremento il contatore
+    gocount++;  //Ogni volta che ricevo Go incremento il contatore
   }
   if (RxData == "6000") {  // se ricevo STOP dalla centrale
     Staterx = RxData;
@@ -228,6 +229,7 @@ void loop() {
     digitalWrite(sirena, HIGH);
     RxData = "";
     stopflag=1; // Inserisco il flag per il reset
+    timerst=millis();
   }
   if (RxData.indexOf("750") != -1 || RxData.indexOf("850") != -1) {  // se ricevo dalla centrale una striga CONTENTE AVANTI o INDIETRO
     Staterx = RxData;
@@ -555,7 +557,7 @@ void loop() {
 
 
   //FINE GESTIONE SIRENA
-  if (gocount >=4 && stopflag==1) {
+  if (gocount >=4 && stopflag==1 && (millis()-timerst)>=1000) {
     //Reset_AVR();
     softReset();
     }
