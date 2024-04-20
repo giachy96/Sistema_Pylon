@@ -90,12 +90,6 @@ int sendcentralerosso = 0;
 int sendcentraleblu = 0;
 int count_send = 0;
 
-// Variabili reset
-int gocount=0;
-int stopflag=0;
-int timerst=0;
-// Fine variabili Reset
-
 byte Key = 0;
 byte Add = 1;
 byte Chan = 5;
@@ -202,6 +196,10 @@ void loop() {
     ResponseStatus rs = e22ttl.sendFixedMessage(Key, Add, Chan, "800");
     oldPress = millis();
   }
+  if (RxData == "1500") {  // se ricevo il reset dalla centrale
+    RxData = "";
+    softReset();
+  }
   if (RxData == "2000") {  // se ricevo lo show dalla centrale
     Staterx = RxData;
     Serial1.println("<2000>");
@@ -209,7 +207,6 @@ void loop() {
     startsirena = millis();
     digitalWrite(sirena, HIGH);
     RxData = "";
-    stopflag=0; // Tolgo il flag per il reset
   }
   if (RxData == "3000") {  // se ricevo GO dalla centrale
     Staterx = RxData;
@@ -218,8 +215,6 @@ void loop() {
     startsirena = millis();
     digitalWrite(sirena, HIGH);
     RxData = "";
-    stopflag=0; // Tolgo il flag per il reset
-    gocount++;  //Ogni volta che ricevo Go incremento il contatore
   }
   if (RxData == "6000") {  // se ricevo STOP dalla centrale
     Staterx = RxData;
@@ -228,8 +223,6 @@ void loop() {
     startsirena = millis();
     digitalWrite(sirena, HIGH);
     RxData = "";
-    stopflag=1; // Inserisco il flag per il reset
-    timerst=millis();
   }
   if (RxData.indexOf("750") != -1 || RxData.indexOf("850") != -1) {  // se ricevo dalla centrale una striga CONTENTE AVANTI o INDIETRO
     Staterx = RxData;
@@ -283,7 +276,6 @@ void loop() {
     flag_nome_pil = 1; // con questo abilito la scrittura dei nomi e delle manche su LCD
     draw(0, 0, 0);
     RxData = "";
-    stopflag=0; // Tolgo il flag per il reset
   }
 
   // FINE PARTE RICEZIONE DAL LORA
@@ -554,15 +546,6 @@ void loop() {
   if (sirenamillis - startsirena >= 300) {
     digitalWrite(sirena, LOW);
   }
-
-
-  //FINE GESTIONE SIRENA
-  if (gocount >=4 && stopflag==1 && (millis()-timerst)>=1000) {
-    //Reset_AVR();
-    softReset();
-    }
-  //Reset Mega
-  
 }
 
 
