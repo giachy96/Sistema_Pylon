@@ -3,6 +3,10 @@
 #include "dmdcases.h"
 #include "LoRa_E22.h"
 #include "countdown.h"
+//#include "avr/io.h" //Prova reset
+//#include "avr/wdt.h" //Prova Reset
+//#define Reset_AVR() wdt_enable(WDTO_30MS); while(1) {}//Prova Reset
+
 LoRa_E22 e22ttl(&Serial2);  // Arduino RX --> e22 TX - Arduino TX --> e22 RX
 
 const byte numChars = 200;
@@ -86,7 +90,6 @@ int sendcentralerosso = 0;
 int sendcentraleblu = 0;
 int count_send = 0;
 
-
 byte Key = 0;
 byte Add = 1;
 byte Chan = 5;
@@ -111,6 +114,7 @@ void setup() {
   delay(200);
   Serial2.begin(9600);  // seriale per il lora
   e22ttl.begin();       //Start e22ttl
+  Serial.println("start o reset");
 }
 
 
@@ -191,6 +195,10 @@ void loop() {
     //delay(1000);
     ResponseStatus rs = e22ttl.sendFixedMessage(Key, Add, Chan, "800");
     oldPress = millis();
+  }
+  if (RxData == "1500") {  // se ricevo il reset dalla centrale
+    RxData = "";
+    softReset();
   }
   if (RxData == "2000") {  // se ricevo lo show dalla centrale
     Staterx = RxData;
@@ -538,9 +546,6 @@ void loop() {
   if (sirenamillis - startsirena >= 300) {
     digitalWrite(sirena, LOW);
   }
-
-
-  //FINE GESTIONE SIRENA
 }
 
 
@@ -577,3 +582,4 @@ void recvWithStartEndMarkers(HardwareSerial& port, char receivedChars[numChars])
   }
   port.flush();
 }
+void softReset() {asm volatile (" jmp 0");}

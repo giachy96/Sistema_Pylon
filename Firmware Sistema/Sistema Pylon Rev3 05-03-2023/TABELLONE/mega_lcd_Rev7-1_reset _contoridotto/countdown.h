@@ -175,7 +175,7 @@ boolean countdown(boolean flag) {
         dmd.drawString(18, 1, "0.000");
         milliscountdown = millis();
         flag = false;
-        sec = 62;
+        sec =7;
       }
 
     }
@@ -183,7 +183,7 @@ boolean countdown(boolean flag) {
 
     milliscountdown = millis();
     flag = false;
-    sec = 12;
+    sec = 7;
 
 
   }
