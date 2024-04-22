@@ -60,7 +60,7 @@ extern String nome_blu;
 extern String cognome_blu;
 extern bool newDataPC;
 
-String RxData = "";
+String RxData = "2000";
 
 LiquidCrystal_I2C lcd = LiquidCrystal_I2C(0x27, 20, 4);
 // lora parametri
@@ -84,9 +84,7 @@ void setup() {
   lcd.init();
   lcd.backlight();
   draw(0, lcd);
-  digitalWrite(buzzer, HIGH);
-  delay(500);
-  digitalWrite(buzzer, LOW);
+  tone(buzzer, 4000, 200);
 
 
 }
