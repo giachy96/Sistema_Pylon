@@ -175,7 +175,7 @@ boolean countdown(boolean flag) {
         dmd.drawString(18, 1, "0.000");
         milliscountdown = millis();
         flag = false;
-        sec =7;
+        sec = 7;
       }
 
     }
