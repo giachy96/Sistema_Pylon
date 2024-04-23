@@ -60,7 +60,7 @@ extern String nome_blu;
 extern String cognome_blu;
 extern bool newDataPC;
 
-String RxData = "2000";
+String RxData = "";
 
 LiquidCrystal_I2C lcd = LiquidCrystal_I2C(0x27, 20, 4);
 // lora parametri
@@ -181,10 +181,10 @@ void loop() {
     if (RxData != "2000") {
       ResponseStatus rs = e22ttl.sendFixedMessage(Key, Add, Chan, "2000"); //invio show
     }
-    delay(500);
-    if (RxData != "2000") {
-      softReset();
-    }
+    // delay(500);
+    // if (RxData != "2000") {
+    //   softReset();
+    // }
 
     draw(2, lcd);
     RxData = "";
@@ -358,6 +358,8 @@ void loop() {
     Serial.println( stringonerosso);
     Serial.println( stringoneverde);
     Serial.println( stringoneblu);
+    delay(1000);
+    softReset();
   }
 
   // 805,Q500,2,3,Matteo,Giacomo,Francesco,Luca,Paolo,Pippo
