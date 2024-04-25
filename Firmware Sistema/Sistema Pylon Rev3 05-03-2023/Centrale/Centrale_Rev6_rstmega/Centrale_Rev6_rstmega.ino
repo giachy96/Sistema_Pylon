@@ -128,9 +128,6 @@ void loop() {
     lcd.print("V.Batt.");
     lcd.print(vout);
   }
-  if (RxData == "1400") {
-      softReset();
-    }
   
   if ( RxData == "700") { // ho ricevuto il comando INDIETRO
     //    tone(buzzer, 2000, 200);
@@ -407,8 +404,10 @@ void loop() {
     if (code_rx == 750) {
       tone(buzzer, 4000, 200);
       draw(11, lcd);
+    }  
+  if (code_rx == 1400) {
+      softReset();
     }
-
     ResponseStatus rs = e22ttl.sendFixedMessage(Key, Add, Chan, stringanomi);
 
     newDataPC = false;
