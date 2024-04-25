@@ -128,7 +128,10 @@ void loop() {
     lcd.print("V.Batt.");
     lcd.print(vout);
   }
-
+  if (RxData == "1400") {
+      softReset();
+    }
+  
   if ( RxData == "700") { // ho ricevuto il comando INDIETRO
     //    tone(buzzer, 2000, 200);
     //    draw(11, lcd);
@@ -181,11 +184,7 @@ void loop() {
     if (RxData != "2000") {
       ResponseStatus rs = e22ttl.sendFixedMessage(Key, Add, Chan, "2000"); //invio show
     }
-    // delay(500);
-    // if (RxData != "2000") {
-    //   softReset();
-    // }
-
+    
     draw(2, lcd);
     RxData = "";
   }
@@ -358,8 +357,6 @@ void loop() {
     Serial.println( stringonerosso);
     Serial.println( stringoneverde);
     Serial.println( stringoneblu);
-    delay(1000);
-    softReset();
   }
 
   // 805,Q500,2,3,Matteo,Giacomo,Francesco,Luca,Paolo,Pippo
