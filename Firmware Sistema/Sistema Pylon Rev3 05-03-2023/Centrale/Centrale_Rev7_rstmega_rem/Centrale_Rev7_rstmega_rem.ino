@@ -155,7 +155,7 @@ void loop() {
     RxData = "";
   }
 
-  if ((digitalRead(pshow) == LOW && doublePress == 0 ) || RxData == "2000") { // caso show
+  if ((digitalRead(pshow) == LOW && doublePress == 0 ) || RxData == "2000" || code_rx == 2000) { // caso show
     tone(buzzer, 4000, 200);
     memset( arraytempirosso, 0, sizeof(arraytempirosso));
     memset( arraytaglirosso, 0, sizeof(arraytaglirosso));
@@ -174,19 +174,19 @@ void loop() {
     punteggioblu = "";
     doublePress = 1;
     oldPress = millis();
-    if (RxData != "2000") {
-      ResponseStatus rs = e22ttl.sendFixedMessage(Key, Add, Chan, "1500"); //invio reset
-      delay(500);
-    }
+    ResponseStatus rs = e22ttl.sendFixedMessage(Key, Add, Chan, "1500"); //invio reset
+    delay(500);
+    
     if (RxData != "2000") {
       ResponseStatus rs = e22ttl.sendFixedMessage(Key, Add, Chan, "2000"); //invio show
     }
     
     draw(2, lcd);
     RxData = "";
+    code_rx = 0;
   }
 
-  if ((digitalRead(pgo) == LOW && doublePress == 0  ) || RxData == "3000") { // caos go
+  if ((digitalRead(pgo) == LOW && doublePress == 0  ) || RxData == "3000" || code_rx == 3000 ) { // caos go
     tone(buzzer, 4500, 200);
     memset( arraytempirosso, 0, sizeof(arraytempirosso));
     memset( arraytaglirosso, 0, sizeof(arraytaglirosso));
@@ -211,8 +211,9 @@ void loop() {
     doublePress = 1;
     oldPress = millis();
     RxData = "";
+    code_rx = 0;
   }
-  if ((digitalRead(pstop) == LOW && doublePress == 0) ||  RxData == "6000") { // caso di stop
+  if ((digitalRead(pstop) == LOW && doublePress == 0) ||  RxData == "6000"  || code_rx == 6000) { // caso di stop
     tone(buzzer, 5000, 200);
     draw(5, lcd);
     if (RxData != "6000") {
@@ -221,6 +222,7 @@ void loop() {
     doublePress = 1;
     oldPress = millis();
     RxData = "";
+    code_rx = 0;
   }
 
   if (digitalRead(r_print) == LOW && doublePress == 0) {  // ristampa tempi
