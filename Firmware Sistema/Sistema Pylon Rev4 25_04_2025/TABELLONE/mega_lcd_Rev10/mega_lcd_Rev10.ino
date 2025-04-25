@@ -266,7 +266,6 @@ void loop() {
     str_nomi_manche.concat (",");
     str_nomi_manche.concat (cognome_blu);
     str_nomi_manche.concat (">");
-    Serial1.println(str_nomi_manche); // invio i dati della manche al teensy per scriverli su SD
     // Serial.println(nome_rosso);
     // Serial.println(cognome_rosso);
     // Serial.println(nome_verde);
@@ -275,6 +274,9 @@ void loop() {
     // Serial.println(cognome_blu);
     flag_nome_pil = 1; // con questo abilito la scrittura dei nomi e delle manche su LCD
     draw(0, 0, 0);
+    Serial1.println("<1750>"); // invio messaggio di reset univoco per il teesny e aspetto il suo riavvio;
+    delay(1000);
+    Serial1.println(str_nomi_manche); // invio i dati della manche al teensy per scriverli su SD
     RxData = "";
   }
 

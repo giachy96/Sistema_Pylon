@@ -424,6 +424,10 @@ void loop() {
     String Rxs6;
     Rxs6 = receivedChars6;
 
+    if (Rxs6.indexOf("1750") != -1) {  // ho ricevuto reset dal mega lcd
+      //per resettare le luci dei pali
+      doReboot();
+    }
     if (Rxs6.indexOf("850") != -1) {  // ho ricevuto avanti/indietro dalla centrale
       //per resettare le luci dei pali
       Serial2.println("<850>");
@@ -790,4 +794,8 @@ unsigned long processSyncMessage() {
     }
   }
   return pctime;
+}
+
+void doReboot() {
+  SCB_AIRCR = 0x05FA0004;
 }
