@@ -123,6 +123,7 @@ void setup() {
   nome_file.concat(year());
   nome_file.concat(".txt");
 
+ //Serial.println("hello"); debug
 
 }
 
@@ -426,6 +427,7 @@ void loop() {
 
     if (Rxs6.indexOf("1750") != -1) {  // ho ricevuto reset dal mega lcd
       //per resettare le luci dei pali
+      //Serial.println("<1750>"); debug
       doReboot();
     }
     if (Rxs6.indexOf("850") != -1) {  // ho ricevuto avanti/indietro dalla centrale
