@@ -473,7 +473,7 @@ void loop() {
       if (Rxs.indexOf("6514") != -1) {
         //sirena
         startsirena = millis();
-        digitalWrite(sirena, HIGH);
+        //digitalWrite(sirena, HIGH); disabilitato secondo V.D. Bosh
         end10laprosso = 1;
         timeoutrosso = 1;
         sendcentralerosso = 1;
@@ -482,7 +482,7 @@ void loop() {
       if (Rxs.indexOf("6524") != -1) {
         //sirena
         startsirena = millis();
-        digitalWrite(sirena, HIGH);
+        //digitalWrite(sirena, HIGH); disabilitato secondo V.D. Bosh
         end10lapverde = 1;
         timeoutverde = 1;
         sendcentraleverde = 1;
@@ -491,7 +491,7 @@ void loop() {
       if (Rxs.indexOf("6534") != -1) {
         //sirena
         startsirena = millis();
-        digitalWrite(sirena, HIGH);
+        //digitalWrite(sirena, HIGH); disabilitato secondo V.D. Bosh
         end10lapblu = 1;
         timeoutblu = 1;
         sendcentraleblu = 1;
