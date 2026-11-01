@@ -1,0 +1,131 @@
+SISTEMA PYLON - PACCHETTO FIRMWARE AGGIORNATO (indici di revisione +1)
+=====================================================================
+Protocolli, codici, canali LoRa e formati pacchetto NON sono cambiati.
+Provato solo su PC (compilazione sintattica + simulazione); NON provato su hardware.
+Gli originali sul tuo computer non sono stati toccati: sono copie.
+
+TABELLA NOMI (vecchio -> nuovo)
+  Centrale_Rev10 (mia, gia' stabilizzata dalla Rev9)   -> CENTRALE/Centrale_Rev11
+  TABELLONE/mega_lcd_Rev12                              -> TABELLONE/mega_lcd_Rev13
+  TABELLONE/Teensy_Rev5 (originale)                     -> TABELLONE/Teensy_Rev8
+  PALO2_3/RX_<colore>_Palo2-3_Luci                      -> ..._Luci_Rev2 (rosso, blu, verde)
+  CRONO ROSSO  Rev5_tempo_lungo -> Rev6_tempo_lungo   (cartella TX_ROSSO_CRONORev8)
+  CRONO BLU    Rev6_tempo_lungo -> Rev7_tempo_lungo   (cartella TX_BLU_CRONORev8)
+  CRONO VERDE  Rev5_tempo_lungo -> Rev6_tempo_lungo   (cartella TX_VERDE_CRONORev8)
+  PALO1 e' diviso nei due set (cartelle SET_LORA e SET_2.4GHz):
+  SET 2.4 GHz (nRF24):
+    MEGA_SEMAFORO_NRF24_Rev2 -> MEGA_SEMAFORO_NRF24_Rev4
+    PALO1/Tx_2.4GHz NRF24L01/TX_<colore>_SEMAFORO_2.4 -> SET_2.4GHz/TX_<colore>_SEMAFORO_2.4_Rev2
+  SET LoRa (E22):
+    MEGA_SEMAFORO_Rev2A_900mhz (era nel .7z) -> SET_LORA/MEGA_SEMAFORO_Rev3_900mhz
+    TX_<colore>_SEMAFORO_Rev1 -> SET_LORA/TX_<colore>_SEMAFORO_Rev2
+    RX_<colore>_Rev3A (rosso, blu, verde) -> invariati, stesso nome
+  Comune ai due set:  RX_TABELLONE_Rev3A -> invariato
+Ricorda: il .ino deve stare in una cartella con lo STESSO nome (regola Arduino IDE).
+
+NOVITA' DELL'ULTIMO GIRO DI LAVORI (Teensy_Rev8)
+  - Ricostruzione dei tempi giro mancanti sul Teensy (nessuna ritrasmissione dal crono):
+    * 1 giro mancante: = totale - somma degli altri (esatto, +-1 ms)
+    * piu' giri mancanti NON adiacenti: la somma e' esatta, ogni giro e' stimato dagli
+      istanti di arrivo dei pacchetti e il residuo e' distribuito in parti uguali
+    * giri adiacenti, giro 10 mancante con altri buchi, dati incoerenti: cella lasciata vuota
+  - Numero giri = ultimo indice ricevuto + 1 (non piu' conteggio dei pacchetti).
+  - PUNTO 1 (stringone chiuso solo quando i 3 colori sono completi) NON modificato: come prima.
+  - Watchdog NON implementato (scelta tua).
+
+CORREZIONI GENERALI
+Non provato su hardware: provato solo su PC (compilazione e simulazione dei loop).
+
+1) CRONOMETRAGGIO / TX_ROSSO, TX_BLU, TX_VERDE (3 file .ino + timestructure.h)
+   - tempo_flt[11] e tempo_parziale[11] -> [12]. Il codice scriveva l'elemento [11] (totale)
+     oltre la fine degli array, sporcando la RAM vicina.
+   - timestructure.h: ramo "indice < 0" usava memset sul VALORE di tempo_parziale come puntatore
+     (mai raggiunto oggi, ma pericoloso). Sostituito con azzeramento semplice.
+   - Nota: il commento "NON SPOSTARE ASSOLUTAMENTE QUESTA PARTE" resta; se un giorno si sposta
+     quel blocco e funziona, probabilmente il vero motivo era l'overflow.
+
+2) TABELLONE / mega_lcd_Rev12 (ex Rev11)
+   - I comandi si riconoscono SOLO dal primo campo del pacchetto (headOf), non piu' con indexOf
+     su tutta la stringa. Prima una gara chiamata es. "Q850" o "Q6000", o un tempo che conteneva
+     "6514", faceva scattare AVANTI/INDIETRO, STOP, timeout ecc.
+   - memset() sulle String (GO e SHOW) sostituiti da azzeraDatiTempi(): il memset perdeva memoria
+     dinamica e lasciava puntatori sporchi (crash dopo molte manche).
+   - delay(2000) dopo <1750> eliminato: il pacchetto nomi parte dopo 2 s senza bloccare
+     LoRa, Teensy, sirena, countdown e display.
+   - decodecomma: ora mantiene i campi vuoti (un tempo mancante non sposta piu' tutti gli altri)
+     e non scrive mai oltre la dimensione dell'array.
+   - decodestringone: ricalcola i tagli da zero (una seconda ricezione non accumula "P1P1").
+   - exceldecode.h: tolto il blocco che con un campo "true" metteva a LOW i pin 4..13
+     (DMD, pulsanti, sirena); buffer pacchetto nomi 100 -> 200 caratteri.
+   - softReset: noInterrupts() prima del jmp 0.
+
+3) TABELLONE / Teensy_Rev6 (ex Rev5)
+   - Codici letti dal primo campo (come sopra): gara "Q2000/Q3000/Q6000/Q1750/Q500" non fa piu'
+     partire SHOW/GO/STOP/reset/standby.
+   - arrayPx_colore[ngiri - 1] con ngiri = 0 scriveva all'indice -1: ora idxGiro() (un taglio
+     prima del primo giro registrato vale come giro 1; massimo giro 11).
+   - tempiColore[values[1].toInt()] ora limitato a 0..10 (indiceGiro).
+   - values[5] -> values[12] e decodecomma limitato: con piu' di 5 campi scriveva fuori array.
+   - serialmethode.h: numChars 100 -> 200 (il pacchetto nomi veniva troncato nel log SD).
+
+4) PALO1 / Semaforo / MEGA_SEMAFORO_NRF24_Rev3 (ex Rev2)
+   - Serial.readString() "per test a casa" disattivato di default (#define TEST_DA_PC): con la USB
+     collegata bloccava il loop 1 s e trasmetteva il testo come stato a tutti i telecomandi.
+   - RF24: lettura limitata al payload reale (32 byte) in buffer azzerato e terminato; prima si
+     leggevano 50 byte in un buffer non inizializzato. Invio con buffer da 32.
+
+5) PALO2_3 / RX_ROSSO, RX_BLU, RX_VERDE
+   - numChars 5 -> 8 (nessun margine oltre i codici da 4 cifre).
+
+NON modificati (restano da valutare sul campo)
+   - Ricezione E22: receiveMessage() ha timeout 100 ms e ogni invio blocca ~120 ms (manca AUX).
+     Nel crono il pulsante e' letto a polling: un tempo preso durante una ricezione/invio puo'
+     slittare. Soluzione vera: interrupt con timestamp (modifica hardware/firmware piu' grande).
+   - Da fare prima della gara: sostituire lo switch di accensione del TX Blu Palo 3.
+
+PROVE ESEGUITE (su PC, non su hardware)
+   - Parser/funzioni nuove: 28 controlli, 0 falliti.
+   - Simulazione del loop del tabellone: 14 controlli, 0 falliti (sul Rev11 originale: 6 falliti).
+   - Simulazione del loop del Teensy: 13 controlli, 0 falliti (sull'originale: crash per overflow).
+   - Compilazione (controllo sintassi) di tabellone e Teensy con stub delle librerie: senza errori.
+   - Non compilati con l'IDE Arduino/Teensyduino reale: provate prima di caricare.
+
+DA VERIFICARE AL BANCO PRIMA DELLA GARA
+  1) Sequenza centrale: 1500 poi 2000 dopo 500 ms. Il tabellone fa soft reset (>= 0,9 s):
+     il 2000 potrebbe andare perso. Sul monitor deve comparire "Ricevo DATO dal lora: 2000"
+     dopo "start o reset". Se manca: allungare il ritardo dopo il 1500 (es. 2000 ms).
+  2) Il confronto dei codici ora e' sul primo campo esatto (prima indexOf): controllare che
+     ogni palo/colore registri i tagli. Se un nodo manda spazi/ritorni a capo, serve trim().
+  3) Sostituire l'interruttore di accensione del TX Blu Palo 3 (dai tuoi appunti).
+  4) timestructure.h corretto (memset tolto) e' nella cartella ROSSO: copialo ovunque
+     BLU e VERDE leggano il loro timestructure.h; non copiare lcdcases.h del ROSSO in BLU/VERDE.
+
+LIMITI NOTI LASCIATI COSI' (non toccati): timing E22 (timeout ricezione 100 ms, invii ~120 ms
+bloccanti), flush() ad ogni loop del tabellone, un solo codicecentrale in 1,2 s sul Teensy,
+buzzer batteria senza isteresi, Delaypress palo 3,5 s, due clock indipendenti (semaforo 61,6 s
+vs tabellone 62 s).
+
+
+TX SEMAFORO 2.4 GHz (nRF24) - Rev2 (rosso, blu, verde)
+  - Buffer di ricezione da 33 byte azzerato, letto con la dimensione reale del payload (32).
+  - Invio con buffer da 32 byte azzerato (come il Mega); se non arriva l'ACK ritenta fino a 3 volte.
+  - Buzzer batteria con isteresi: allarme sotto 3,2 V, spento solo sopra 3,4 V.
+  - Commento iniziale E22 sostituito con quello nRF24.
+  - NON modificati (compatibilita' con i nodi sul campo): indirizzi (di fatto 1 solo byte),
+    canale radio (default 76; 'Chan' nei TX non e' usato), codici, Delaypress 3,5 s condiviso.
+  - Il file .ino e' stato salvato con fine riga LF (prima CRLF): l'IDE Arduino lo accetta.
+
+
+SET LoRa DEL PALO 1 (verificato)
+  - MEGA_SEMAFORO_Rev3_900mhz: test da PC (readString) disattivato di default con #define TEST_DA_PC,
+    come nel Mega 2.4 GHz. Per il resto il codice e' identico alla Rev2A.
+  - TX_<colore>_SEMAFORO_Rev2: buzzer batteria con isteresi (3,2 V / 3,4 V), intestazione aggiornata.
+  - RX_<colore>_Rev3A e RX_TABELLONE_Rev3A: controllati, nessun difetto da correggere, lasciati invariati
+    (le variabili onlight/on nei RX colore non vengono mai messe a 1: codice inutilizzato ma innocuo).
+  - Canali E22 coerenti tra TX e RX: rosso 15, verde 20, blu 25 (tabellone/centrale 10).
+    Indirizzi dei moduli E22 e parametri radio non sono nel codice: non verificabili da qui.
+
+DIFFERENZA TRA I DUE MEGA (da decidere tu)
+  Il Mega 2.4 GHz (Rev2 in poi) ha la sequenza luci di partenza (relay accesi dal 3000 fino a 61,6 s, poi
+  spenti a gradini di 1,1 s): il Mega LoRa Rev2A, piu' vecchio, NON ce l'ha. Non l'ho aggiunta perche' non
+  me l'hai chiesto: se anche il set LoRa deve avere le luci di partenza, va portata la stessa parte.

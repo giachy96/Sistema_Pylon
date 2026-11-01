@@ -1,0 +1,59 @@
+SISTEMA PYLON - CORREZIONI AL FIRMWARE (revisione generale)
+============================================================
+I protocolli, i codici, i canali LoRa e i formati dei pacchetti NON sono cambiati.
+Le cartelle sono copie: i file originali non sono stati toccati.
+Non provato su hardware: provato solo su PC (compilazione e simulazione dei loop).
+
+1) CRONOMETRAGGIO / TX_ROSSO, TX_BLU, TX_VERDE (3 file .ino + timestructure.h)
+   - tempo_flt[11] e tempo_parziale[11] -> [12]. Il codice scriveva l'elemento [11] (totale)
+     oltre la fine degli array, sporcando la RAM vicina.
+   - timestructure.h: ramo "indice < 0" usava memset sul VALORE di tempo_parziale come puntatore
+     (mai raggiunto oggi, ma pericoloso). Sostituito con azzeramento semplice.
+   - Nota: il commento "NON SPOSTARE ASSOLUTAMENTE QUESTA PARTE" resta; se un giorno si sposta
+     quel blocco e funziona, probabilmente il vero motivo era l'overflow.
+
+2) TABELLONE / mega_lcd_Rev12 (ex Rev11)
+   - I comandi si riconoscono SOLO dal primo campo del pacchetto (headOf), non piu' con indexOf
+     su tutta la stringa. Prima una gara chiamata es. "Q850" o "Q6000", o un tempo che conteneva
+     "6514", faceva scattare AVANTI/INDIETRO, STOP, timeout ecc.
+   - memset() sulle String (GO e SHOW) sostituiti da azzeraDatiTempi(): il memset perdeva memoria
+     dinamica e lasciava puntatori sporchi (crash dopo molte manche).
+   - delay(2000) dopo <1750> eliminato: il pacchetto nomi parte dopo 2 s senza bloccare
+     LoRa, Teensy, sirena, countdown e display.
+   - decodecomma: ora mantiene i campi vuoti (un tempo mancante non sposta piu' tutti gli altri)
+     e non scrive mai oltre la dimensione dell'array.
+   - decodestringone: ricalcola i tagli da zero (una seconda ricezione non accumula "P1P1").
+   - exceldecode.h: tolto il blocco che con un campo "true" metteva a LOW i pin 4..13
+     (DMD, pulsanti, sirena); buffer pacchetto nomi 100 -> 200 caratteri.
+   - softReset: noInterrupts() prima del jmp 0.
+
+3) TABELLONE / Teensy_Rev6 (ex Rev5)
+   - Codici letti dal primo campo (come sopra): gara "Q2000/Q3000/Q6000/Q1750/Q500" non fa piu'
+     partire SHOW/GO/STOP/reset/standby.
+   - arrayPx_colore[ngiri - 1] con ngiri = 0 scriveva all'indice -1: ora idxGiro() (un taglio
+     prima del primo giro registrato vale come giro 1; massimo giro 11).
+   - tempiColore[values[1].toInt()] ora limitato a 0..10 (indiceGiro).
+   - values[5] -> values[12] e decodecomma limitato: con piu' di 5 campi scriveva fuori array.
+   - serialmethode.h: numChars 100 -> 200 (il pacchetto nomi veniva troncato nel log SD).
+
+4) PALO1 / Semaforo / MEGA_SEMAFORO_NRF24_Rev3 (ex Rev2)
+   - Serial.readString() "per test a casa" disattivato di default (#define TEST_DA_PC): con la USB
+     collegata bloccava il loop 1 s e trasmetteva il testo come stato a tutti i telecomandi.
+   - RF24: lettura limitata al payload reale (32 byte) in buffer azzerato e terminato; prima si
+     leggevano 50 byte in un buffer non inizializzato. Invio con buffer da 32.
+
+5) PALO2_3 / RX_ROSSO, RX_BLU, RX_VERDE
+   - numChars 5 -> 8 (nessun margine oltre i codici da 4 cifre).
+
+NON modificati (restano da valutare sul campo)
+   - Ricezione E22: receiveMessage() ha timeout 100 ms e ogni invio blocca ~120 ms (manca AUX).
+     Nel crono il pulsante e' letto a polling: un tempo preso durante una ricezione/invio puo'
+     slittare. Soluzione vera: interrupt con timestamp (modifica hardware/firmware piu' grande).
+   - Da fare prima della gara: sostituire lo switch di accensione del TX Blu Palo 3.
+
+PROVE ESEGUITE (su PC, non su hardware)
+   - Parser/funzioni nuove: 28 controlli, 0 falliti.
+   - Simulazione del loop del tabellone: 14 controlli, 0 falliti (sul Rev11 originale: 6 falliti).
+   - Simulazione del loop del Teensy: 13 controlli, 0 falliti (sull'originale: crash per overflow).
+   - Compilazione (controllo sintassi) di tabellone e Teensy con stub delle librerie: senza errori.
+   - Non compilati con l'IDE Arduino/Teensyduino reale: provate prima di caricare.
