@@ -126,11 +126,12 @@ int idxGiro(int ngiri) {
 
 // Rev6: spezza "a,b,,c" mantenendo i campi vuoti, senza mai scrivere oltre la fine dell'array.
 // I campi non ricevuti vengono azzerati, cosi' non restano valori vecchi.
-template <size_t N>
-int decodecomma(const String &str, String (&tempi)[N]) {
+// (niente template: l'IDE Arduino genera il prototipo senza "template" e la compilazione fallisce)
+const int NVALUES = 12;  // deve coincidere con String values[12]
+int decodecomma(const String &str, String *tempi) {
   int n = 0;
   int start = 0;
-  while (n < (int)N) {
+  while (n < NVALUES) {
     int p = str.indexOf(',', start);
     if (p < 0) {
       tempi[n++] = str.substring(start);
@@ -139,7 +140,7 @@ int decodecomma(const String &str, String (&tempi)[N]) {
     tempi[n++] = str.substring(start, p);
     start = p + 1;
   }
-  for (int k = n; k < (int)N; k++) tempi[k] = "";
+  for (int k = n; k < NVALUES; k++) tempi[k] = "";
   return n;
 }
 
