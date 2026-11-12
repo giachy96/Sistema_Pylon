@@ -15,7 +15,7 @@
    Collegamenti (Arduino UNO/Nano, come i telecomandi dei pali):
    E22 TX -> pin 2 (PullUp)      E22 RX -> pin 3 (PullUp + partitore)     M0/M1 -> GND     AUX non collegato
    Display OLED SH1106 I2C (SDA/SCL)      Buzzer -> pin 5      Batteria -> A0 (stesso partitore degli altri TX)
-   Pulsanti verso GND (INPUT_PULLUP):  INDIETRO = pin 4, AVANTI = pin 6, SHOW = pin 7, GO = pin 8, STOP = pin 9
+   Pulsanti verso GND (INPUT_PULLUP):  INDIETRO = pin 4, AVANTI = pin 6, SHOW = pin 7, GO = pin 10, STOP = pin 9
 
    Modulo E22 del telecomando: canale 5, stessi parametri radio del tabellone (velocita' in aria, potenza,
    chiave, modalita' trasmissione fissa); l'indirizzo e' FFFF (ADDH=FF, ADDL=FF: riceve tutto
@@ -36,7 +36,7 @@ const byte Chan = 5;  // canale centrale/tabellone
 
 const byte NUM_PULSANTI = 5;
 //                                  INDIETRO AVANTI SHOW GO STOP
-const byte pinPulsante[NUM_PULSANTI] = { 4, 6, 7, 8, 9 };
+const byte pinPulsante[NUM_PULSANTI] = { 4, 6, 7, 10, 9 };
 const char* const codice[NUM_PULSANTI] = { "700", "800", "2000", "3000", "6000" };
 const char* const nomeCmd[NUM_PULSANTI] = { " INDIETRO", " AVANTI", " SHOW", " GO", " STOP" };
 const byte IDX_STOP = 4;
