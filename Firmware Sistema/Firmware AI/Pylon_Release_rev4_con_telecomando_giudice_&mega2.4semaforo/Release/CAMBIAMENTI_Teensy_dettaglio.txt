@@ -1,0 +1,33 @@
+TEENSY Rev7 (sostituisce Teensy_Rev6) - ricostruzione dei tempi di giro persi
+==============================================================================
+Il punto 1 (colore che non chiude) NON e' stato toccato: resta come prima.
+Protocollo, codici e formato dei pacchetti invariati. Nessuna ritrasmissione dal crono.
+
+COSA FA
+- Se un pacchetto di giro (4514/4524/4534) si perde, il campo del giro resta vuoto nello stringone.
+  Alla fine della gara (quando arriva il pacchetto finale con il totale) il Teensy lo ricostruisce:
+    * 1 giro mancante            -> ESATTO: totale - somma degli altri giri (+-1 ms)
+    * piu' giri NON adiacenti    -> la somma dei mancanti e' esatta; ogni giro e' STIMATO dagli istanti
+                                    di arrivo dei pacchetti vicini e poi corretto perche' la somma torni
+    * giri adiacenti mancanti, giro 10 con altri mancanti, pacchetto di partenza perso insieme al giro 1,
+      oppure dati incoerenti      -> campi lasciati VUOTI (nessun tempo inventato)
+- Il contatore dei giri (ngiri) ora si ricava dal numero del giro scritto nel pacchetto, non contando
+  i pacchetti: se ne perdi uno, il sfasamento dei tagli si recupera al pacchetto successivo
+  (prima restava sfasato per tutta la gara).
+- Nel log SD (file Backup_gg_mm_aaaa.txt), a fine gara, per ogni colore:
+    ARRIVI <colore> (ms dal primo pacchetto): 0=.. 1=.. ...   -> serve a misurare il ritardo radio vero
+    RICOSTRUZIONE <colore> giroN esatto=...  /  stimato=...    -> cosa e' stato calcolato
+    RICOSTRUZIONE <colore> impossibile: <motivo>              -> cosa non si e' potuto recuperare
+  Scrive sulla SD solo a fine gara, non pacchetto per pacchetto.
+
+LIMITI NOTI
+- Una stima dagli arrivi ha un errore pari alla variazione del ritardo radio (da misurare con le righe ARRIVI).
+- Se si perde il pacchetto di fine di un giro, il taglio fatto subito dopo viene assegnato al giro prima
+  finche' non arriva il pacchetto successivo.
+- Se si perdono insieme l'ultimo giro e il pacchetto finale, il totale non arriva e non si ricostruisce nulla.
+
+PROVE (su PC, non su hardware)
+- 186 scenari (gare q500 e f3e, 1 e 3 piloti, ritardo radio variabile 0/60/120 ms, 15 schemi di perdita):
+  Rev7 186/186 corretti; Rev6 74/186 (tutti i casi con giro perso ricostruibile restano vuoti).
+- Errore massimo delle stime (giri non adiacenti): 0 ms senza variazione di ritardo, 46 ms con 60 ms, 96 ms con 120 ms.
+- Nessun errore di memoria. Controllo di sintassi con stub, non compilato con Teensyduino.
