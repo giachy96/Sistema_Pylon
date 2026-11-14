@@ -3,7 +3,8 @@
    Rev2: BLOCCO IN GARA. Dopo il GO il telecomando non trasmette piu' nulla (tranne lo STOP) finche' non ha
    "sentito" arrivare tutti e 3 gli stringoni finali (5514/5524/5534; per un pilota assente
    il Teensy manda 6514/6524/6534 con i campi vuoti: vale uguale) dal tabellone alla centrale. Cosi' non
-   puo' mai collidere con i risultati. Si sblocca anche con il proprio STOP o se sente un 6000 della centrale.
+   puo' mai collidere con i risultati. Si sblocca anche con il proprio STOP, se sente un 6000 della centrale
+   (anche incollato ad altri pacchetti) e, per sicurezza se il 6000 si perde, dopo TIMEOUT_GARA ms dal Go.
    Se sente un 3000 (Go dato da altro) si blocca anch'esso. I dati degli stringoni non vengono memorizzati.
    Il modulo E22 ora ascolta: indirizzo 0xFFFF (monitor), canale 5, stessi parametri radio.
 
@@ -31,7 +32,7 @@ LoRa_E22 e22ttl(2, 3);  // Arduino RX --> e22 TX - Arduino TX --> e22 RX
 
 // ---- configurazione ----
 const byte Key = 0;   // ADDH destinazione
-const byte Add = 0;   // ADDL destinazione = centrale
+const byte Add = 1;   // ADDL destinazione = modulo E22 della centrale (il modulo del tabellone e' 0)
 const byte Chan = 5;  // canale centrale/tabellone
 
 const byte NUM_PULSANTI = 5;
@@ -54,6 +55,8 @@ const float SOGLIA_BATT_ALLARME = 3.2;
 const float SOGLIA_BATT_RIENTRO = 3.4;
 
 // ---- blocco in gara ----
+const unsigned long TIMEOUT_GARA = 240000UL;  // sblocco di sicurezza dopo 4 minuti dal Go (Stop da centrale/PC perso)
+unsigned long inizioGara = 0;
 bool inGara = false;      // true dal Go fino ai 3 stringoni (o Stop)
 byte stringoniVisti = 0;  // bit0 = 5514, bit1 = 5524, bit2 = 5534
 
@@ -115,6 +118,7 @@ void schermataGara() {
 
 void entraInGara() {
   inGara = true;
+  inizioGara = millis();
   stringoniVisti = 0;
 }
 
@@ -168,7 +172,7 @@ void ascolta() {
       entraInGara();
       cambiato = true;
     }
-    if (m == "6000" && inGara) {  // Stop della centrale
+    if (inGara && m.indexOf(',') < 0 && m.indexOf("6000") >= 0) {  // Stop della centrale (anche incollato)
       esciDaGara(true);
       return;
     }
@@ -218,6 +222,7 @@ void loop() {
   }
 
   ascolta();
+  if (inGara && (now - inizioGara >= TIMEOUT_GARA)) esciDaGara(true);  // sblocco di sicurezza
   if (inGara && !schermataComando && now - ultimoAggBatt >= INTERVALLO_BATT) schermataGara();
 
   // batteria: allarme con isteresi
