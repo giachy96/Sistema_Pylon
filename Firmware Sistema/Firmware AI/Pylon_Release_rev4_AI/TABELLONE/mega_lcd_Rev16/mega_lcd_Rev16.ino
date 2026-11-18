@@ -1,4 +1,6 @@
-// ===== mega_lcd_Rev15 - revisione incrementata (precedente: mega_lcd_Rev14) - vedi CAMBIAMENTI.txt =====
+// ===== mega_lcd_Rev16 - revisione incrementata (precedente: mega_lcd_Rev15) - vedi CAMBIAMENTI.txt =====
+// Rev16: dopo i nomi (750/850) le due schermate si alternano: info gara (categoria/manche/round) per 2 s, nomi per 6 s,
+//        e cosi' via finche' non arriva un nuovo comando (Show, Go, Stop, nuovi nomi, ...), che azzera flag_nome_pil.
 // Rev15: ordine delle schermate a ogni nuova manche: all'arrivo del pacchetto nomi (750/850) compare SUBITO la schermata
 //        con categoria/manche/round (4 s) e poi quella dei nomi. Prima compariva prima la schermata dei nomi, poi (dopo
 //        l'attesa del Teensy) quella della manche, poi di nuovo i nomi.
@@ -86,7 +88,9 @@ extern String nome_verde;
 extern String cognome_verde;
 extern String nome_blu;
 extern String cognome_blu;
-int flag_nome_pil = 0;
+int flag_nome_pil = 0;  // 0 = fermo, 1/2 = info gara a schermo, 3 = nomi a schermo (alternanza fino al prossimo comando)
+const unsigned long DURATA_SCHERMATA_INFO = 2000;  // ms categoria/manche/round
+const unsigned long DURATA_SCHERMATA_NOMI = 6000;  // ms nomi piloti
 unsigned long  time_screen_manche;
 String Staterx;
 String RxData;
@@ -181,9 +185,14 @@ void loop() {
       flag_nome_pil = 2;
       draw(7, 7, 7); // butto fuori la schemata delle manche
     }
-    if ((millis() - time_screen_manche) > 4000  && flag_nome_pil == 2 ) {
-      draw(0, 0, 0); // butto fuori la schemata dei nomi
-      flag_nome_pil = 0;
+    if (flag_nome_pil == 2 && (millis() - time_screen_manche) > DURATA_SCHERMATA_INFO) {
+      draw(0, 0, 0);  // Rev16: tocca ai nomi
+      time_screen_manche = millis();
+      flag_nome_pil = 3;
+    } else if (flag_nome_pil == 3 && (millis() - time_screen_manche) > DURATA_SCHERMATA_NOMI) {
+      draw(7, 7, 7);  // Rev16: di nuovo info gara, e cosi' via
+      time_screen_manche = millis();
+      flag_nome_pil = 2;
     }
   }
 
@@ -288,7 +297,7 @@ void loop() {
     // Serial.println(cognome_blu);
     draw(7, 7, 7);  // Rev15: subito la schermata con categoria / manche / round ...
     time_screen_manche = millis();
-    flag_nome_pil = 2;  // ... e dopo 4 s (vedi sopra) i nomi
+    flag_nome_pil = 2;  // ... poi alternanza info 2 s / nomi 6 s (vedi sotto)
     Serial1.println("<1750>"); // invio messaggio di reset univoco per il teesny e aspetto il suo riavvio;
     //Serial.println("<1750>");debug
     // Rev12: niente piu' delay(2000) bloccante. Il pacchetto nomi parte dopo attesaRebootTeensy dal blocco qui sotto.
