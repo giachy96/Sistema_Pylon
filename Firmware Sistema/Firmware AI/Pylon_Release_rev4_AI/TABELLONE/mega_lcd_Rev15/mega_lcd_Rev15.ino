@@ -1,4 +1,7 @@
-// ===== mega_lcd_Rev14 - revisione incrementata (precedente: mega_lcd_Rev13) - vedi CAMBIAMENTI.txt =====
+// ===== mega_lcd_Rev15 - revisione incrementata (precedente: mega_lcd_Rev14) - vedi CAMBIAMENTI.txt =====
+// Rev15: ordine delle schermate a ogni nuova manche: all'arrivo del pacchetto nomi (750/850) compare SUBITO la schermata
+//        con categoria/manche/round (4 s) e poi quella dei nomi. Prima compariva prima la schermata dei nomi, poi (dopo
+//        l'attesa del Teensy) quella della manche, poi di nuovo i nomi.
 // Rev14: - STOP imperativo: il 6000 dalla centrale viene riconosciuto anche se incollato ad altri pacchetti
 //          (messaggio senza virgole che contiene 6000, es. "30006000") e ha la precedenza.
 //        - al termine del conto alla rovescia le righe senza dati ricevono 0 / 0.000 negli array: un ridisegno
@@ -283,8 +286,9 @@ void loop() {
     // Serial.println(cognome_verde);
     // Serial.println(nome_blu);
     // Serial.println(cognome_blu);
-    flag_nome_pil = 0;
-    draw(0, 0, 0);
+    draw(7, 7, 7);  // Rev15: subito la schermata con categoria / manche / round ...
+    time_screen_manche = millis();
+    flag_nome_pil = 2;  // ... e dopo 4 s (vedi sopra) i nomi
     Serial1.println("<1750>"); // invio messaggio di reset univoco per il teesny e aspetto il suo riavvio;
     //Serial.println("<1750>");debug
     // Rev12: niente piu' delay(2000) bloccante. Il pacchetto nomi parte dopo attesaRebootTeensy dal blocco qui sotto.
@@ -301,7 +305,7 @@ void loop() {
     Serial1.println(namesPending);  // invio i dati della manche al teensy per scriverli su SD
     namesPending = "";
     namesPendingFlag = false;
-    flag_nome_pil = 1;  // con questo abilito la scrittura dei nomi e delle manche su LCD
+    // Rev15: nessun ridisegno qui, la sequenza manche -> nomi e' gia' partita all'arrivo del pacchetto
   }
 
   // inzio la lettura dalla seriale del teesny
