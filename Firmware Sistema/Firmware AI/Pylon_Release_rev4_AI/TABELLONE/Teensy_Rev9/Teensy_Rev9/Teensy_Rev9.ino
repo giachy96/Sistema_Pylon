@@ -1,4 +1,5 @@
-// ===== Teensy_Rev8 - revisione incrementata (precedente: Teensy_Rev5 originale) - vedi CAMBIAMENTI.txt =====
+// ===== Teensy_Rev9 - revisione incrementata (precedente: Teensy_Rev8) - vedi CAMBIAMENTI.txt =====
+// Rev9: chiusura automatica dei piloti rimasti aperti per pacchetti persi (vedi blocco REV9 sotto)
 //testato 27/12/2022
 #include "serialmethode.h"
 #include <TimeLib.h>
@@ -91,6 +92,35 @@ bool giroRicevuto[3][12];           // il pacchetto del giro k (0 = partenza) e'
 unsigned long arrivoGiro[3][12];    // istante di arrivo (millis) del pacchetto del giro k
 int giroPendente[3] = {0, 0, 0};    // indice del giro appena ricevuto, serve a calcolare ngiri
 const char* const nomeCol[3] = {"rosso", "verde", "blu"};
+
+// ---------------------------------------------------------------------------
+// REV9: CHIUSURA AUTOMATICA DEI PILOTI RIMASTI APERTI
+// Dopo il 10o giro il crono manda il finale (5x14) e passa a "fine": da li' non puo' piu' andare
+// in timeout. Se si perdono il giro 10 e/o il finale, al Teensy restava il pilota aperto per sempre.
+//  1) giro 10 ricevuto ma finale 5x14 non arrivato entro ATTESA_FINALE_MS: il Teensy chiude da solo
+//     il pilota con il totale = somma dei 10 giri (risultato esatto, come se il finale fosse arrivato).
+//  2) pilota con almeno un pacchetto, muto da piu' di SILENZIO_MAX_MS (30 s del crono + margine) mentre
+//     almeno un altro pilota ha gia' chiuso: il Teensy genera il suo TIMEOUT (6x14, punteggio 200 in centrale).
+// Vale solo tra GO e STOP/SHOW. Un pacchetto del crono che arriva dopo la chiusura automatica viene
+// ignorato (e scritto nel log SD) per non mandare due stringoni alla centrale.
+// Tutto viene scritto nel log SD (AUTOCHIUSURA / AUTOTIMEOUT / TARDIVO).
+// ---------------------------------------------------------------------------
+const unsigned long ATTESA_FINALE_MS = 3000;     // dopo il pacchetto del giro 10
+const unsigned long SILENZIO_MAX_MS = 35000;     // il crono va in timeout a 30 s dall'ultima pressione
+const bool RICHIEDI_ALTRI_CHIUSI = true;         // false: il timeout per silenzio vale anche se nessun altro ha chiuso
+bool garaAttiva = false;                         // true tra GO e STOP/SHOW
+bool chiuso[3] = {false, false, false};          // stringone gia' mandato alla centrale
+bool chiusoAuto[3] = {false, false, false};      // chiuso da questa logica: i pacchetti tardivi si ignorano
+unsigned long ultimoPacchetto[3] = {0, 0, 0};    // ultimo pacchetto di giro ricevuto dal crono (millis)
+
+void rev9Reset(bool attiva) {
+  garaAttiva = attiva;
+  for (int c = 0; c < 3; c++) {
+    chiuso[c] = false;
+    chiusoAuto[c] = false;
+    ultimoPacchetto[c] = 0;
+  }
+}
 
 int pStop = 38;
 int pGo = 39;
@@ -255,6 +285,81 @@ void ricostruisciTempi(int c) {
   scrivisuSD(log);
 }
 
+bool inChiusura(int c) {  // chiusura gia' avviata ma stringone non ancora mandato
+  if (c == 0) return end10lap_rosso == 1 || delay10giri_rosso == 1;
+  if (c == 1) return end10lap_verde == 1 || delay10giri_verde == 1;
+  return end10lap_blu == 1 || delay10giri_blu == 1;
+}
+
+bool colChiuso(int c) {
+  return chiuso[c] || inChiusura(c);
+}
+
+bool haPacchetti(int c) {
+  for (int k = 0; k <= 10; k++) {
+    if (giroRicevuto[c][k]) return true;
+  }
+  return false;
+}
+
+void avviaChiusura10(int c) {  // stesso percorso del finale 5x14 arrivato dal crono
+  if (c == 0) { delay10giri_rosso = 1; timedelay10giri_rosso = millis() - 601; }
+  if (c == 1) { delay10giri_verde = 1; timedelay10giri_verde = millis() - 601; }
+  if (c == 2) { delay10giri_blu = 1; timedelay10giri_blu = millis() - 601; }
+}
+
+void forzaTimeout(int c) {  // stesso percorso del 6x14 arrivato dal crono
+  if (c == 0) ntaglitot_rosso = 10;
+  if (c == 1) ntaglitot_verde = 10;
+  if (c == 2) ntaglitot_blu = 10;
+}
+
+void rev9Controlli() {
+  if (!garaAttiva) return;
+  unsigned long ora = millis();
+  for (int c = 0; c < 3; c++) {
+    if (colChiuso(c) || !haPacchetti(c)) continue;
+    String *t = tempiCol[c];
+    // 1) giro 10 arrivato, finale no: chiudo con il totale calcolato
+    if (giroRicevuto[c][10] && t[11].length() == 0 && (ora - arrivoGiro[c][10]) > ATTESA_FINALE_MS) {
+      long somma = 0;
+      bool ok = true;
+      for (int k = 1; k <= 10; k++) {
+        long v = parseMs(t[k]);
+        if (v < 0) { ok = false; break; }
+        somma += v;
+      }
+      if (ok) {
+        t[11] = formatMs(somma);
+        chiusoAuto[c] = true;
+        String log = "AUTOCHIUSURA ";
+        log.concat(nomeCol[c]);
+        log.concat(": giro 10 ricevuto, finale perso, totale=");
+        log.concat(t[11]);
+        scrivisuSD(log);
+        avviaChiusura10(c);
+        continue;
+      }
+    }
+    // 2) pilota muto troppo a lungo mentre altri hanno chiuso: timeout
+    if ((ora - ultimoPacchetto[c]) > SILENZIO_MAX_MS) {
+      if (RICHIEDI_ALTRI_CHIUSI) {
+        bool altri = false;
+        for (int d = 0; d < 3; d++) {
+          if (d != c && colChiuso(d)) altri = true;
+        }
+        if (!altri) continue;
+      }
+      chiusoAuto[c] = true;
+      String log = "AUTOTIMEOUT ";
+      log.concat(nomeCol[c]);
+      log.concat(": nessun pacchetto dal crono da oltre 35 s");
+      scrivisuSD(log);
+      forzaTimeout(c);
+    }
+  }
+}
+
 void setup() {
   pinMode(pStop, INPUT_PULLUP);
   pinMode(pGo, INPUT_PULLUP);
@@ -316,6 +421,7 @@ void loop() {
       Serial4.print("<6000>");
       Serial2.print("<6000>");
       oldMillis = millis();
+      rev9Reset(false);  // Rev9
       codicecentrale = 0;
     }
     if (digitalRead(pGo) == LOW || codicecentrale == 3000) {
@@ -329,6 +435,7 @@ void loop() {
       Serial4.print("<3000>");
       Serial2.print("<3000>");
       oldMillis = millis();
+      rev9Reset(true);  // Rev9
       ntagliP1_rosso = 0;
       memset(arrayP1_rosso, 0, sizeof(arrayP1_rosso));
       ntagliP2_rosso = 0;
@@ -378,6 +485,7 @@ void loop() {
       Serial4.print("<2000>");
       Serial2.print("<2000>");
       oldMillis = millis();
+      rev9Reset(false);  // Rev9
       ntagliP1_rosso = 0;
       memset(arrayP1_rosso, 0, sizeof(arrayP1_rosso));
       ntagliP2_rosso = 0;
@@ -424,6 +532,12 @@ void loop() {
     Rxs8 = receivedChars8;
     Serial.println( Rxs8);
     String h8 = headOf(Rxs8);  // Rev6: codice = primo campo
+    if (chiusoAuto[0] && h8 != "2510") {  // Rev9: pilota gia' chiuso dalla logica automatica
+      String lg = "TARDIVO ignorato rosso: ";
+      lg.concat(Rxs8);
+      scrivisuSD(lg);
+      h8 = "";
+    }
     if (h8 == "4514" || h8 == "5514" || h8 == "2510" || h8 == "6514") {
       String pack8 = "<";
       pack8.concat(receivedChars8);
@@ -439,6 +553,7 @@ void loop() {
         int ig = indiceGiro(values[1]);
         tempirosso[ig] = values[2];
         giroRicevuto[0][ig] = true;       // Rev7
+        ultimoPacchetto[0] = millis();    // Rev9
         arrivoGiro[0][ig] = millis();     // Rev7
         giroPendente[0] = ig;             // Rev7
         delaygiro_rosso = 1;
@@ -485,6 +600,12 @@ void loop() {
     Rxs1 = receivedChars1;
     Serial.println( Rxs1);
     String h1 = headOf(Rxs1);  // Rev6: codice = primo campo
+    if (chiusoAuto[2] && h1 != "2530") {  // Rev9: pilota gia' chiuso dalla logica automatica
+      String lg = "TARDIVO ignorato blu: ";
+      lg.concat(Rxs1);
+      scrivisuSD(lg);
+      h1 = "";
+    }
     if (h1 == "4534" || h1 == "5534" || h1 == "2530" || h1 == "6534") {
       String pack1 = "<";
       pack1.concat(receivedChars1);
@@ -500,6 +621,7 @@ void loop() {
         int ig = indiceGiro(values[1]);
         tempiblu[ig] = values[2];
         giroRicevuto[2][ig] = true;       // Rev7
+        ultimoPacchetto[2] = millis();    // Rev9
         arrivoGiro[2][ig] = millis();     // Rev7
         giroPendente[2] = ig;             // Rev7
         delaygiro_blu = 1;
@@ -548,6 +670,12 @@ void loop() {
     Rxs7 = receivedChars7;
     Serial.println( Rxs7);
     String h7 = headOf(Rxs7);  // Rev6: codice = primo campo
+    if (chiusoAuto[1] && h7 != "2520") {  // Rev9: pilota gia' chiuso dalla logica automatica
+      String lg = "TARDIVO ignorato verde: ";
+      lg.concat(Rxs7);
+      scrivisuSD(lg);
+      h7 = "";
+    }
     if (h7 == "4524" || h7 == "5524" || h7 == "2520" || h7 == "6524") {
       String pack7 = "<";
       pack7.concat(receivedChars7);
@@ -563,6 +691,7 @@ void loop() {
         int ig = indiceGiro(values[1]);
         tempiverde[ig] = values[2];
         giroRicevuto[1][ig] = true;       // Rev7
+        ultimoPacchetto[1] = millis();    // Rev9
         arrivoGiro[1][ig] = millis();     // Rev7
         giroPendente[1] = ig;             // Rev7
         delaygiro_verde = 1;
@@ -757,6 +886,8 @@ void loop() {
 
 
 
+  rev9Controlli();  // Rev9: dopo i tagli dei pali, cosi' ntaglitot = 10 non viene incrementato prima del blocco timeout
+
   if (ntaglitot_rosso > 1 && ntaglitot_rosso < 10 ) {  // ha fatto due tagli il rosso
     //Serial6.println("<4015>");
     Serial3.println("<4015>");
@@ -842,6 +973,7 @@ void loop() {
     }
     Serial.println(" ");
     end10lap_rosso = 0;
+    chiuso[0] = true;  // Rev9
 
   }
 
@@ -876,6 +1008,7 @@ void loop() {
     }
     Serial.println(" ");
     end10lap_verde = 0;
+    chiuso[1] = true;  // Rev9
 
   }
 
@@ -907,6 +1040,7 @@ void loop() {
     scrivisuSD (stringoneblu);
     Serial.println(stringoneblu);
     end10lap_blu = 0;
+    chiuso[2] = true;  // Rev9
   }
 
 

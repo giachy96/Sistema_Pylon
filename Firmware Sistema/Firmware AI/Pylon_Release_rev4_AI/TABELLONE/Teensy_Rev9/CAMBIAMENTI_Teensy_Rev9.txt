@@ -1,0 +1,11 @@
+Teensy_Rev9 (precedente: Teensy_Rev8)
+Problema: dopo il 10o giro il crono manda il finale 5x14 e non puo' piu' andare in timeout. Se si perdono
+il giro 10 e/o il finale, il pilota restava aperto per sempre (solo lo Stop chiudeva la manche).
+1) Giro 10 ricevuto ma finale 5x14 non arrivato entro 3 s: il Teensy chiude il pilota con totale = somma dei 10 giri
+   (risultato esatto, stesso percorso del finale normale).
+2) Pilota con almeno un pacchetto, muto da oltre 35 s (30 s del crono + margine) mentre almeno un altro pilota
+   ha gia' chiuso: timeout 6x14 generato dal Teensy (punteggio 200 in centrale).
+Attivo solo tra GO e STOP/SHOW. Pacchetti del crono arrivati dopo la chiusura automatica: ignorati e scritti su SD (TARDIVO).
+Log SD: AUTOCHIUSURA / AUTOTIMEOUT / TARDIVO.
+Costanti in testa al blocco REV9: ATTESA_FINALE_MS, SILENZIO_MAX_MS, RICHIEDI_ALTRI_CHIUSI.
+Non toccati: regola dei colori silenziosi/tre colori, protocollo radio, crono, centrale, telecomando.
