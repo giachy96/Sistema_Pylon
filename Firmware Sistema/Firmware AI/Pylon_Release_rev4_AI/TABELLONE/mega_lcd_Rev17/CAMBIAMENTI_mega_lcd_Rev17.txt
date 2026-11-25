@@ -1,0 +1,6 @@
+mega_lcd_Rev17 (precedente: mega_lcd_Rev16)
+L'alternanza info gara 2 s / nomi 6 s (Rev16) si ferma ora in tre modi, non solo con l'eco SHOW/GO/STOP del Teensy:
+ - 2000 / 3000 / 6000 ricevuti dalla centrale via LoRa
+ - qualsiasi pacchetto di gara dal Teensy: giro (45x4), finale (55x4), timeout (65x4), doppio taglio (40x5)
+Cosi' durante la gara i nomi non possono piu' ricomparire tra un giro e l'altro.
+Resto invariato.

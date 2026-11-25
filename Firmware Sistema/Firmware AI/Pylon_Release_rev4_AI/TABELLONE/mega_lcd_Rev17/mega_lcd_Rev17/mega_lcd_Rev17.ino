@@ -1,3 +1,4 @@
+// Rev17: l'alternanza info/nomi si ferma anche senza l'eco GO del Teensy: basta un 2000/3000/6000 dalla centrale o un pacchetto di gara (giro, finale, timeout, doppio taglio)
 // ===== mega_lcd_Rev16 - revisione incrementata (precedente: mega_lcd_Rev15) - vedi CAMBIAMENTI.txt =====
 // Rev16: dopo i nomi (750/850) le due schermate si alternano: info gara (categoria/manche/round) per 2 s, nomi per 6 s,
 //        e cosi' via finche' non arriva un nuovo comando (Show, Go, Stop, nuovi nomi, ...), che azzera flag_nome_pil.
@@ -223,6 +224,7 @@ void loop() {
   }
   if (RxData == "2000") {  // se ricevo lo show dalla centrale
     Staterx = RxData;
+    flag_nome_pil = 0;  // Rev17
     Serial1.println("<2000>");
     //sirena
     startsirena = millis();
@@ -231,6 +233,7 @@ void loop() {
   }
   if (RxData == "3000") {  // se ricevo GO dalla centrale
     Staterx = RxData;
+    flag_nome_pil = 0;  // Rev17
     Serial1.println("<3000>");
     //sirena
     startsirena = millis();
@@ -239,6 +242,7 @@ void loop() {
   }
   if (RxData.length() > 0 && RxData.indexOf(',') < 0 && RxData.indexOf("6000") >= 0) {  // Rev14: STOP dalla centrale, anche se incollato ad altri pacchetti
     Staterx = RxData;
+    flag_nome_pil = 0;  // Rev17
     Serial1.println("<6000>");
     //sirena
     startsirena = millis();
@@ -327,6 +331,9 @@ void loop() {
     //  Serial.println(Rxs);
     updatescreen = 0;
     String head = headOf(Rxs);  // Rev12: codice = primo campo del pacchetto
+    if (head == "4514" || head == "4524" || head == "4534" || head == "5514" || head == "5524" || head == "5534" || head == "6514" || head == "6524" || head == "6534" || head == "4015" || head == "4025" || head == "4035") {
+      flag_nome_pil = 0;  // Rev17: la gara e' in corso, niente piu' alternanza info/nomi
+    }
 
     if (head == "STOP" && updatescreen == 0) {  // se riveco STOP dal TEENSY
       end10lapblu = 0;
