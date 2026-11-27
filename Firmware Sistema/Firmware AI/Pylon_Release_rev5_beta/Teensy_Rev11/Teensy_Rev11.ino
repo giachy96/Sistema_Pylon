@@ -1,0 +1,1214 @@
+// ===== Teensy_Rev9 - revisione incrementata (precedente: Teensy_Rev8) - vedi CAMBIAMENTI.txt =====
+// Rev9: chiusura automatica dei piloti rimasti aperti per pacchetti persi (vedi blocco REV9 sotto)
+//testato 27/12/2022
+#include "serialmethode.h"
+#include <TimeLib.h>
+#include <SD.h>
+#include <SPI.h>
+
+
+char receivedChars1[numChars];
+char receivedChars2[numChars];
+char receivedChars3[numChars];
+char receivedChars4[numChars];
+char receivedChars5[numChars];
+char receivedChars6[numChars];
+char receivedChars7[numChars];
+char receivedChars8[numChars];
+boolean newData1 = false;
+boolean newData2 = false;
+boolean newData3 = false;
+boolean newData4 = false;
+boolean newData5 = false;
+boolean newData6 = false;
+boolean newData7 = false;
+boolean newData8 = false;
+unsigned long currentMillis;
+unsigned long oldMillis;
+unsigned long pressbutton = 1200;
+
+
+String cnc;
+String tempiverde[12];
+String tempirosso[12];
+String tempiblu[12];
+int end10lap_rosso = 0;
+int end10lap_verde = 0;
+int end10lap_blu = 0;
+
+
+String values[14];  // Rev6: era [5], con piu' campi decodecomma scriveva oltre la fine
+
+int ngiri_blu = 0;
+int ngiri_rosso = 0;
+int ngiri_verde = 0;
+int ntagliP1_rosso = 0;
+int ntaglitot_rosso = 0;
+int arrayP1_rosso[11];
+int ntagliP2_rosso = 0;
+int arrayP2_rosso[11];
+int ntagliP3_rosso = 0;
+int arrayP3_rosso[11];
+int ntagliP1_blu = 0;
+int ntaglitot_blu = 0;
+int arrayP1_blu[11];
+int ntagliP2_blu = 0;
+int arrayP2_blu[11];
+int ntagliP3_blu = 0;
+int arrayP3_blu[11];
+int ntagliP1_verde = 0;
+int ntaglitot_verde = 0;
+int arrayP1_verde[11];
+int ntagliP2_verde = 0;
+int arrayP2_verde[11];
+int ntagliP3_verde = 0;
+int arrayP3_verde[11];
+
+// variabili per il dalay a giro
+int delaygiro_rosso = 0;
+unsigned long timedelaygiro_rosso ;
+int delay10giri_rosso = 0;
+unsigned long timedelay10giri_rosso ;
+int delaygiro_verde = 0;
+unsigned long timedelaygiro_verde ;
+int delay10giri_verde = 0;
+unsigned long timedelay10giri_verde ;
+int delaygiro_blu = 0;
+unsigned long timedelaygiro_blu ;
+int delay10giri_blu = 0;
+unsigned long timedelay10giri_blu ;
+
+
+
+String stringoneverde  ;
+String stringoneblu  ;
+String stringonerosso  ;
+unsigned long stringone_delay ;
+
+
+// Rev7: dati per ricostruire i tempi di giro persi (0 = rosso, 1 = verde, 2 = blu)
+String* const tempiCol[3] = {tempirosso, tempiverde, tempiblu};
+bool giroRicevuto[3][12];           // il pacchetto del giro k (0 = partenza) e' arrivato
+unsigned long arrivoGiro[3][12];    // istante di arrivo (millis) del pacchetto del giro k
+int giroPendente[3] = {0, 0, 0};    // indice del giro appena ricevuto, serve a calcolare ngiri
+const char* const nomeCol[3] = {"rosso", "verde", "blu"};
+
+// ---------------------------------------------------------------------------
+// REV11: I PACCHETTI DEL CRONO PORTANO ANCHE I TEMPI PRECEDENTI
+// Giro n = codice,n,tempo_n,tempo_1..tempo_(n-1). Finale = codice,11,totale,tempo_1..tempo_10 (arriva circa 3,5 s dopo il giro 10).
+// Timeout = codice,11,totale,tempo_1..tempo_k. Un giro perso si recupera dal pacchetto successivo: la ricostruzione
+// dei tempi dal totale (Rev7) non serve piu' ed e' stata tolta. Il giro 10 chiude la manche: se il finale non arriva
+// entro ATTESA_FINALE_MS lo stringone parte con il totale calcolato dal Teensy; se arriva prima vale il totale del
+// crono (differenza oltre TOLLERANZA_TOTALE_MS scritta nel log SD). Se si perde il giro 10 ma arriva il finale,
+// il finale porta tutti i tempi e chiude. Se si perdono entrambi resta il timeout (200) dopo SILENZIO_MAX_MS.
+// Dopo il giro 10 (ngiri > 10) i tagli dei pali per quel colore vengono ignorati e il messaggio di fine ai pali parte subito (FINE_AI_PALI_AL_GIRO10).
+// Al Mega il Teensy manda sempre il pacchetto corto (codice,giro,tempo) come prima.
+// REV9: CHIUSURA AUTOMATICA DEI PILOTI RIMASTI APERTI
+// Dopo il 10o giro il crono manda il finale (5x14) e passa a "fine": da li' non puo' piu' andare
+// in timeout. Se si perdono il giro 10 e/o il finale, al Teensy restava il pilota aperto per sempre.
+//  1) giro 10 ricevuto ma finale 5x14 non arrivato entro ATTESA_FINALE_MS: il Teensy chiude da solo
+//     il pilota con il totale = somma dei 10 giri (risultato esatto, come se il finale fosse arrivato).
+//  2) pilota con almeno un pacchetto, muto da piu' di SILENZIO_MAX_MS (30 s del crono + margine) mentre
+//     almeno un altro pilota ha gia' chiuso: il Teensy genera il suo TIMEOUT (6x14, punteggio 200 in centrale).
+// Vale solo tra GO e STOP/SHOW. Un pacchetto del crono che arriva dopo la chiusura automatica viene
+// ignorato (e scritto nel log SD) per non mandare due stringoni alla centrale.
+// Tutto viene scritto nel log SD (AUTOCHIUSURA / AUTOTIMEOUT / TARDIVO).
+// ---------------------------------------------------------------------------
+const unsigned long ATTESA_FINALE_MS = 5000;     // Rev11: dopo il pacchetto del giro 10 (il crono manda il finale dopo 3,5 s)
+const long TOLLERANZA_TOTALE_MS = 100;           // Rev11: differenza accettata tra il totale calcolato e quello del crono
+const bool FINE_AI_PALI_AL_GIRO10 = true;        // Rev11: true = messaggio di fine ai pali appena arriva il giro 10; false = insieme allo stringone
+bool paliAvvisati[3] = {false, false, false};    // Rev11: messaggio di fine gia' mandato ai pali
+const unsigned long SILENZIO_MAX_MS = 35000;     // il crono va in timeout a 30 s dall'ultima pressione
+const bool RICHIEDI_ALTRI_CHIUSI = true;         // false: il timeout per silenzio vale anche se nessun altro ha chiuso
+bool garaAttiva = false;                         // true tra GO e STOP/SHOW
+bool chiuso[3] = {false, false, false};          // stringone gia' mandato alla centrale
+bool chiusoAuto[3] = {false, false, false};      // chiuso da questa logica: i pacchetti tardivi si ignorano
+unsigned long ultimoPacchetto[3] = {0, 0, 0};    // ultimo pacchetto di giro ricevuto dal crono (millis)
+
+void rev9Reset(bool attiva) {
+  garaAttiva = attiva;
+  for (int c = 0; c < 3; c++) {
+    chiuso[c] = false;
+    chiusoAuto[c] = false;
+    ultimoPacchetto[c] = 0;
+    paliAvvisati[c] = false;  // Rev11
+  }
+}
+
+int pStop = 38;
+int pGo = 39;
+int pShow = 40;
+int codicecentrale = 0;
+
+const int chipSelect = BUILTIN_SDCARD;
+String nome_file = "Backup_";
+
+
+// Rev6: primo campo del pacchetto (fino alla prima virgola). I codici si confrontano solo con questo.
+String headOf(const String &s) {
+  int p = s.indexOf(',');
+  if (p < 0) return s;
+  return s.substring(0, p);
+}
+
+// Rev6: indice del giro ricevuto dal crono, limitato a 0..10 (prima toInt() poteva dare qualsiasi valore e scrivere fuori da tempirosso[12])
+int indiceGiro(const String &campo) {
+  int v = campo.toInt();
+  if (v < 0) v = 0;
+  if (v > 10) v = 10;
+  return v;
+}
+
+// Rev6: posizione nell'array dei tagli (11 elementi) per il giro corrente.
+// ngiri = 0 (taglio prima del primo giro registrato) dava indice -1 e scriveva prima dell'array: ora vale come giro 1.
+int idxGiro(int ngiri) {
+  if (ngiri < 1) return 0;
+  if (ngiri > 11) return 10;
+  return ngiri - 1;
+}
+
+// Rev6: spezza "a,b,,c" mantenendo i campi vuoti, senza mai scrivere oltre la fine dell'array.
+// I campi non ricevuti vengono azzerati, cosi' non restano valori vecchi.
+// (niente template: l'IDE Arduino genera il prototipo senza "template" e la compilazione fallisce)
+const int NVALUES = 14;  // deve coincidere con String values[14] (Rev11: finale = codice,11,totale + 10 giri = 13 campi)
+int decodecomma(const String &str, String *tempi) {
+  int n = 0;
+  int start = 0;
+  while (n < NVALUES) {
+    int p = str.indexOf(',', start);
+    if (p < 0) {
+      tempi[n++] = str.substring(start);
+      break;
+    }
+    tempi[n++] = str.substring(start, p);
+    start = p + 1;
+  }
+  for (int k = n; k < NVALUES; k++) tempi[k] = "";
+  return n;
+}
+
+// ---------------------------------------------------------------------------
+// Rev7 (tolta in Rev11): era la ricostruzione dei tempi di giro persi; ora i giri mancanti arrivano nell'array dei pacchetti
+// Il crono manda il tempo di ogni giro e, alla fine, il totale (= somma dei 10 giri).
+// Se un pacchetto di giro si perde, il campo resta vuoto. Qui lo ricostruiamo senza chiedere
+// al crono di ritrasmettere:
+//  - 1 solo giro mancante           -> esatto: totale - somma degli altri (+-1 ms)
+//  - piu' giri mancanti NON adiacenti -> la loro somma e' esatta; ogni giro e' stimato dagli
+//    istanti di arrivo dei pacchetti vicini e poi corretto perche' la somma torni
+//  - giri adiacenti mancanti o dati incoerenti -> campi lasciati vuoti
+// Tutto viene scritto nel log SD (RICOSTRUZIONE ...), il protocollo non cambia.
+// ---------------------------------------------------------------------------
+long parseMs(const String &s) {  // "6.130" -> 6130, vuoto -> -1
+  if (s.length() == 0) return -1;
+  int p = s.indexOf('.');
+  if (p < 0) return s.toInt() * 1000L;
+  long ip = s.substring(0, p).toInt();
+  String f = s.substring(p + 1);
+  while (f.length() < 3) f.concat("0");
+  f = f.substring(0, 3);
+  return ip * 1000L + f.toInt();
+}
+
+String formatMs(long ms) {  // 6130 -> "6.130" (stesso formato di dtostrf(...,4,3) del crono)
+  char b[20];
+  snprintf(b, sizeof(b), "%ld.%03ld", ms / 1000, ms % 1000);
+  return String(b);
+}
+
+void logArrivi(int c) {  // istanti di arrivo dei pacchetti, per misurare nelle gare vere quanto e' costante il ritardo radio
+  String m = "ARRIVI ";
+  m.concat(nomeCol[c]);
+  m.concat(" (ms dal primo pacchetto):");
+  unsigned long base = 0;
+  bool primo = true;
+  for (int k = 0; k <= 10; k++) {
+    if (!giroRicevuto[c][k]) continue;
+    if (primo) { base = arrivoGiro[c][k]; primo = false; }
+    m.concat(" ");
+    m.concat(k);
+    m.concat("=");
+    m.concat((long)(arrivoGiro[c][k] - base));
+  }
+  scrivisuSD(m);
+}
+
+bool inChiusura(int c) {  // chiusura gia' avviata ma stringone non ancora mandato
+  if (c == 0) return end10lap_rosso == 1 || delay10giri_rosso == 1;
+  if (c == 1) return end10lap_verde == 1 || delay10giri_verde == 1;
+  return end10lap_blu == 1 || delay10giri_blu == 1;
+}
+
+bool colChiuso(int c) {
+  return chiuso[c] || inChiusura(c);
+}
+
+bool haPacchetti(int c) {
+  for (int k = 0; k <= 10; k++) {
+    if (giroRicevuto[c][k]) return true;
+  }
+  return false;
+}
+
+void avviaChiusura10(int c) {  // stesso percorso del finale 5x14 arrivato dal crono
+  if (c == 0) { delay10giri_rosso = 1; timedelay10giri_rosso = millis() - 601; }
+  if (c == 1) { delay10giri_verde = 1; timedelay10giri_verde = millis() - 601; }
+  if (c == 2) { delay10giri_blu = 1; timedelay10giri_blu = millis() - 601; }
+}
+
+void forzaTimeout(int c) {  // stesso percorso del 6x14 arrivato dal crono
+  if (c == 0) ntaglitot_rosso = 10;
+  if (c == 1) ntaglitot_verde = 10;
+  if (c == 2) ntaglitot_blu = 10;
+}
+
+void rev9Controlli() {
+  if (!garaAttiva) return;
+  unsigned long ora = millis();
+  for (int c = 0; c < 3; c++) {
+    if (colChiuso(c) || !haPacchetti(c)) continue;
+    String *t = tempiCol[c];
+    // 1) giro 10 arrivato, finale no: chiudo con il totale calcolato
+    if (giroRicevuto[c][10] && t[11].length() == 0 && (ora - arrivoGiro[c][10]) > ATTESA_FINALE_MS) {
+      long somma = 0;
+      bool ok = true;
+      for (int k = 1; k <= 10; k++) {
+        long v = parseMs(t[k]);
+        if (v < 0) { ok = false; break; }
+        somma += v;
+      }
+      if (ok) {
+        t[11] = formatMs(somma);
+        chiusoAuto[c] = true;
+        String log = "AUTOCHIUSURA ";
+        log.concat(nomeCol[c]);
+        log.concat(": giro 10 ricevuto, finale perso, totale=");
+        log.concat(t[11]);
+        scrivisuSD(log);
+        avviaChiusura10(c);
+        continue;
+      }
+    }
+    // 2) pilota muto troppo a lungo mentre altri hanno chiuso: timeout
+    if ((ora - ultimoPacchetto[c]) > SILENZIO_MAX_MS) {
+      if (RICHIEDI_ALTRI_CHIUSI) {
+        bool altri = false;
+        for (int d = 0; d < 3; d++) {
+          if (d != c && colChiuso(d)) altri = true;
+        }
+        if (!altri) continue;
+      }
+      chiusoAuto[c] = true;
+      String log = "AUTOTIMEOUT ";
+      log.concat(nomeCol[c]);
+      log.concat(": nessun pacchetto dal crono da oltre 35 s");
+      scrivisuSD(log);
+      forzaTimeout(c);
+    }
+  }
+}
+
+// ---------------------------------------------------------------------------
+// REV11: funzioni
+// ---------------------------------------------------------------------------
+// v[primo...primo+quanti-1] sono i giri 1..quanti riportati dal crono. Valgono quelli del crono.
+void rev11Giri(int c, String *v, int primo, int quanti) {
+  String *t = tempiCol[c];
+  for (int j = 0; j < quanti && j < 10; j++) {
+    String &nuovo = v[primo + j];
+    if (parseMs(nuovo) < 0) continue;
+    int k = j + 1;
+    if (t[k].length() == 0) {
+      String lg = "RECUPERATO ";
+      lg.concat(nomeCol[c]);
+      lg.concat(" giro");
+      lg.concat(k);
+      lg.concat("=");
+      lg.concat(nuovo);
+      scrivisuSD(lg);
+    } else if (parseMs(t[k]) != parseMs(nuovo)) {
+      String lg = "DISCORDANTE ";
+      lg.concat(nomeCol[c]);
+      lg.concat(" giro");
+      lg.concat(k);
+      lg.concat(": ");
+      lg.concat(t[k]);
+      lg.concat("->");
+      lg.concat(nuovo);
+      scrivisuSD(lg);
+    }
+    t[k] = nuovo;
+  }
+}
+
+long sommaGiri(int c) {  // somma dei giri 1..10, -1 se ne manca uno
+  String *t = tempiCol[c];
+  long somma = 0;
+  for (int k = 1; k <= 10; k++) {
+    long v = parseMs(t[k]);
+    if (v < 0) return -1;
+    somma += v;
+  }
+  return somma;
+}
+
+void avvisaPaliFine(int c) {  // messaggio di fine ai pali, una volta sola per manche
+  if (paliAvvisati[c]) return;
+  paliAvvisati[c] = true;
+  if (c == 0) { Serial3.print("<5514>"); Serial5.print("<5514>"); }
+  if (c == 1) { Serial3.print("<5524>"); Serial4.print("<5524>"); }
+  if (c == 2) { Serial3.print("<5534>"); Serial2.print("<5534>"); }
+}
+
+void rev11Giro10(int c) {  // giro 10 arrivato: la manche e' chiusa, il Teensy tiene da parte il totale
+  if (!garaAttiva) return;
+  long tot = sommaGiri(c);
+  String lg = "GIRO 10 ";
+  lg.concat(nomeCol[c]);
+  lg.concat(": totale calcolato=");
+  lg.concat(tot < 0 ? String("n.d.") : formatMs(tot));
+  lg.concat(", attendo il finale");
+  scrivisuSD(lg);
+  if (FINE_AI_PALI_AL_GIRO10) avvisaPaliFine(c);
+}
+
+// finale arrivato (values gia' decodificato, nf campi): confronto dei totali, poi i tempi del crono
+void rev11Finale(int c, int nf) {
+  long mio = sommaGiri(c);
+  rev11Giri(c, values, 3, nf - 3);
+  long crono = parseMs(values[2]);
+  if (mio >= 0 && crono >= 0) {
+    long d = mio - crono;
+    if (d < 0) d = -d;
+    if (d > TOLLERANZA_TOTALE_MS) {
+      String lg = "DISCORDANZA TOTALE ";
+      lg.concat(nomeCol[c]);
+      lg.concat(": calcolato=");
+      lg.concat(formatMs(mio));
+      lg.concat(" crono=");
+      lg.concat(values[2]);
+      lg.concat(" (vale quello del crono)");
+      scrivisuSD(lg);
+    }
+  }
+}
+
+void rev11TaglioTardivo(int c, int palo) {  // taglio arrivato dopo il giro 10: ignorato
+  String lg = "TAGLIO P";
+  lg.concat(palo);
+  lg.concat(" ");
+  lg.concat(nomeCol[c]);
+  lg.concat(" dopo il giro 10: ignorato");
+  scrivisuSD(lg);
+}
+
+void setup() {
+  pinMode(pStop, INPUT_PULLUP);
+  pinMode(pGo, INPUT_PULLUP);
+  pinMode(pShow, INPUT_PULLUP);
+  Serial.begin(9600);
+  Serial1.begin(9600);  // cronoblu
+  Serial2.begin(9600);  // palo 2/3 blu
+  Serial3.begin(9600);  // palo1
+  Serial4.begin(9600);  // palo 2/3 verde
+  Serial5.begin(9600);  // palo 2/3 rosso
+  Serial6.begin(9600);  // centrale
+  Serial7.begin(9600);  // cronoverde
+  Serial8.begin(9600);  // cronorosso
+
+  // for the log of the manche
+  SD.begin(chipSelect);
+  setSyncProvider(getTeensy3Time);
+  if (timeStatus() != timeSet) {
+    Serial.println("Unable to sync with the RTC");
+  } else {
+    Serial.println("RTC has set the system time");
+  }
+
+  nome_file.concat(day());
+  nome_file.concat("_");
+  nome_file.concat(month());
+  nome_file.concat("_");
+  nome_file.concat(year());
+  nome_file.concat(".txt");
+
+ //Serial.println("hello"); debug
+
+}
+
+
+// the loop routine runs over and over again forever:
+void loop() {
+  currentMillis = millis();
+  recvSerial1();
+  recvSerial2();
+  recvSerial3();
+  recvSerial4();
+  recvSerial5();
+  recvSerial6();
+  recvSerial7();
+  recvSerial8();
+
+
+  if (currentMillis - oldMillis >= pressbutton) {
+  //  if (digitalRead(pStop) == HIGH || codicecentrale == 6000) {
+   if (digitalRead(pStop) == LOW || codicecentrale == 6000) {
+      Serial.println("<STOP>");
+      Serial6.print("<STOP>");
+      Serial8.print("<6000>");
+      Serial1.print("<6000>");
+      Serial7.print("<6000>");
+      Serial3.print("<6000>");
+      Serial5.print("<6000>");
+      Serial4.print("<6000>");
+      Serial2.print("<6000>");
+      oldMillis = millis();
+      rev9Reset(false);  // Rev9
+      codicecentrale = 0;
+    }
+    if (digitalRead(pGo) == LOW || codicecentrale == 3000) {
+      Serial.println("<GO>");
+      Serial6.print("<GO>");
+      Serial8.print("<3000>");
+      Serial1.print("<3000>");
+      Serial7.print("<3000>");
+      Serial3.print("<3000>");
+      Serial5.print("<3000>");
+      Serial4.print("<3000>");
+      Serial2.print("<3000>");
+      oldMillis = millis();
+      rev9Reset(true);  // Rev9
+      ntagliP1_rosso = 0;
+      memset(arrayP1_rosso, 0, sizeof(arrayP1_rosso));
+      ntagliP2_rosso = 0;
+      memset(arrayP2_rosso, 0, sizeof(arrayP2_rosso));
+      ntagliP3_rosso = 0;
+      memset(arrayP3_rosso, 0, sizeof(arrayP3_rosso));
+      ntagliP1_blu = 0;
+      memset(arrayP1_blu, 0, sizeof(arrayP1_blu));
+      ntagliP2_blu = 0;
+      memset(arrayP2_blu, 0, sizeof(arrayP2_blu));
+      ntagliP3_blu = 0;
+      memset(arrayP3_blu, 0, sizeof(arrayP3_blu));
+      ntagliP1_verde = 0;
+      memset(arrayP1_verde, 0, sizeof(arrayP1_verde));
+      ntagliP2_verde = 0;
+      memset(arrayP2_verde, 0, sizeof(arrayP2_verde));
+      ntagliP3_verde = 0;
+      memset(arrayP3_verde, 0, sizeof(arrayP3_verde));
+      for ( int k = 0;  k < 12 ; k++) {
+        tempiverde[k] = "";
+        tempiblu[k] = "";
+        tempirosso[k] = "";
+        giroRicevuto[0][k] = false;
+        giroRicevuto[1][k] = false;
+        giroRicevuto[2][k] = false;
+      }
+      giroPendente[0] = giroPendente[1] = giroPendente[2] = 0;
+      ngiri_blu = 0;
+      ngiri_rosso = 0;
+      ngiri_verde = 0;
+      ntaglitot_blu = 0;
+      ntaglitot_verde = 0;
+      ntaglitot_rosso = 0;
+      codicecentrale = 0;
+      stringoneverde = ""  ;
+      stringoneblu = "" ;
+      stringonerosso = "" ;
+    }
+    if (digitalRead(pShow) == LOW || codicecentrale == 2000) {
+      Serial.println("<SHOW>");
+      Serial6.print("<SHOW>");
+      Serial8.print("<2000>");
+      Serial1.print("<2000>");
+      Serial7.print("<2000>");
+      Serial3.print("<2000>");
+      Serial5.print("<2000>");
+      Serial4.print("<2000>");
+      Serial2.print("<2000>");
+      oldMillis = millis();
+      rev9Reset(false);  // Rev9
+      ntagliP1_rosso = 0;
+      memset(arrayP1_rosso, 0, sizeof(arrayP1_rosso));
+      ntagliP2_rosso = 0;
+      memset(arrayP2_rosso, 0, sizeof(arrayP2_rosso));
+      ntagliP3_rosso = 0;
+      memset(arrayP3_rosso, 0, sizeof(arrayP3_rosso));
+      ntagliP1_blu = 0;
+      memset(arrayP1_blu, 0, sizeof(arrayP1_blu));
+      ntagliP2_blu = 0;
+      memset(arrayP2_blu, 0, sizeof(arrayP2_blu));
+      ntagliP3_blu = 0;
+      memset(arrayP3_blu, 0, sizeof(arrayP3_blu));
+      ntagliP1_verde = 0;
+      memset(arrayP1_verde, 0, sizeof(arrayP1_verde));
+      ntagliP2_verde = 0;
+      memset(arrayP2_verde, 0, sizeof(arrayP2_verde));
+      ntagliP3_verde = 0;
+      memset(arrayP3_verde, 0, sizeof(arrayP3_verde));
+      for ( int k = 0;  k < 12 ; k++) {
+        tempiverde[k] = "";
+        tempiblu[k] = "";
+        tempirosso[k] = "";
+        giroRicevuto[0][k] = false;
+        giroRicevuto[1][k] = false;
+        giroRicevuto[2][k] = false;
+      }
+      giroPendente[0] = giroPendente[1] = giroPendente[2] = 0;
+      ngiri_blu = 0;
+      ngiri_rosso = 0;
+      ngiri_verde = 0;
+      ntaglitot_blu = 0;
+      ntaglitot_verde = 0;
+      ntaglitot_rosso = 0;
+      codicecentrale = 0;
+      stringoneverde = ""  ;
+      stringoneblu = "" ;
+      stringonerosso = "" ;
+    }
+  }
+
+  //Dati dal CronoROSSO
+  if (newData8 == true) {
+    String Rxs8;
+    Rxs8 = receivedChars8;
+    Serial.println( Rxs8);
+    String h8 = headOf(Rxs8);  // Rev6: codice = primo campo
+    if (chiusoAuto[0] && h8 != "2510") {  // Rev9: pilota gia' chiuso dalla logica automatica
+      String lg = "TARDIVO ignorato rosso: ";
+      lg.concat(Rxs8);
+      scrivisuSD(lg);
+      h8 = "";
+    }
+    if (h8 == "4514" || h8 == "5514" || h8 == "2510" || h8 == "6514") {
+      String pack8 = "<";
+      pack8.concat(receivedChars8);
+      pack8.concat(">");
+
+      if (h8 == "2510") {  // show rosso
+        Serial6.print(pack8);
+      }
+
+      if (h8 == "4514") {  // nuovo giro rosso
+        decodecomma(Rxs8, values);
+        String corto = "<";  // Rev11: al Mega solo codice, giro e tempo come prima
+        corto.concat(values[0]);
+        corto.concat(",");
+        corto.concat(values[1]);
+        corto.concat(",");
+        corto.concat(values[2]);
+        corto.concat(">");
+        Serial6.print(corto);
+        int ig = indiceGiro(values[1]);
+        tempirosso[ig] = values[2];
+        rev11Giri(0, values, 3, ig - 1);  // Rev11: giri precedenti dal pacchetto
+        giroRicevuto[0][ig] = true;       // Rev7
+        ultimoPacchetto[0] = millis();    // Rev9
+        arrivoGiro[0][ig] = millis();     // Rev7
+        giroPendente[0] = ig;             // Rev7
+        delaygiro_rosso = 1;
+        timedelaygiro_rosso = millis();
+      }
+      if (h8 == "5514") {  // finale rosso (Rev11: con tutti i tempi)
+        int nf = decodecomma(Rxs8, values);
+        rev11Finale(0, nf);
+        tempirosso[11] = values[2];
+        avviaChiusura10(0);
+      }
+      if (h8 == "6514") {  // timeout rosso
+        int nf = decodecomma(Rxs8, values);
+        rev11Giri(0, values, 3, nf - 3);  // Rev11: giri fatti dal pacchetto di timeout
+        ntaglitot_rosso = 10;
+      }
+    }
+    newData8 = false;
+  }
+
+  if (delaygiro_rosso == 1) {
+    if (millis() - timedelaygiro_rosso > 300) {
+      ngiri_rosso = giroPendente[0] + 1;  // Rev7: dal numero del giro nel pacchetto, non contando i pacchetti (uno perso non sfasa piu' i tagli)
+      ntagliP1_rosso = 0;
+      ntagliP2_rosso = 0;
+      ntagliP3_rosso = 0;
+      delaygiro_rosso = 0;
+      if (giroPendente[0] == 10) rev11Giro10(0);  // Rev11
+      Serial.println("ngiri_rosso");
+      Serial.println(ngiri_rosso);
+    }
+  }
+  if (delay10giri_rosso == 1) {
+    if (millis() - timedelay10giri_rosso > 600) {
+      avvisaPaliFine(0);  // Rev11: se non gia' avvisati al giro 10
+      stringonerosso = "<5514,";
+      end10lap_rosso = 1;
+      Serial.println("10giri_rosso");
+      delay10giri_rosso = 0;
+    }
+  }
+
+  //Dati dal CronoBLU
+  if (newData1 == true) {
+    String Rxs1;
+    Rxs1 = receivedChars1;
+    Serial.println( Rxs1);
+    String h1 = headOf(Rxs1);  // Rev6: codice = primo campo
+    if (chiusoAuto[2] && h1 != "2530") {  // Rev9: pilota gia' chiuso dalla logica automatica
+      String lg = "TARDIVO ignorato blu: ";
+      lg.concat(Rxs1);
+      scrivisuSD(lg);
+      h1 = "";
+    }
+    if (h1 == "4534" || h1 == "5534" || h1 == "2530" || h1 == "6534") {
+      String pack1 = "<";
+      pack1.concat(receivedChars1);
+      pack1.concat(">");
+
+      if (h1 == "2530") {  // show blu
+        Serial6.print(pack1);
+      }
+
+      if (h1 == "4534") {  // nuovo giro blu
+        decodecomma(Rxs1, values);
+        String corto = "<";  // Rev11: al Mega solo codice, giro e tempo come prima
+        corto.concat(values[0]);
+        corto.concat(",");
+        corto.concat(values[1]);
+        corto.concat(",");
+        corto.concat(values[2]);
+        corto.concat(">");
+        Serial6.print(corto);
+        int ig = indiceGiro(values[1]);
+        tempiblu[ig] = values[2];
+        rev11Giri(2, values, 3, ig - 1);  // Rev11: giri precedenti dal pacchetto
+        giroRicevuto[2][ig] = true;       // Rev7
+        ultimoPacchetto[2] = millis();    // Rev9
+        arrivoGiro[2][ig] = millis();     // Rev7
+        giroPendente[2] = ig;             // Rev7
+        delaygiro_blu = 1;
+        timedelaygiro_blu = millis();
+
+      }
+      if (h1 == "5534") {  // finale blu (Rev11: con tutti i tempi)
+        int nf = decodecomma(Rxs1, values);
+        rev11Finale(2, nf);
+        tempiblu[11] = values[2];
+        avviaChiusura10(2);
+
+      }
+      if (h1 == "6534") {  // timeout blu
+        int nf = decodecomma(Rxs1, values);
+        rev11Giri(2, values, 3, nf - 3);  // Rev11: giri fatti dal pacchetto di timeout
+        ntaglitot_blu = 10;
+      }
+    }
+    newData1 = false;
+  }
+  if (delaygiro_blu == 1) {
+    if (millis() - timedelaygiro_blu > 300) {
+      ngiri_blu = giroPendente[2] + 1;  // Rev7: dal numero del giro nel pacchetto, non contando i pacchetti (uno perso non sfasa piu' i tagli)
+      ntagliP1_blu = 0;
+      ntagliP2_blu = 0;
+      ntagliP3_blu = 0;
+      delaygiro_blu = 0;
+      if (giroPendente[2] == 10) rev11Giro10(2);  // Rev11
+      Serial.println("ngiri_blu");
+      Serial.println(ngiri_blu);
+    }
+  }
+  if (delay10giri_blu == 1) {
+    if (millis() - timedelay10giri_blu > 600) {
+      avvisaPaliFine(2);  // Rev11: se non gia' avvisati al giro 10
+      stringoneblu = "<5534,";
+      end10lap_blu = 1;
+      Serial.println("10giri_blu");
+      delay10giri_blu = 0;
+    }
+  }
+
+
+  //Dati dal CronoVERDE
+  if (newData7 == true) {
+    String Rxs7;
+    Rxs7 = receivedChars7;
+    Serial.println( Rxs7);
+    String h7 = headOf(Rxs7);  // Rev6: codice = primo campo
+    if (chiusoAuto[1] && h7 != "2520") {  // Rev9: pilota gia' chiuso dalla logica automatica
+      String lg = "TARDIVO ignorato verde: ";
+      lg.concat(Rxs7);
+      scrivisuSD(lg);
+      h7 = "";
+    }
+    if (h7 == "4524" || h7 == "5524" || h7 == "2520" || h7 == "6524") {
+      String pack7 = "<";
+      pack7.concat(receivedChars7);
+      pack7.concat(">");
+
+      if (h7 == "2520") {  // show verde
+        Serial6.print(pack7);
+      }
+
+      if (h7 == "4524") {  // nuovo giro verde
+        decodecomma(Rxs7, values);
+        String corto = "<";  // Rev11: al Mega solo codice, giro e tempo come prima
+        corto.concat(values[0]);
+        corto.concat(",");
+        corto.concat(values[1]);
+        corto.concat(",");
+        corto.concat(values[2]);
+        corto.concat(">");
+        Serial6.print(corto);
+        int ig = indiceGiro(values[1]);
+        tempiverde[ig] = values[2];
+        rev11Giri(1, values, 3, ig - 1);  // Rev11: giri precedenti dal pacchetto
+        giroRicevuto[1][ig] = true;       // Rev7
+        ultimoPacchetto[1] = millis();    // Rev9
+        arrivoGiro[1][ig] = millis();     // Rev7
+        giroPendente[1] = ig;             // Rev7
+        delaygiro_verde = 1;
+        timedelaygiro_verde = millis();
+
+      }
+      if (h7 == "5524") {  // finale verde (Rev11: con tutti i tempi)
+        int nf = decodecomma(Rxs7, values);
+        rev11Finale(1, nf);
+        tempiverde[11] = values[2];
+        avviaChiusura10(1);
+
+      }
+      if (h7 == "6524") {  // timeout verde
+        int nf = decodecomma(Rxs7, values);
+        rev11Giri(1, values, 3, nf - 3);  // Rev11: giri fatti dal pacchetto di timeout
+        ntaglitot_verde = 10;
+      }
+    }
+    newData7 = false;
+  }
+
+  if (delaygiro_verde == 1) {
+    if (millis() - timedelaygiro_verde > 300) {
+      ngiri_verde = giroPendente[1] + 1;  // Rev7: dal numero del giro nel pacchetto, non contando i pacchetti (uno perso non sfasa piu' i tagli)
+      ntagliP1_verde = 0;
+      ntagliP2_verde = 0;
+      ntagliP3_verde = 0;
+      Serial.println("ngiri_verde");
+      Serial.println(ngiri_verde);
+      delaygiro_verde = 0;
+      if (giroPendente[1] == 10) rev11Giro10(1);  // Rev11
+    }
+  }
+  if (delay10giri_verde == 1) {
+    if (millis() - timedelay10giri_verde > 600) {
+      avvisaPaliFine(1);  // Rev11: se non gia' avvisati al giro 10
+      stringoneverde = "<5524,";
+      end10lap_verde = 1;
+      Serial.println("10giri_verde");
+      delay10giri_verde = 0;
+    }
+  }
+
+  //Dati dalla CENTRALE
+  if (newData6 == true) {
+    String Rxs6;
+    Rxs6 = receivedChars6;
+    String h6 = headOf(Rxs6);  // Rev6: codice = primo campo, non una sottostringa (es. gara "Q2000")
+
+    if (h6 == "1750") {  // ho ricevuto reset dal mega lcd
+      //per resettare le luci dei pali
+      //Serial.println("<1750>"); debug
+      doReboot();
+    }
+    if (h6 == "850") {  // ho ricevuto avanti/indietro dalla centrale
+      //per resettare le luci dei pali
+      Serial2.println("<850>");
+      Serial3.println("<850>");
+      Serial4.println("<850>");
+      Serial5.println("<850>");
+      scrivisuSD (Rxs6);
+    }
+
+    if (h6 == "2000") {  // ho ricevuto lo show dalla centrale
+      codicecentrale = 2000;
+    }
+    if (h6 == "3000") {  // ho ricevuto GO dalla centrale
+      codicecentrale = 3000;
+    }
+    if (h6 == "6000") {  // ho ricevuto lo show dalla centrale
+      codicecentrale = 6000;
+    }
+    if (h6 == "3513") {  // avvio rosso
+      String pack6_r = "<";
+      pack6_r.concat(receivedChars6);
+      pack6_r.concat(">");
+      Serial8.print(pack6_r);
+    }
+    if (h6 == "3523") {  // avvio verde
+      String pack6_v = "<";
+      pack6_v.concat(receivedChars6);
+      pack6_v.concat(">");
+      Serial7.print(pack6_v);
+    }
+    if (h6 == "3533") {  // avvio blu
+      String pack6_b = "<";
+      pack6_b.concat(receivedChars6);
+      pack6_b.concat(">");
+      Serial1.print(pack6_b);
+    }
+    if (h6 == "3001") {  // avvio tutti i tagli
+      String pack6_t = "<";
+      pack6_t.concat(receivedChars6);
+      pack6_t.concat(">");
+      Serial3.print(pack6_t);  // palo1
+      Serial5.print(pack6_t);  //palo2-3 rosso
+      Serial4.print(pack6_t);  //palo2-3 rosso
+      Serial2.print(pack6_t);  //palo2-3 rosso
+    }
+    if (h6 == "500") {  // ho ricevuto STANDBY
+      Serial2.println("<500>");
+      Serial3.println("<500>");
+      Serial4.println("<500>");
+      Serial5.println("<500>");
+    }
+    newData6 = false;
+  }
+
+  //Dati dalla Palo1
+  if (newData3 == true) {
+    String Rxs3;
+    Rxs3 = receivedChars3;
+    String h3 = headOf(Rxs3);
+    if (h3 == "3111") {  // tagli palo 1 rosso
+      Serial.println("Taglio P1 Rosso");
+      if (ngiri_rosso > 10) {  // Rev11: dopo il giro 10 la manche e' finita, i tagli non contano
+        rev11TaglioTardivo(0, 1);
+      } else {
+        ntagliP1_rosso++;
+        ntaglitot_rosso++;
+        arrayP1_rosso[idxGiro(ngiri_rosso)] = ntagliP1_rosso;
+      }
+    }
+    if (h3 == "3121") {  // tagli palo 1 verde
+      if (ngiri_verde > 10) {  // Rev11: dopo il giro 10 la manche e' finita, i tagli non contano
+        rev11TaglioTardivo(1, 1);
+      } else {
+        ntagliP1_verde++;
+        ntaglitot_verde++;
+        arrayP1_verde[idxGiro(ngiri_verde)] = ntagliP1_verde;
+      }
+    }
+    if (h3 == "3131") {  // tagli palo 1 blu
+      if (ngiri_blu > 10) {  // Rev11: dopo il giro 10 la manche e' finita, i tagli non contano
+        rev11TaglioTardivo(2, 1);
+      } else {
+        ntagliP1_blu++;
+        ntaglitot_blu++;
+        arrayP1_blu[idxGiro(ngiri_blu)] = ntagliP1_blu;
+      }
+    }
+    newData3 = false;
+  }
+
+
+  //Dati dalla Palo2/3rosso
+  if (newData5 == true) {
+    String Rxs5;
+    Rxs5 = receivedChars5;
+    String h5 = headOf(Rxs5);
+    if (h5 == "3211") {  // tagli palo 2 rosso
+      Serial.println("Taglio P2 Rosso");
+      if (ngiri_rosso > 10) {  // Rev11: dopo il giro 10 la manche e' finita, i tagli non contano
+        rev11TaglioTardivo(0, 2);
+      } else {
+        ntagliP2_rosso++;
+        ntaglitot_rosso++;
+        arrayP2_rosso[idxGiro(ngiri_rosso)] = ntagliP2_rosso;
+      }
+    }
+    if (h5 == "3311") {  // tagli palo 3 rosso
+      Serial.println("Taglio P3 Rosso");
+      if (ngiri_rosso > 10) {  // Rev11: dopo il giro 10 la manche e' finita, i tagli non contano
+        rev11TaglioTardivo(0, 3);
+      } else {
+        ntagliP3_rosso++;
+        ntaglitot_rosso++;
+        arrayP3_rosso[idxGiro(ngiri_rosso)] = ntagliP3_rosso;
+      }
+    }
+    newData5 = false;
+  }
+
+  //Dati dalla Palo2/3verde
+  if (newData4 == true) {
+    String Rxs4;
+    Rxs4 = receivedChars4;
+    String h4 = headOf(Rxs4);
+    if (h4 == "3221") {  // tagli palo 2 verde
+      Serial.println("Taglio P2 Verde");
+      if (ngiri_verde > 10) {  // Rev11: dopo il giro 10 la manche e' finita, i tagli non contano
+        rev11TaglioTardivo(1, 2);
+      } else {
+        ntagliP2_verde++;
+        ntaglitot_verde++;
+        arrayP2_verde[idxGiro(ngiri_verde)] = ntagliP2_verde;
+      }
+    }
+    if (h4 == "3321") {  // tagli palo 3 verde
+      Serial.println("Taglio P3 verde");
+      if (ngiri_verde > 10) {  // Rev11: dopo il giro 10 la manche e' finita, i tagli non contano
+        rev11TaglioTardivo(1, 3);
+      } else {
+        ntagliP3_verde++;
+        ntaglitot_verde++;
+        arrayP3_verde[idxGiro(ngiri_verde)] = ntagliP3_verde;
+      }
+    }
+    newData4 = false;
+  }
+
+  //Dati dalla Palo2/3blu
+  if (newData2 == true) {
+    String Rxs2;
+    Rxs2 = receivedChars2;
+    String h2 = headOf(Rxs2);
+    if (h2 == "3231") {  // tagli palo 2 blu
+      Serial.println("Taglio P2 Blu");
+      if (ngiri_blu > 10) {  // Rev11: dopo il giro 10 la manche e' finita, i tagli non contano
+        rev11TaglioTardivo(2, 2);
+      } else {
+        ntagliP2_blu++;
+        ntaglitot_blu++;
+        arrayP2_blu[idxGiro(ngiri_blu)] = ntagliP2_blu;
+      }
+    }
+    if (h2 == "3331") {  // tagli palo 3 blu
+      Serial.println("Taglio P3 blu");
+      if (ngiri_blu > 10) {  // Rev11: dopo il giro 10 la manche e' finita, i tagli non contano
+        rev11TaglioTardivo(2, 3);
+      } else {
+        ntagliP3_blu++;
+        ntaglitot_blu++;
+        arrayP3_blu[idxGiro(ngiri_blu)] = ntagliP3_blu;
+      }
+    }
+    newData2 = false;
+  }
+
+
+
+  rev9Controlli();  // Rev9: dopo i tagli dei pali, cosi' ntaglitot = 10 non viene incrementato prima del blocco timeout
+
+  if (ntaglitot_rosso > 1 && ntaglitot_rosso < 10 ) {  // ha fatto due tagli il rosso
+    //Serial6.println("<4015>");
+    Serial3.println("<4015>");
+    Serial5.println("<4015>");
+    Serial8.println("<4015>");
+    ntaglitot_rosso = 0;
+    end10lap_rosso = 1;
+    stringonerosso = "<4015,";
+  }
+  if (ntaglitot_verde > 1 && ntaglitot_verde < 10) {  // ha fatto due tagli il verde
+    // Serial6.println("<4025>");
+    Serial3.println("<4025>");
+    Serial7.println("<4025>");
+    Serial4.println("<4025>");
+    ntaglitot_verde = 0;
+    end10lap_verde = 1;
+    stringoneverde = "<4025,";
+  }
+
+  if (ntaglitot_blu > 1 && ntaglitot_blu < 10) {  // ha fatto due tagli il blu
+    // Serial6.println("<4035>");
+    Serial3.println("<4035>");
+    Serial1.println("<4035>");
+    Serial2.println("<4035>");
+    ntaglitot_blu = 0;
+    end10lap_blu = 1;
+    stringoneblu = "<4035,";
+  }
+  if ( ntaglitot_blu == 10) {  // ATTENZIONE PER PULIZA SI è riustao il ntagli blu per il TIMEOUT!
+    // Serial6.println("<6534>");  // timeout blu
+    Serial3.println("<6534>");
+    Serial2.println("<6534>");
+    ntaglitot_blu = 0;
+    end10lap_blu = 1;
+    stringoneblu = "<6534,";
+  }
+  if ( ntaglitot_verde == 10) {  //timeout verde
+    // Serial6.println("<6534>");
+    Serial3.println("<6524>");
+    Serial4.println("<6524>");
+    ntaglitot_verde = 0;
+    end10lap_verde = 1;
+    stringoneverde = "<6524,";
+  }
+  if ( ntaglitot_rosso == 10) {  //timeout rosso
+    // Serial6.println("<6534>");
+    Serial3.println("<6514>");
+    Serial5.println("<6514>");
+    ntaglitot_rosso = 0;
+    end10lap_rosso = 1;
+    stringonerosso = "<6514,";
+  }
+
+
+  // codice che crea le stringhe finali per i colori
+  if (end10lap_rosso == 1 &&  ( millis() - stringone_delay  >= 200)) {  // creo la stringa finale per il rosso
+    logArrivi(0);
+
+    for (int i = 1; i <= 10; i++) {
+      stringonerosso.concat(tempirosso[i]);
+
+      if (arrayP1_rosso[i - 1] != 0) {
+        stringonerosso.concat("-P1");
+      }
+      if (arrayP2_rosso[i - 1] != 0) {
+        stringonerosso.concat("-P2");
+      }
+      if (arrayP3_rosso[i - 1] != 0) {
+        stringonerosso.concat("-P3");
+      }
+      stringonerosso.concat(",");
+    }
+    stringonerosso.concat(tempirosso[11]);
+    stringonerosso.concat(">");
+    Serial6.println(stringonerosso);
+    stringone_delay  = millis();
+    Serial.println("Mando lo stringone rosso alla centrale");
+    Serial.println("Scrivo su SD lo stringone rosso");
+    scrivisuSD (stringonerosso);
+    Serial.println(stringonerosso);
+    for (int k = 0; k <= 10; k++) {
+      Serial.print(arrayP2_rosso[k]);
+    }
+    Serial.println(" ");
+    end10lap_rosso = 0;
+    chiuso[0] = true;  // Rev9
+
+  }
+
+  if (end10lap_verde == 1 &&  ( millis() - stringone_delay  >= 200) ) {  // creo la stringa finale per il verde
+    logArrivi(1);
+
+
+    for (int i = 1; i <= 10; i++) {
+      stringoneverde.concat(tempiverde[i]);
+
+      if (arrayP1_verde[i - 1] != 0) {
+        stringoneverde.concat("-P1");
+      }
+      if (arrayP2_verde[i - 1] != 0) {
+        stringoneverde.concat("-P2");
+      }
+      if (arrayP3_verde[i - 1] != 0) {
+        stringoneverde.concat("-P3");
+      }
+      stringoneverde.concat(",");
+    }
+    stringoneverde.concat(tempiverde[11]);
+    stringoneverde.concat(">");
+    Serial6.println(stringoneverde);
+    stringone_delay  = millis();
+    Serial.println("Mando lo stringone verde alla centrale");
+    Serial.println("Scrivo su SD lo stringone verde");
+    scrivisuSD (stringoneverde);
+    Serial.println(stringoneverde);
+    for (int k = 0; k <= 10; k++) {
+      Serial.print(arrayP2_verde[k]);
+    }
+    Serial.println(" ");
+    end10lap_verde = 0;
+    chiuso[1] = true;  // Rev9
+
+  }
+
+
+  if (end10lap_blu == 1 &&  ( millis() - stringone_delay  >= 200)) {  // creo la stringa finale per il blu
+    logArrivi(2);
+
+
+    for (int i = 1; i <= 10; i++) {
+      stringoneblu.concat(tempiblu[i]);
+
+      if (arrayP1_blu[i - 1] != 0) {
+        stringoneblu.concat("-P1");
+      }
+      if (arrayP2_blu[i - 1] != 0) {
+        stringoneblu.concat("-P2");
+      }
+      if (arrayP3_blu[i - 1] != 0) {
+        stringoneblu.concat("-P3");
+      }
+      stringoneblu.concat(",");
+    }
+    stringoneblu.concat(tempiblu[11]);
+    stringoneblu.concat(">");
+    Serial6.println(stringoneblu);
+    stringone_delay  = millis();
+    Serial.println("Mando lo stringone blu alla centrale");
+    Serial.println("Scrivo su SD lo stringone blu");
+    scrivisuSD (stringoneblu);
+    Serial.println(stringoneblu);
+    end10lap_blu = 0;
+    chiuso[2] = true;  // Rev9
+  }
+
+
+  // fine codice delle stringhe finali
+} // FINE LOOP
+
+
+void scrivisuSD( String string_to_backup ) {
+
+  // make a string for assembling the data to log:
+  String dataString = hour();
+  dataString += ":";
+  dataString += minute();
+  dataString += ":";
+  dataString += second();
+  dataString += "   ";
+  dataString += string_to_backup;
+
+  // open the file.
+
+  int str_len = nome_file.length() + 1;
+  char nome_file_char[str_len];
+  nome_file.toCharArray(nome_file_char, str_len);
+  File dataFile = SD.open(nome_file_char, FILE_WRITE);
+
+  // if the file is available, write to it:
+  if (dataFile) {
+    dataFile.println(dataString);
+    dataFile.close();
+    // print to the serial port too:
+    Serial.println("Ho scritto su SD");
+  } else {
+    // if the file isn't open, pop up an error:
+    Serial.println("error opening file.txt");
+  }
+
+}
+
+
+time_t getTeensy3Time()
+{
+  return Teensy3Clock.get();
+}
+
+/*  code to process time sync messages from the serial port   */
+#define TIME_HEADER  "T"   // Header tag for serial time sync message
+
+unsigned long processSyncMessage() {
+  unsigned long pctime = 0L;
+  const unsigned long DEFAULT_TIME = 1357041600; // Jan 1 2013
+
+  if (Serial.find(TIME_HEADER)) {
+    pctime = Serial.parseInt();
+    return pctime;
+    if ( pctime < DEFAULT_TIME) { // check the value is a valid time (greater than Jan 1 2013)
+      pctime = 0L; // return 0 to indicate that the time is not valid
+    }
+  }
+  return pctime;
+}
+
+void doReboot() {
+  SCB_AIRCR = 0x05FA0004;
+}

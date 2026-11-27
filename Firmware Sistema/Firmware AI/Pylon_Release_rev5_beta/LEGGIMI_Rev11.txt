@@ -1,0 +1,34 @@
+SISTEMA PYLON - Rev11 (Teensy) + Rev10 (crono TX)  -  array cumulativi
+
+FILE DA CARICARE
+- Teensy: TABELLONE/Teensy_Rev11 (+ serialmethode.h)
+- Crono: TX_ROSSO_CRONORev10, TX_VERDE_CRONORev10, TX_BLU_CRONORev10
+- NON cambiano: Mega LCD Rev17, Centrale, bridge RX_CRONO, PC.
+
+PACCHETTI DEL CRONO
+- Giro n:   codice,n,t_n,t_1..t_(n-1)   (giro 0 invariato)
+- Finale:   codice,11,totale,t_1..t_10   (inviato 3,5 s dopo il giro 10)
+- Timeout:  codice,11,totale,t_1..t_k    (k giri fatti)
+Ogni comando ricevuto dal Teensy annulla il finale in attesa.
+
+COMPORTAMENTO DEL TEENSY
+- La manche e chiusa dal GIRO 10 (non dallo stringone).
+  Il messaggio di fine manche ai pali parte al giro 10.
+- I tagli dei pali dopo il giro 10 sono ignorati (riga nel log SD).
+- I giri persi si recuperano dall'array dei pacchetti successivi.
+- Il Teensy si calcola il totale. Se arriva il finale lo confronta (tolleranza 0,1 s)
+  e usa quello del crono. Se il finale non arriva entro 5 s, usa il suo.
+- Se si perdono giro 10 e finale: scatta il 200 dopo 35 s come prima.
+
+COSTANTI
+- Crono: RITARDO_FINALE = 3500 ms
+- Teensy: ATTESA_FINALE_MS = 5000, TOLLERANZA_TOTALE_MS = 100, FINE_AI_PALI_AL_GIRO10 = true
+
+RIGHE NUOVE NEL LOG SD
+RECUPERATO, DISCORDANTE, GIRO 10, DISCORDANZA TOTALE, "dopo il giro 10: ignorato"
+
+DA CONTROLLARE IN CAMPO
+- Il pacchetto del giro 10 e lungo (~80 caratteri): misurare il tempo reale in aria.
+- Il buffer dell'E22 deve essere a 200 byte.
+- I TX dei pali devono ignorare le pressioni dopo il messaggio di fine.
+- Il messaggio di fine ai pali ora arriva prima di prima.
